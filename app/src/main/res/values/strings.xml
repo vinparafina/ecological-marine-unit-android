@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Ecological Marine Unit Explorer</string>
+    <string name="emu_ocean_surface_layer">
+        http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac
+    </string>
+    <string name="toolbar_title">Explore An Ocean Location</string>
+    <string name="service_emu_polygon">
+        http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/EMU_Cluster_Polygon/FeatureServer/0
+    </string>
+    <string name="service_emu_mesh_cluster">
+        http://utility.arcgis.com/usrsvcs/servers/dbb13dad900d4014b0611358602723dd/rest/services/EMU_Point_Mesh_Cluster/MapServer/0
+    </string>
+    <string name="service_emu_point_mesh">
+        http://utility.arcgis.com/usrsvcs/servers/82cff671f6fd4c88905454899ce015c2/rest/services/EMU_Point_Mesh/MapServer/0
+    </string>
+    <string name="name_emu">NameEMU</string>
+    <string name="geo_base">GeomorphologyBase</string>
+    <string name="geo_features">GeomorphologyFeatures</string>
+    <string name="emu_number">Cluster37</string>
+    <string name="thickness">ThicknessPos</string>
+    <string name="point_x">POINT_X</string>
+    <string name="point_y">POINT_Y</string>
+    <string name="no_emu_found">Please select an ocean location</string>
+    <string name="bundle_physical_summary">physical_summary</string>
+    <string name="bundle_nutrient_summary">nutrient_summary</string>
+    <string name="bundle_emu_number">emu_number</string>
+    <string name="bundle_thickness">bundle_thickness</string>
+    <string name="Cluster3">#708cd9</string>
+    <string name="Cluster5">#a0d7d1</string>
+    <string name="Cluster8">#ccb0ba</string>
+    <string name="Cluster9">#c5b6d0</string>
+    <string name="Cluster10">#7570e6</string>
+    <string name="Cluster11">#cabfd9</string>
+    <string name="Cluster13">#364799</string>
+    <string name="Cluster14">#465290</string>
+    <string name="Cluster18">#eb96cc</string>
+    <string name="Cluster19">#b9caf6</string>
+    <string name="Cluster21">#ebbccd</string>
+    <string name="Cluster23">#a0d7d1</string>
+    <string name="Cluster24">#eba9d4</string>
+    <string name="Cluster25">#a0d7d1</string>
+    <string name="Cluster26">#9365e6</string>
+    <string name="Cluster29">#4792c9</string>
+    <string name="Cluster30">#b4d7e7</string>
+    <string name="Cluster31">#9ad4e6</string>
+    <string name="Cluster33">#7591ff</string>
+    <string name="Cluster35">#9edbff</string>
+    <string name="Cluster36">#1a52aa</string>
+    <string name="Cluster37">#4792c9</string>
+    <string name="layer_thickness_desc">"Layer thickness at this location "</string>
+    <string name="meters">" meters"</string>
+    <string name="below_surface_description">"Distance below surface "</string>
+    <string name="ocean_summary_location_title">EMU Summary for Location</string>
+
+</resources>
