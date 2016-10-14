@@ -6,9 +6,10 @@
               android:id="@+id/water_column_linear_layout_top"
               android:elevation="@dimen/cardview_default_elevation" android:paddingLeft="16dp"
               android:paddingRight="8dp">
+
     <TextView android:layout_width="match_parent"
-              android:layout_height="wrap_content" android:text="0 m"
-              android:paddingTop="56dp"/>
+              android:layout_height="wrap_content" android:text="0 m"/>
+
     <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
                   android:id="@+id/buttonContainer"
                   android:orientation="vertical"

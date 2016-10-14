@@ -34,7 +34,7 @@ public interface MapContract {
   interface View extends BaseView<Presenter> {
     Point getScreenToLocation(android.graphics.Point mapPoint);
     Context getContext();
-    //void showSelectedRegion(Polygon polygon);
+    void resetMap();
     void showDataNotFound();
     void showSummary(WaterColumn column);
     void showClickedLocation(Point point);

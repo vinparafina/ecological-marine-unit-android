@@ -82,7 +82,6 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
   @Nullable
   public  View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
-    setUpToolbar();
 
     mEmuObsView = (RecyclerView) layoutInflater.inflate(R.layout.summary_recycler_view, container,false) ;
 
@@ -120,14 +119,7 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
       Log.i("SummaryFragment", "Saving instance state");
     }
   }
-  /**
-   * Override the application label used for the toolbar title
-   */
-  private void setUpToolbar() {
-    final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-    ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-    ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.ocean_summary_location_title);
-  }
+
 
   /**
    * Set the data for this view
@@ -139,6 +131,9 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
     emuObservations.clear();
     for (EMUObservation observation : emuSet){
       emuObservations.add(observation);
+    }
+    if (mEmuAdapter != null){
+      mEmuAdapter.notifyDataSetChanged();
     }
   }
 

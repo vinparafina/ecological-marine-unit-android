@@ -32,6 +32,7 @@ import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
+import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.LineSymbol;
@@ -78,6 +79,10 @@ public class MapFragment extends Fragment implements MapContract.View {
 
   private Point mSelectedPoint;
   private ArcGISMap mMap;
+  private Viewpoint mInitialViewpoint;
+
+  private final double GALAPAGOS_LAT = -0.3838312;
+  private final double GALAPAGOS_LONG = -91.5727346;
 
   public MapFragment(){}
 
@@ -120,8 +125,6 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     setUpMap(root);
 
-    setUpToolbar();
-
     if (mSelectedPoint != null){
       showClickedLocation(mSelectedPoint);
       Log.i("MapFragment", "Reconstituting state in 'onCreateView'");
@@ -149,11 +152,12 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     mMapView = (MapView) root.findViewById(R.id.map);
 
-    // Create a map using Ocean basemap and
-    // zoom to Galapagos Islands
-    mMap  = new ArcGISMap(Basemap.Type.OCEANS,-0.3838312, -91.5727346, 4  );
+    // Create a map using Ocean basemap
+    // centered on the Galapagos Islands
+    mMap  = new ArcGISMap(Basemap.Type.OCEANS, GALAPAGOS_LAT, GALAPAGOS_LONG, 4  );
 
     mMapView.setMap(mMap);
+
 
     // Create and add layers that need to be visible in the map
     mGraphicOverlay  = new GraphicsOverlay();
@@ -170,6 +174,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED) {
+          mInitialViewpoint = mMap.getInitialViewpoint();
           // Stop listening to any more draw status changes
           mMapView.removeDrawStatusChangedListener(this);
           // Start listening to touch interactions on the map
@@ -191,15 +196,7 @@ public class MapFragment extends Fragment implements MapContract.View {
 
   }
 
-  /**
-   * Override the application label used for the toolbar title
-   */
-  private void setUpToolbar() {
-    final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-    ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-    ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-    actionBar.setTitle("Explore An Ocean Location");
-  }
+
 
   @Override
   public final void onResume(){
@@ -219,6 +216,19 @@ public class MapFragment extends Fragment implements MapContract.View {
   public Point getScreenToLocation(android.graphics.Point mapPoint){
 
     return mMapView.screenToLocation(mapPoint);
+
+  }
+
+  /**
+   * Zoom to initial map view and clear out the graphical layers
+   */
+  @Override public void resetMap() {
+    mSelectedPoint = null;
+    mGraphicOverlay.getGraphics().clear();
+    if (mInitialViewpoint != null){
+      mMapView.setViewpoint(mInitialViewpoint);
+    }
+
 
   }
 
@@ -261,6 +271,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     mGraphicOverlay.getGraphics().clear();
     mGraphicOverlay.getGraphics().add(marker);
   }
+
 
   public class MapTouchListener extends DefaultMapViewOnTouchListener {
     /**

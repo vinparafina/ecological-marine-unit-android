@@ -27,8 +27,12 @@ package com.esri.android.ecologicalmarineunitexplorer.map;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -62,14 +66,14 @@ public class MapActivity extends AppCompatActivity implements WaterColumnFragmen
     setUpMagFragment();
   }
 
-  @Override
-  public void onBackPressed(){
-      super.onBackPressed();
-  }
   /**
    * Configure the map fragment
    */
   private void setUpMagFragment(){
+
+    // Set up the toolbar for the map fragment
+    setUpMapToolbar();
+
     final FragmentManager fm = getSupportFragmentManager();
 
     MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
@@ -80,16 +84,78 @@ public class MapActivity extends AppCompatActivity implements WaterColumnFragmen
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), mapFragment, R.id.map_container, "map fragment");
     }
+  }
+
+  /**
+   * Override the application label used for the toolbar title
+   */
+  private void setUpMapToolbar() {
+    final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    ((AppCompatActivity) this).setSupportActionBar(toolbar);
+    ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
+    actionBar.setTitle("Explore An Ocean Location");
+    toolbar.setNavigationIcon(null);
+
+  }
+  /**
+   * Set the text for the summary toolbar and listen
+   * for navigation requests
+   */
+  private void setUpSummaryToolbar() {
+    final Toolbar toolbar = (Toolbar) this.findViewById(R.id.toolbar);
+    ((AppCompatActivity) this).setSupportActionBar(toolbar);
+    ((AppCompatActivity) this).getSupportActionBar().setTitle(R.string.ocean_summary_location_title);
+    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
+    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+
+        //Remove summary and water column
+        final FragmentManager fm = getSupportFragmentManager();
+        SummaryFragment summaryFragment = (SummaryFragment) fm.findFragmentById(R.id.summary_container) ;
+        if (summaryFragment != null ) {
+          FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+          transaction.remove(summaryFragment);
+          transaction.commit();
+        }
+        WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.column_container);
+        if (waterColumnFragment != null){
+          FragmentTransaction waterTransaction = getSupportFragmentManager().beginTransaction();
+          waterTransaction.remove(waterColumnFragment);
+          waterTransaction.commit();
+        }
+
+        //Reconstitute the large map
+
+        MapFragment mapFragment =  (MapFragment) fm.findFragmentById(R.id.map_container);
+        if (mapFragment != null){
+          mapFragment.resetMap();
+        }
+
+        FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
+        LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT);
+        mapLayout.setLayoutParams(layoutParams);
+        mapLayout.requestLayout();
+
+        // Set the toolbar title and remove navigation
+        setUpMapToolbar();
+      }
+    });
 
   }
 
   public void showSummary(WaterColumn waterColumn){
+
     final FragmentManager fm = getSupportFragmentManager();
     SummaryFragment summaryFragment = (SummaryFragment) fm.findFragmentById(R.id.summary_container) ;
+
     if (summaryFragment == null){
       summaryFragment = SummaryFragment.newInstance();
       mSummaryPresenter = new SummaryPresenter(summaryFragment);
     }
+    // Set up the summary toolbar
+    setUpSummaryToolbar();
+
     mSummaryPresenter.setWaterColumn(waterColumn);
 
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -113,7 +179,7 @@ public class MapActivity extends AppCompatActivity implements WaterColumnFragmen
     // Commit the transaction
     transaction.commit();
 
-    WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.water_column_linear_layout_top);
+    WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.column_container);
     if (waterColumnFragment == null){
       waterColumnFragment = WaterColumnFragment.newInstance();
     }

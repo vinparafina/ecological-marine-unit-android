@@ -94,6 +94,10 @@ public class WaterColumnFragment extends Fragment {
 
   public void setWaterColumn(WaterColumn waterColumn){
     mWaterColumn = waterColumn;
+    if (mRoot != null){
+      buildWaterColumn(waterColumn);
+      buildWaterColumn(waterColumn);
+    }
   }
   /**
    * Dynamically add a button for each EMU represented
@@ -102,13 +106,7 @@ public class WaterColumnFragment extends Fragment {
    */
   public void buildWaterColumn(WaterColumn waterColumn){
 
-    int count = mRoot.getChildCount();
-    for (int z=0 ; z < count; z++){
-      View v = mRoot.getChildAt(z);
-      if (v instanceof Button){
-        mRoot.removeViewAt(z);
-      }
-    }
+    mButtonContainer.removeAllViews();
 
     // Each button will be added to layout with a layout_weight
     // relative to the ratio of the EUMObservation to
