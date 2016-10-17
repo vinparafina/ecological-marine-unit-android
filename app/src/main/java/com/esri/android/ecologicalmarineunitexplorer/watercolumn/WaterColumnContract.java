@@ -1,4 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.map;
+package com.esri.android.ecologicalmarineunitexplorer.watercolumn;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,28 +26,14 @@ package com.esri.android.ecologicalmarineunitexplorer.map;
 import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
 import com.esri.android.ecologicalmarineunitexplorer.BaseView;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.Polygon;
-import com.esri.arcgisruntime.layers.Layer;
-import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.android.ecologicalmarineunitexplorer.map.MapContract;
 
-public interface MapContract {
-  interface View extends BaseView<Presenter> {
-    Point getScreenToLocation(android.graphics.Point mapPoint);
-    void resetMap();
-    void showMessage(String message);
-    void addLayer(Layer layer);
-    void setUpMap(ArcGISMap map );
-    void showSummary(WaterColumn column);
-    void showClickedLocation(Point point);
-    void showProgressBar(String message, String title);
-    void hideProgressBar();
+public interface WaterColumnContract {
+  interface View extends BaseView<MapContract.Presenter> {
+    void setWaterColumn(WaterColumn waterColumn);
+    void showWaterColumn(WaterColumn waterColumn);
   }
-  interface Presenter extends BasePresenter {
-
-    void setSelectedPoint(Point point);
-    Polygon getBufferPolygonForPoint(Point point, double distance);
-    void mapLoaded();
-
+  interface Presenter extends BasePresenter{
+    void setWaterColumn(WaterColumn waterColumn);
   }
 }

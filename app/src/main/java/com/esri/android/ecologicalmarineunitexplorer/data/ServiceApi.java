@@ -23,9 +23,13 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
+
 public interface ServiceApi {
   interface SummaryCallback {
     void onWaterColumnsLoaded(WaterColumn column  );
+  }
+  interface StatCallback{
+    void onStatsLoaded();
   }
 
 }

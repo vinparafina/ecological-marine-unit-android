@@ -16,3 +16,16 @@ For information about licensing your deployed app, see [License your app](https:
 
 [](Esri Tags: ArcGIS Android Mobile)
 [](Esri Language: Java)​
+
+The Model View Presenter architecture is used in this application.  The descriptions below were taken from this [site](http://www.tinmegali.com/en/model-view-presenter-android-part-1/).
+Presenter
+
+The Presenter is responsible to act as the middle man between View and Model. It retrieves data from the Model and returns it formatted to the View. But unlike the typical MVC, it also decides what happens when you interact with the View.
+
+View
+
+The View, usually implemented by an Activity, will contain a reference to the presenter. The only thing that the view will do is to call a method from the Presenter every time there is an interface action.
+
+Model
+
+In an application with a good layered architecture, this model would only be the gateway to the domain layer or business logic. See it as the provider of the data we want to display in the view.

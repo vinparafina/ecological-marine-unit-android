@@ -1,7 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.summary;
-
-
-
+package com.esri.android.ecologicalmarineunitexplorer.watercolumn;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,20 +26,19 @@ package com.esri.android.ecologicalmarineunitexplorer.summary;
 import android.support.annotation.NonNull;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 
-public class SummaryPresenter implements SummaryContract.Presenter {
+public class WaterColumnPresenter implements WaterColumnContract.Presenter {
 
-  private SummaryFragment mSummaryView;
+  private WaterColumnContract.View mView;
 
-  public SummaryPresenter(@NonNull SummaryFragment fragment){
-    mSummaryView = fragment;
-    mSummaryView.setPresenter(this);
-  }
-  @Override public void setWaterColumn(WaterColumn waterColumn) {
-    mSummaryView.showWaterColumn(waterColumn);
+  public WaterColumnPresenter(@NonNull WaterColumnContract.View view){
+    mView = view;
   }
 
   @Override public void start() {
 
   }
 
+  @Override public void setWaterColumn(WaterColumn waterColumn) {
+    mView.setWaterColumn(waterColumn);
+  }
 }

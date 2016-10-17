@@ -23,8 +23,10 @@
  */
 
 
-package com.esri.android.ecologicalmarineunitexplorer.map;
+package com.esri.android.ecologicalmarineunitexplorer;
 
+import android.databinding.tool.util.L;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -37,22 +39,31 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.esri.android.ecologicalmarineunitexplorer.R;
+import com.esri.android.ecologicalmarineunitexplorer.chartSummary.SummaryChartFragment;
+import com.esri.android.ecologicalmarineunitexplorer.chartSummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
+import com.esri.android.ecologicalmarineunitexplorer.data.EMU;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
+import com.esri.android.ecologicalmarineunitexplorer.map.MapFragment;
+import com.esri.android.ecologicalmarineunitexplorer.map.MapPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.summary.SummaryFragment;
 import com.esri.android.ecologicalmarineunitexplorer.summary.SummaryPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.util.ActivityUtils;
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnFragment;
-
+import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnPresenter;
 
 import java.util.Set;
 
-public class MapActivity extends AppCompatActivity implements WaterColumnFragment.OnWaterColumnSegmentClickedListener,
-    SummaryFragment.OnRectangleTappedListener {
+public class MainActivity extends AppCompatActivity implements WaterColumnFragment.OnWaterColumnSegmentClickedListener,
+    SummaryFragment.OnRectangleTappedListener, SummaryFragment.OnDetailClickedListener {
 
-  private MapPresenter mMapPresenter;
+
   private SummaryPresenter mSummaryPresenter;
   private DataManager mDataManager;
+  private WaterColumnPresenter mWaterColumnPresenter;
+
+  public MainActivity() {
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +91,7 @@ public class MapActivity extends AppCompatActivity implements WaterColumnFragmen
 
     if (mapFragment == null) {
       mapFragment = MapFragment.newInstance();
-      mMapPresenter = new MapPresenter(mapFragment, mDataManager);
+      MapPresenter mapPresenter = new MapPresenter(mapFragment, mDataManager);
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), mapFragment, R.id.map_container, "map fragment");
     }
@@ -98,6 +109,17 @@ public class MapActivity extends AppCompatActivity implements WaterColumnFragmen
 
   }
   /**
+   * Set up toolbar for chart detail
+   * @param EMUid - integer representing the name of the EMU
+   */
+  private void setUpChartSummaryToolbar(int EMUid){
+    final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    ((AppCompatActivity) this).setSupportActionBar(toolbar);
+    ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
+    actionBar.setTitle("Detail for EMU " + EMUid);
+  }
+
+  /**
    * Set the text for the summary toolbar and listen
    * for navigation requests
    */
@@ -110,40 +132,63 @@ public class MapActivity extends AppCompatActivity implements WaterColumnFragmen
       @Override public void onClick(View v) {
 
         //Remove summary and water column
-        final FragmentManager fm = getSupportFragmentManager();
-        SummaryFragment summaryFragment = (SummaryFragment) fm.findFragmentById(R.id.summary_container) ;
-        if (summaryFragment != null ) {
-          FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-          transaction.remove(summaryFragment);
-          transaction.commit();
-        }
-        WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.column_container);
-        if (waterColumnFragment != null){
-          FragmentTransaction waterTransaction = getSupportFragmentManager().beginTransaction();
-          waterTransaction.remove(waterColumnFragment);
-          waterTransaction.commit();
-        }
+        removeSummaryAndWaterColumnViews();
 
         //Reconstitute the large map
+        reconstituteLargeMap();
 
-        MapFragment mapFragment =  (MapFragment) fm.findFragmentById(R.id.map_container);
-        if (mapFragment != null){
-          mapFragment.resetMap();
-        }
-
-        FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
-        LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT);
-        mapLayout.setLayoutParams(layoutParams);
-        mapLayout.requestLayout();
-
-        // Set the toolbar title and remove navigation
-        setUpMapToolbar();
       }
     });
 
   }
+  private void removeSummaryAndWaterColumnViews(){
+    final FragmentManager fm = getSupportFragmentManager();
+    SummaryFragment summaryFragment = (SummaryFragment) fm.findFragmentById(R.id.summary_container) ;
+    if (summaryFragment != null ) {
+      FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+      transaction.remove(summaryFragment);
+      transaction.commit();
+    }
+    WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.column_container);
+    if (waterColumnFragment != null){
+      FragmentTransaction waterTransaction = getSupportFragmentManager().beginTransaction();
+      waterTransaction.remove(waterColumnFragment);
+      waterTransaction.commit();
+    }
+  }
 
+  private void removeMapView(){
+    final FragmentManager fm = getSupportFragmentManager();
+    MapFragment mapFragment =  (MapFragment) fm.findFragmentById(R.id.map_container);
+    if (mapFragment != null){
+      FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+      transaction.remove(mapFragment);
+      transaction.commit();
+    }
+  }
+
+  private void reconstituteLargeMap(){
+    final FragmentManager fm = getSupportFragmentManager();
+    MapFragment mapFragment =  (MapFragment) fm.findFragmentById(R.id.map_container);
+    if (mapFragment != null){
+      mapFragment.resetMap();
+    }
+
+    FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
+    LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT);
+    mapLayout.setLayoutParams(layoutParams);
+    mapLayout.requestLayout();
+
+    // Set the toolbar title and remove navigation
+    setUpMapToolbar();
+  }
+
+  /**
+   * Add the WaterColumnFragment and SummaryFragment to
+   * the view while shrinking the map view.
+   * @param waterColumn
+   */
   public void showSummary(WaterColumn waterColumn){
 
     final FragmentManager fm = getSupportFragmentManager();
@@ -182,13 +227,46 @@ public class MapActivity extends AppCompatActivity implements WaterColumnFragmen
     WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.column_container);
     if (waterColumnFragment == null){
       waterColumnFragment = WaterColumnFragment.newInstance();
+      mWaterColumnPresenter = new WaterColumnPresenter(waterColumnFragment);
     }
-    waterColumnFragment.setWaterColumn(waterColumn);
+
+
     FragmentTransaction wcTransaction = getSupportFragmentManager().beginTransaction();
     wcTransaction.replace(R.id.column_container, waterColumnFragment);
     wcTransaction.commit();
+    mWaterColumnPresenter.setWaterColumn(waterColumn);
   }
 
+  public void showSummaryDetail(int emuName){
+    // Remove summary and water column
+    removeSummaryAndWaterColumnViews();
+
+    // Remove map
+    removeMapView();
+
+    FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
+    layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
+    layout.requestLayout();
+
+    // Add the chart view to the column container
+    final FragmentManager fm = getSupportFragmentManager();
+    SummaryChartPresenter presenter = null;
+    SummaryChartFragment chartFragment = (SummaryChartFragment) fm.findFragmentById(R.id.chartContainer);
+    if (chartFragment == null){
+      chartFragment = SummaryChartFragment.newInstance();
+      presenter = new SummaryChartPresenter(chartFragment, mDataManager);
+    }
+    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    transaction.replace(R.id.chartContainer, chartFragment);
+    transaction.commit();
+
+    chartFragment.setPresenter(presenter);
+    presenter.getDetailForSummary(emuName);
+
+
+
+  }
   /**
    * When a water column segment is tapped, show the
    * associated item in the SummaryFragment
@@ -208,5 +286,9 @@ public class MapActivity extends AppCompatActivity implements WaterColumnFragmen
     if (waterColumnFragment != null ){
       waterColumnFragment.highlightSegment(position);
     }
+  }
+
+  @Override public void onButtonClick(int emuName) {
+      showSummaryDetail(emuName);
   }
 }

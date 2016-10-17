@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.robotium.solo.Solo;
-import com.esri.android.ecologicalmarineunitexplorer.map.MapActivity;
 
 import java.io.File;
 
@@ -58,7 +57,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
   private static final String TAG = EMUAppTest.class.getSimpleName();
 
 
-  public EMUAppTest() { super(MapActivity.class);}
+  public EMUAppTest() { super(MainActivity.class);}
 
   @Override
   public void setUp() throws Exception {
@@ -120,7 +119,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
     // This assumes viewpoint at start up hasn't
     // changed since map was initialized
     // x = 973.0 y =  891.0
-    solo.clickOnScreen(1002,937,1);
+    solo.clickOnScreen(973,891,1);
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
     boolean buttonFound = solo.searchButton("DETAILS");
@@ -135,7 +134,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
     // This assumes viewpoint at start up hasn't
     // changed since map was initialized
     assertTrue(solo.waitForDialogToClose());
-    solo.clickOnScreen(586,231,2);
+    solo.clickOnScreen(1002,937,1);
     boolean messageShows = solo.waitForText(getActivity().getString(R.string.no_emu_found));
     assertTrue(messageShows);
   }
@@ -146,7 +145,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
    * when a point in the ocean is clicked.
    */
   public void testSummaryShown(){
-    solo.clickOnScreen(400,1300,1);
+    solo.clickOnScreen(973,891,1);
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
     boolean buttonFound = solo.searchButton("DETAILS");
@@ -164,7 +163,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
    * the water column are displayed
    */
   public void testWaterColumnShown(){
-    solo.clickOnScreen(400,1300,1);
+    solo.clickOnScreen(973,891,1);
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
     boolean buttonFound = solo.searchButton("DETAILS");
@@ -182,7 +181,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
    * is clicked.
    */
   public void testRectangleClickSelectsSegment(){
-    solo.clickOnScreen(400,1300,1);
+    solo.clickOnScreen(973,891,1);
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
     boolean scrollsuccess = solo.scrollDownRecyclerView(2);

@@ -1,27 +1,22 @@
 package com.esri.android.ecologicalmarineunitexplorer.watercolumn;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.EMUObservation;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
+import com.esri.android.ecologicalmarineunitexplorer.map.MapContract;
 import com.esri.android.ecologicalmarineunitexplorer.util.EmuHelper;
 
 import java.util.Set;
@@ -50,13 +45,17 @@ import java.util.Set;
  *
  */
 
-public class WaterColumnFragment extends Fragment {
+public class WaterColumnFragment extends Fragment implements WaterColumnContract.View {
 
   private LinearLayout mRoot;
   private LinearLayout mButtonContainer;
   private WaterColumn mWaterColumn;
   private OnWaterColumnSegmentClickedListener mCallback;
   private Button mSelectedButton;
+
+  @Override public void setPresenter(MapContract.Presenter presenter) {
+
+  }
 
   // Define behavior for column clicking
   public interface OnWaterColumnSegmentClickedListener {
@@ -73,7 +72,7 @@ public class WaterColumnFragment extends Fragment {
     mRoot = (LinearLayout) layoutInflater.inflate(R.layout.water_column, container,false);
     mButtonContainer = (LinearLayout) mRoot.findViewById(R.id.buttonContainer);
     if (mWaterColumn != null){
-      buildWaterColumn(mWaterColumn);
+      showWaterColumn(mWaterColumn);
     }
     return  mRoot;
   }
@@ -94,17 +93,13 @@ public class WaterColumnFragment extends Fragment {
 
   public void setWaterColumn(WaterColumn waterColumn){
     mWaterColumn = waterColumn;
-    if (mRoot != null){
-      buildWaterColumn(waterColumn);
-      buildWaterColumn(waterColumn);
-    }
   }
   /**
    * Dynamically add a button for each EMU represented
    * in the water column.
    * @param waterColumn
    */
-  public void buildWaterColumn(WaterColumn waterColumn){
+  public void showWaterColumn(WaterColumn waterColumn){
 
     mButtonContainer.removeAllViews();
 
@@ -122,6 +117,7 @@ public class WaterColumnFragment extends Fragment {
       final Button button = new Button(getContext());
       LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0, relativeSize);
       button.setLayoutParams(layoutParams);
+      // Enable the button background to be change color based on its state (pressed, selected, or enabled)
       button.setBackground(buildStateList(observation.getEmu().getName()));
 
       button.setId(buttonId);
@@ -140,6 +136,11 @@ public class WaterColumnFragment extends Fragment {
     }
   }
 
+  /**
+   * Build a stateful drawable for a given EMU
+   * @param emuName
+   * @return StateListDrawable responsive to selected, pressed, and enabled states
+   */
   private StateListDrawable buildStateList(int emuName){
     StateListDrawable stateListDrawable = new StateListDrawable();
 

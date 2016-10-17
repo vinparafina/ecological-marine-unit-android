@@ -24,6 +24,7 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  */
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.esri.arcgisruntime.geometry.Point;
 
 
@@ -32,6 +33,22 @@ public class EMUObservation implements Comparable<EMUObservation> {
   @NonNull private int top;
   @NonNull private int thickness;
   @NonNull private Point location;
+  @Nullable private Double salinity;
+  @Nullable private Double temperature;
+  @Nullable private Double oxygen;
+  @Nullable private Double phosphate;
+  @Nullable private Double silicate;
+  @Nullable private Double nitrate;
+
+  @Nullable public Double getOxygen() {
+    return oxygen;
+  }
+
+  public void setOxygen(@Nullable Double oxygen) {
+    this.oxygen = oxygen;
+  }
+
+
 
   @Override public int compareTo(EMUObservation another) {
     if (this.getTop() > another.getTop()){
@@ -45,12 +62,18 @@ public class EMUObservation implements Comparable<EMUObservation> {
 
   }
 
-  @Override public final String toString() {
+  @Override public String toString() {
     return "EMUObservation{" +
         "emu=" + emu +
         ", top=" + top +
         ", thickness=" + thickness +
         ", location=" + location +
+        ", salinity=" + salinity +
+        ", temperature=" + temperature +
+        ", oxygen=" + oxygen +
+        ", phosphate=" + phosphate +
+        ", silicate=" + silicate +
+        ", nitrate=" + nitrate +
         '}';
   }
 
@@ -84,5 +107,45 @@ public class EMUObservation implements Comparable<EMUObservation> {
 
   public void setLocation(Point point) {
     this.location = point;
+  }
+
+  @Nullable public Double getSalinity() {
+    return salinity;
+  }
+
+  public void setSalinity(@Nullable Double salinity) {
+    this.salinity = salinity;
+  }
+
+  @Nullable public Double getTemperature() {
+    return temperature;
+  }
+
+  public void setTemperature(@Nullable Double temperature) {
+    this.temperature = temperature;
+  }
+
+  @Nullable public Double getPhosphate() {
+    return phosphate;
+  }
+
+  public void setPhosphate(@Nullable Double phosphate) {
+    this.phosphate = phosphate;
+  }
+
+  @Nullable public Double getSilicate() {
+    return silicate;
+  }
+
+  public void setSilicate(@Nullable Double silicate) {
+    this.silicate = silicate;
+  }
+
+  @Nullable public Double getNitrate() {
+    return nitrate;
+  }
+
+  public void setNitrate(@Nullable Double nitrate) {
+    this.nitrate = nitrate;
   }
 }

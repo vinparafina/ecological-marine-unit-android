@@ -28,10 +28,14 @@ package com.esri.android.ecologicalmarineunitexplorer.map;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
 import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.arcgisruntime.geometry.*;
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
+import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.Basemap;
 
 import java.util.List;
 
@@ -41,28 +45,57 @@ public class MapPresenter implements MapContract.Presenter {
 
   private  MapContract.View mMapView;
   private DataManager mDataManager;
+  private final double GALAPAGOS_LAT = -0.3838312;
+  private final double GALAPAGOS_LONG = -91.5727346;
+  private final String DIALOG_MESSAGE = "Loading map data...";
+  private final String DIALOG_TITLE = "Message";
+  private final String TILED_LAYER_URL = "http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac";
+  private final String NO_EMU_FOUND = "Please select an ocean location";
+  private final double BUFFER_SIZE = 32000;
 
-  public MapPresenter(@NonNull final MapContract.View mapView, @Nullable final DataManager dataManager){
+  public MapPresenter(@NonNull final MapContract.View mapView, @NonNull final DataManager dataManager){
     mMapView = checkNotNull(mapView, "map view cannot be null");
     mDataManager = checkNotNull(dataManager);
     mDataManager = dataManager;
     mMapView.setPresenter(this);
 
   }
+
+  /**
+   * Start by setting the map up and
+   * adding the tiled layer for the EMU polygons
+   */
   @Override public void start() {
-    // no op for now
+    // Show a dialog while the map loads
+    mMapView.showProgressBar(DIALOG_MESSAGE, DIALOG_TITLE);
+    ArcGISMap map =  new ArcGISMap(Basemap.Type.OCEANS, GALAPAGOS_LAT, GALAPAGOS_LONG, 4  );
+    mMapView.setUpMap(map);
+
+    // EMU Ocean Surface
+    ArcGISTiledLayer tiledLayerBaseMap = new ArcGISTiledLayer(TILED_LAYER_URL);
+    mMapView.addLayer(tiledLayerBaseMap);
   }
 
+  /**
+   * When a user clicks a location in the map,
+   * show the progress bar and
+   * create a buffered polygon around the point and
+   * query for EMU data.
+   * @param point - A geolocation representing the
+   *              place a user clicked on the map
+   */
   @Override public void setSelectedPoint(Point point) {
+    mMapView.showProgressBar("Retrieving data...", "Data Load");
     mMapView.showClickedLocation(point);
-    Polygon polygon = getBufferPolygonForPoint(point, 32000);
+    Polygon polygon = getBufferPolygonForPoint(point, BUFFER_SIZE);
     PolygonBuilder builder = new PolygonBuilder(polygon);
     Envelope envelope = builder.getExtent();
     mDataManager.queryForEmuAtLocation(envelope, new ServiceApi.SummaryCallback() {
       @Override public void onWaterColumnsLoaded(WaterColumn column) {
+        mMapView.hideProgressBar();
         WaterColumn waterColumn =   column;
         if (waterColumn == null){
-          mMapView.showDataNotFound();
+          mMapView.showMessage(NO_EMU_FOUND);
         }else{
           mMapView.showSummary(waterColumn);
         }
@@ -70,8 +103,23 @@ public class MapPresenter implements MapContract.Presenter {
     });
   }
 
+  /**
+   * Create a polygon representing a buffered region around a
+   * a given point
+   * @param point - A geolocation representing the
+   *              place a user clicked on the map
+   * @param distance - size of the buffer to build around the point
+   * @return - a polygon representing the buffered region with the point as its center
+   */
   @Override public Polygon getBufferPolygonForPoint(Point point, double distance) {
     return GeometryEngine.buffer(point, distance);
 
+  }
+
+  /**
+   * Once map has been loaded, hide the progress bar
+   */
+  @Override public void mapLoaded() {
+    mMapView.hideProgressBar();
   }
 }

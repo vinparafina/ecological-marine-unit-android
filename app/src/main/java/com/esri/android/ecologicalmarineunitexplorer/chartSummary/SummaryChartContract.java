@@ -1,4 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.map;
+package com.esri.android.ecologicalmarineunitexplorer.chartSummary;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,29 +25,20 @@ package com.esri.android.ecologicalmarineunitexplorer.map;
 
 import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
 import com.esri.android.ecologicalmarineunitexplorer.BaseView;
+import com.esri.android.ecologicalmarineunitexplorer.data.EMUStat;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.Polygon;
-import com.esri.arcgisruntime.layers.Layer;
-import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.github.mikephil.charting.data.CombinedData;
 
-public interface MapContract {
+import java.util.List;
+
+public interface SummaryChartContract {
   interface View extends BaseView<Presenter> {
-    Point getScreenToLocation(android.graphics.Point mapPoint);
-    void resetMap();
-    void showMessage(String message);
-    void addLayer(Layer layer);
-    void setUpMap(ArcGISMap map );
-    void showSummary(WaterColumn column);
-    void showClickedLocation(Point point);
-    void showProgressBar(String message, String title);
-    void hideProgressBar();
+      void showChartsForEMU(List<CombinedData> dataList);
   }
+
   interface Presenter extends BasePresenter {
-
-    void setSelectedPoint(Point point);
-    Polygon getBufferPolygonForPoint(Point point, double distance);
-    void mapLoaded();
-
+      void prepareDataForCharts(EMUStat stat, WaterColumn waterColumn);
+      void getDetailForSummary(int emuName);
   }
 }
+

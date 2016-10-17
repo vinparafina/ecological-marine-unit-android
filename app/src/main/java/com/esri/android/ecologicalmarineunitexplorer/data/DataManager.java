@@ -41,6 +41,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimaps;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class DataManager {
   private ServiceFeatureTable mMeshClusterTable;
@@ -49,11 +50,15 @@ public class DataManager {
 
   private ServiceFeatureTable mClusterPolygonTable;
 
+  private ServiceFeatureTable mSummaryStats;
+
   private Context mContext;
 
   private static DataManager instance = null;
 
-  private Map<Point, WaterColumn> cache = new HashMap<>();
+  private WaterColumn mCurrentWaterColumn = null;
+
+  private Map<Integer, EMUStat> summary_table = new HashMap<>();
 
 
   private DataManager(Context applicationContext){
@@ -64,8 +69,10 @@ public class DataManager {
 
     mMeshClusterTable = new ServiceFeatureTable(mContext.getString(R.string.service_emu_mesh_cluster));
 
-    mMeshPointTable = new ServiceFeatureTable(mContext.getString(R.string.service_emu_point_mesh)
-    );
+    mMeshPointTable = new ServiceFeatureTable(mContext.getString(R.string.service_emu_point_mesh));
+
+    mSummaryStats = new ServiceFeatureTable(mContext.getString((R.string.service_emu_summary)));
+
   }
   /**
    * A singleton that provides access to data services
@@ -91,26 +98,44 @@ public class DataManager {
     processQueryForEMuAtLocation(envelope, futureResult, callback);
   }
 
+  public void getStatisticsForEMUs(final ServiceApi.StatCallback callback){
+    if (summary_table.size() > 0){
+      callback.onStatsLoaded();
+    }else{
+      mSummaryStats.setFeatureRequestMode(ServiceFeatureTable.FeatureRequestMode.MANUAL_CACHE);
+      mSummaryStats.loadAsync();
+      mSummaryStats.addDoneLoadingListener(new Runnable() {
+        @Override public void run() {
+          QueryParameters queryParameters = new QueryParameters();
+          queryParameters.setWhereClause("1 = 1");
+          List<String> outFields = new ArrayList<String>();
+          outFields.add("*");
+          ListenableFuture<FeatureQueryResult> futureResult = mSummaryStats.populateFromServiceAsync(queryParameters,true,outFields);
+          processQueryForEmuStats(futureResult, callback);
+        }
+      });
+    }
+
+  }
   /**
    * Process the listenable future by creating a WaterColumn for
    * any returned data.
    * @param envelope - an Envelope representing the search area
    * @param futureResult - a ListenableFuture<FeatureQueryResult> to process
    * @param callback  - a SummaryCallback called when query processing is complete
-   * @return - a WaterColumn representing returned features.
    */
   private void processQueryForEMuAtLocation(final Envelope envelope, final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.SummaryCallback callback){
 
     futureResult.addDoneListener(new Runnable() {
       @Override public void run() {
         try{
-          Log.i("ProcessQuery", "Query done...");
+        //  Log.i("ProcessQuery", "Query done...");
           FeatureQueryResult fqr = futureResult.get();
 
           Map<Geometry,WaterColumn> pointWaterColumnMap = new HashMap<Geometry, WaterColumn>();
 
           if (fqr != null){
-            Log.i("ProcessQuery", "Processing features...");
+        //    Log.i("ProcessQuery", "Processing features...");
 
             List<EMUObservation> emuObservations = new ArrayList<EMUObservation>();
             final Iterator<Feature> iterator = fqr.iterator();
@@ -149,11 +174,11 @@ public class DataManager {
 
           // If there is more than one water column, we only care about the
           // one closest to the point clicked in the map.
-          WaterColumn closestWaterColumn = findClosestWaterColumn(envelope, pointWaterColumnMap);
+          mCurrentWaterColumn = findClosestWaterColumn(envelope, pointWaterColumnMap);
 
 
           // Processing is complete, notify the callback
-          callback.onWaterColumnsLoaded(closestWaterColumn);
+          callback.onWaterColumnsLoaded(mCurrentWaterColumn);
 
 
         }catch (Exception e){
@@ -162,17 +187,49 @@ public class DataManager {
       }
     });
   }
-
-  public void addToWaterColumnCache(WaterColumn waterColumn){
-    cache.put(waterColumn.getLocation(), waterColumn);
-  }
-  public WaterColumn getFromWaterColumnCache(Point location){
-    WaterColumn waterColumn = null;
-    if (cache.containsKey(location)){
-      waterColumn = cache.get(location);
+  public EMUStat getStatForEMU(int emuName){
+    EMUStat stat = null;
+    if (summary_table.size() > 0){
+      stat = summary_table.get(emuName);
     }
-    return waterColumn;
+    return stat;
   }
+
+  public WaterColumn getCurrentWaterColumn(){
+    return mCurrentWaterColumn;
+  }
+
+  /**
+   * Parse returned data and create EMUStat items for each returned row
+   * @param futureResults - a ListenableFuture<FeatureQueryResult> to process
+   * @param callback - a StatCallback called when query processing is complete
+   *
+   */
+  private void processQueryForEmuStats(final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.StatCallback callback){
+    futureResult.addDoneListener(new Runnable() {
+
+      @Override public void run() {
+        try {
+          FeatureQueryResult fqr = futureResult.get();
+          if (fqr != null){
+            final Iterator<Feature> iterator = fqr.iterator();
+            while (iterator.hasNext()){
+              Feature feature = iterator.next();
+              Map<String,Object> map = feature.getAttributes();
+              EMUStat stat = createEMUStat(map);
+              summary_table.put(stat.getEmu_name(), stat);
+            }
+          }
+          callback.onStatsLoaded();
+        } catch (Exception e) {
+          e.printStackTrace();
+          // TO DO: Handle errors
+        }
+      }
+    });
+
+  }
+
   /**
    * Given a Map containing strings as keys and objects as values,
    * create an EMUObservation
@@ -223,8 +280,124 @@ public class DataManager {
     // Set the thickness
     observation.setThickness(Integer.parseInt(extractValueFromMap(mContext.getString(R.string.thickness),map)));
 
-   // Log.i("Observation", "observation: " + observation.toString());
+    String temp = extractValueFromMap("temp", map);
+    if (temp != null){
+      observation.setTemperature(Double.parseDouble(temp));
+    }
+
+    String salinity = extractValueFromMap("salinity", map);
+    if (salinity != null){
+      observation.setSalinity(Double.parseDouble(salinity));
+    }
+
+    String dissolvedOx = extractValueFromMap("dissO2", map);
+    if (dissolvedOx != null){
+      observation.setOxygen(Double.parseDouble(dissolvedOx));
+    }
+
+    String phosphate = extractValueFromMap("phosphate", map);
+    if (phosphate != null){
+      observation.setPhosphate(Double.parseDouble(phosphate));
+    }
+
+    String silicate = extractValueFromMap("silicate", map);
+    if (silicate !=  null){
+      observation.setSilicate(Double.parseDouble(silicate));
+    }
+
+    String nitrate = extractValueFromMap("nitrate", map);
+    if (nitrate != null){
+      observation.setNitrate(Double.parseDouble(nitrate));
+    }
+
+    Log.i("Observation", "observation: " + observation.toString());
     return observation;
+  }
+  private EMUStat createEMUStat(Map<String,Object> map){
+    EMUStat stat = new EMUStat();
+
+    stat.setEmu_name(Integer.parseInt(extractValueFromMap("Cluster37", map)));
+
+    String min_temp = extractValueFromMap("MIN_temp", map);
+    if (min_temp != null){
+      stat.setTemp_min(Double.parseDouble(min_temp));
+    }
+    String max_temp = extractValueFromMap("MAX_temp", map);
+    if (max_temp != null){
+      stat.setTemp_max(Double.parseDouble(max_temp));
+    }
+    String mean_temp = extractValueFromMap("MEAN_temp", map);
+    if (mean_temp != null){
+      stat.setTemp_mean(Double.parseDouble(mean_temp));
+    }
+
+    String min_salinity = extractValueFromMap("MIN_salinity", map);
+    if (min_salinity != null){
+      stat.setSalinity_min(Double.parseDouble(min_salinity));
+    }
+    String max_salinity = extractValueFromMap("MAX_salinity", map);
+    if (max_salinity != null){
+      stat.setSalinity_max(Double.parseDouble(max_salinity));
+    }
+    String mean_salinity = extractValueFromMap("MEAN_salinity", map);
+    if (mean_salinity != null){
+      stat.setSalinity_mean(Double.parseDouble(mean_salinity));
+    }
+
+    String min_disso2 = extractValueFromMap("MIN_dissO2", map);
+    if (min_disso2 != null){
+      stat.setDisso2_min(Double.parseDouble(min_disso2));
+    }
+    String max_disso2 = extractValueFromMap("MAX_dissO2", map);
+    if (max_disso2 != null){
+      stat.setDisso2_max(Double.parseDouble(max_disso2));
+    }
+    String mean_disso2 = extractValueFromMap("MEAN_dissO2", map);
+    if (mean_disso2 != null){
+      stat.setDisso2_mean(Double.parseDouble(mean_disso2));
+    }
+
+    String min_phosphate = extractValueFromMap("MIN_phosphate", map);
+    if (min_phosphate != null){
+      stat.setPhosphate_min(Double.parseDouble(min_phosphate));
+    }
+    String max_phosphate = extractValueFromMap("MAX_phosphate", map);
+    if (max_disso2 != null){
+      stat.setPhosphate_max(Double.parseDouble(max_phosphate));
+    }
+    String mean_phosphate = extractValueFromMap("MEAN_phosphate", map);
+    if (mean_phosphate != null){
+      stat.setPhosphate_mean(Double.parseDouble(mean_phosphate));
+    }
+
+    String min_silicate = extractValueFromMap("MIN_silicate", map);
+    if (min_silicate != null){
+      stat.setSilicate_min(Double.parseDouble(min_silicate));
+    }
+    String max_silicate = extractValueFromMap("MAX_silicate", map);
+    if (max_silicate != null){
+      stat.setSilicate_max(Double.parseDouble(max_silicate));
+    }
+    String mean_silicate = extractValueFromMap("MEAN_silicate", map);
+    if (mean_silicate != null){
+      stat.setSilicate_mean(Double.parseDouble(mean_silicate));
+    }
+
+    String min_nitrate = extractValueFromMap("MIN_nitrate", map);
+    if (min_nitrate != null){
+      stat.setNitrate_min(Double.parseDouble(min_nitrate));
+    }
+    String max_nitrate = extractValueFromMap("MAX_nitrate", map);
+    if (max_nitrate != null){
+      stat.setNitrate_max(Double.parseDouble(max_nitrate));
+    }
+    String mean_nitrate = extractValueFromMap("MEAN_nitrate", map);
+    if (mean_nitrate != null){
+      stat.setNitrate_mean(Double.parseDouble(mean_nitrate));
+    }
+
+
+    return  stat;
   }
 
   /**

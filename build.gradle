@@ -18,6 +18,7 @@ allprojects {
         maven {
             url 'http://android:8080/artifactory/arcgis'
         }
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -41,4 +42,5 @@ ext {
     robotiumVersion = '5.6.3'
     espressoCoreVersion = '2.2.2'
     guavaVersion = '18.0'
+    mpAndroidChartVersion = 'v3.0.0-beta1'
 }

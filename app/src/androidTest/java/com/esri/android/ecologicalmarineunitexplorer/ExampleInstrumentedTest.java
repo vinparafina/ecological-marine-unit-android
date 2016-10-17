@@ -26,12 +26,18 @@ package com.esri.android.ecologicalmarineunitexplorer;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.core.deps.guava.util.concurrent.ExecutionError;
 import android.support.test.runner.AndroidJUnit4;
 
+import android.util.Log;
+import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
+import com.esri.android.ecologicalmarineunitexplorer.data.EMUStat;
+import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.*;
 
 /**
@@ -47,5 +53,20 @@ public class ExampleInstrumentedTest {
     Context appContext = InstrumentationRegistry.getTargetContext();
 
     assertEquals("com.esri.android.ecologicalmarineunitexplorer", appContext.getPackageName());
+  }
+  @Test
+  public void testEMUSummaryService() throws Exception{
+    // Context of the app under test.
+    Context appContext = InstrumentationRegistry.getTargetContext();
+
+    final DataManager dataManager = DataManager.getDataManagerInstance(appContext);
+
+    dataManager.getStatisticsForEMUs(new ServiceApi.StatCallback() {
+      @Override public void onStatsLoaded() {
+        EMUStat stat = dataManager.getStatForEMU(24);
+        Log.d("TEST", stat.toString());
+        assertNotNull(stat);
+      }
+    });
   }
 }

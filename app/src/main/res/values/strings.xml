@@ -13,6 +13,7 @@
     <string name="service_emu_point_mesh">
         http://utility.arcgis.com/usrsvcs/servers/82cff671f6fd4c88905454899ce015c2/rest/services/EMU_Point_Mesh/MapServer/0
     </string>
+    <string name="service_emu_summary">http://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/EMU_Summary_Table/FeatureServer/0</string>
     <string name="name_emu">NameEMU</string>
     <string name="geo_base">GeomorphologyBase</string>
     <string name="geo_features">GeomorphologyFeatures</string>
