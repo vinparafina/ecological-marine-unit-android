@@ -33,11 +33,13 @@ import java.util.List;
 
 public interface SummaryChartContract {
   interface View extends BaseView<Presenter> {
-      void showChartsForEMU(List<CombinedData> dataList);
+      void showChartData(List<CombinedData> dataList);
+      void setTemperatureText(double temperatureText);
+      void setSalinityText(double salinityText);
   }
 
   interface Presenter extends BasePresenter {
-      void prepareDataForCharts(EMUStat stat, WaterColumn waterColumn);
+      void prepareDataForCharts(EMUStat stat, WaterColumn waterColumn, int emuName);
       void getDetailForSummary(int emuName);
   }
 }

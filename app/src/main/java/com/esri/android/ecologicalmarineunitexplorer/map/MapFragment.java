@@ -141,6 +141,7 @@ public class MapFragment extends Fragment implements MapContract.View {
   public final void onResume(){
     super.onResume();
     mMapView.resume();
+
   }
 
   @Override
@@ -183,7 +184,7 @@ public class MapFragment extends Fragment implements MapContract.View {
    * @param column
    */
   @Override public void showSummary(WaterColumn column) {
-    ((com.esri.android.ecologicalmarineunitexplorer.MainActivity) getActivity()).showSummary(column);
+    ((com.esri.android.ecologicalmarineunitexplorer.MainActivity) getActivity()).showSummary();
   }
 
   /**

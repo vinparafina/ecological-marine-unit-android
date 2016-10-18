@@ -26,9 +26,7 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
 import android.support.annotation.NonNull;
 import com.esri.arcgisruntime.geometry.Point;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class WaterColumn implements  Comparable<WaterColumn> {
   @NonNull private Set<EMUObservation> emuSet;
@@ -92,5 +90,23 @@ public class WaterColumn implements  Comparable<WaterColumn> {
 
   public void setLocation(Point location) {
     this.location = location;
+  }
+
+  /**
+   * Return a list of EMU Observation items with a given emu name
+   * @param emuName - int representing emu name
+   * @return - a list containing zero or more EMU Observation items
+   */
+  public List<EMUObservation> getEMUObservations(int emuName){
+    List<EMUObservation> emuObservations = new ArrayList<>();
+    Iterator<EMUObservation> iter = this.emuSet.iterator();
+    while (iter.hasNext()){
+      EMUObservation observation = iter.next();
+      if (observation.getEmu().getName() == emuName){
+        emuObservations.add(observation);
+      }
+    }
+    return  emuObservations;
+
   }
 }

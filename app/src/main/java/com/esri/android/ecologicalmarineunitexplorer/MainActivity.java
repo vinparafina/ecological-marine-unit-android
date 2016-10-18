@@ -25,7 +25,6 @@
 
 package com.esri.android.ecologicalmarineunitexplorer;
 
-import android.databinding.tool.util.L;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -33,16 +32,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.chartSummary.SummaryChartFragment;
 import com.esri.android.ecologicalmarineunitexplorer.chartSummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
-import com.esri.android.ecologicalmarineunitexplorer.data.EMU;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapFragment;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapPresenter;
@@ -52,8 +48,6 @@ import com.esri.android.ecologicalmarineunitexplorer.util.ActivityUtils;
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnFragment;
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnPresenter;
 
-import java.util.Set;
-
 public class MainActivity extends AppCompatActivity implements WaterColumnFragment.OnWaterColumnSegmentClickedListener,
     SummaryFragment.OnRectangleTappedListener, SummaryFragment.OnDetailClickedListener {
 
@@ -61,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
   private SummaryPresenter mSummaryPresenter;
   private DataManager mDataManager;
   private WaterColumnPresenter mWaterColumnPresenter;
+  private SummaryChartPresenter mSummaryChartPresenter;
 
   public MainActivity() {
   }
@@ -117,8 +112,30 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
     actionBar.setTitle("Detail for EMU " + EMUid);
+    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+
+        // Remove the chart fragment
+        removeChartSummaryDetail();
+
+        // Show summary
+        showSummary();
+
+        // Add back the map
+        shrinkMap();
+      }
+    });
   }
 
+  private void removeChartSummaryDetail(){
+    final FragmentManager fm = getSupportFragmentManager();
+    SummaryChartFragment summaryChartFragment = (SummaryChartFragment) fm.findFragmentById(R.id.chartContainer);
+    if (summaryChartFragment != null){
+      FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+      transaction.remove(summaryChartFragment);
+      transaction.commit();
+    }
+  }
   /**
    * Set the text for the summary toolbar and listen
    * for navigation requests
@@ -135,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
         removeSummaryAndWaterColumnViews();
 
         //Reconstitute the large map
-        reconstituteLargeMap();
+        expandMap();
 
       }
     });
@@ -167,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     }
   }
 
-  private void reconstituteLargeMap(){
+  private void expandMap(){
     final FragmentManager fm = getSupportFragmentManager();
     MapFragment mapFragment =  (MapFragment) fm.findFragmentById(R.id.map_container);
     if (mapFragment != null){
@@ -184,12 +201,37 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     setUpMapToolbar();
   }
 
+  private void shrinkMap(){
+    final FragmentManager fm = getSupportFragmentManager();
+
+    MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
+
+    if (mapFragment == null) {
+      mapFragment = MapFragment.newInstance();
+      MapPresenter mapPresenter = new MapPresenter(mapFragment, mDataManager);
+      ActivityUtils.addFragmentToActivity(
+          getSupportFragmentManager(), mapFragment, R.id.map_container, "map fragment");
+    }
+
+    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    transaction.replace(R.id.map_container, mapFragment);
+    transaction.commit();
+
+    // Adjust the map's layout
+    FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
+    LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,7);
+    layoutParams.setMargins(0, 0,36,0);
+    mapLayout.setLayoutParams(layoutParams);
+    mapLayout.requestLayout();
+  }
+
   /**
    * Add the WaterColumnFragment and SummaryFragment to
    * the view while shrinking the map view.
-   * @param waterColumn
    */
-  public void showSummary(WaterColumn waterColumn){
+  public void showSummary(){
+
+    WaterColumn waterColumn = mDataManager.getCurrentWaterColumn();
 
     final FragmentManager fm = getSupportFragmentManager();
     SummaryFragment summaryFragment = (SummaryFragment) fm.findFragmentById(R.id.summary_container) ;
@@ -251,19 +293,21 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
     // Add the chart view to the column container
     final FragmentManager fm = getSupportFragmentManager();
-    SummaryChartPresenter presenter = null;
     SummaryChartFragment chartFragment = (SummaryChartFragment) fm.findFragmentById(R.id.chartContainer);
     if (chartFragment == null){
       chartFragment = SummaryChartFragment.newInstance();
-      presenter = new SummaryChartPresenter(chartFragment, mDataManager);
+      mSummaryChartPresenter = new SummaryChartPresenter(emuName, chartFragment, mDataManager);
+
     }
+
+
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     transaction.replace(R.id.chartContainer, chartFragment);
+   // transaction.addToBackStack("chart detail fragment");
     transaction.commit();
 
-    chartFragment.setPresenter(presenter);
-    presenter.getDetailForSummary(emuName);
-
+//    mSummaryChartPresenter.getDetailForSummary(emuName);
+    setUpChartSummaryToolbar(emuName);
 
 
   }

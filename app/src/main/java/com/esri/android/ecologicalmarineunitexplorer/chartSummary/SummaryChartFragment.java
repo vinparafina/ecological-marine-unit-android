@@ -2,16 +2,21 @@ package com.esri.android.ecologicalmarineunitexplorer.chartSummary;
 
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.data.CombinedData;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /* Copyright 2016 Esri
@@ -47,23 +52,37 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
     return new SummaryChartFragment();
   }
 
+
   @Override
   @Nullable
   public View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
-    mRoot = layoutInflater.inflate(R.layout.summary_charts, container,false);
 
+    mRoot = layoutInflater.inflate(R.layout.summary_charts, container,false);
+    mPresenter.start();
     return mRoot;
   }
 
-  @Override public void showChartsForEMU(List<CombinedData> dataList) {
-    int size = dataList.size();
-    for (int x=0; x < size; x++){
-      CombinedData data = dataList.get(x);
-      int viewId = getIdForChartView(x);
-      prepareChartView(viewId, data);
+  @Override public void showChartData(List<CombinedData> dataList) {
+    if (dataList != null){
+      int size = dataList.size();
+      for (int x=0; x < size; x++){
+        CombinedData data = dataList.get(x);
+        int viewId = getIdForChartView(x);
+        prepareChartView(viewId, data);
+      }
     }
 
+  }
+
+  @Override public void setTemperatureText(double temperatureText) {
+    TextView textView = (TextView) mRoot.findViewById(R.id.txtTemp);
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(temperatureText))+"");
+  }
+
+  public void setSalinityText(double salinityText) {
+    TextView textView = (TextView) mRoot.findViewById(R.id.txtSalinity);
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(salinityText)) + "");
   }
   private void prepareChartView(int id, CombinedData data){
     CombinedChart chart = (CombinedChart) mRoot.findViewById(id);
@@ -77,6 +96,8 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
 
     chart.setData(data);
     chart.invalidate();
+
+    Log.i("ChartFragment", "Height = " + chart.getHeight() + " width = "+ chart.getWidth());
 
   }
 

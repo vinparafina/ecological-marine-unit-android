@@ -195,6 +195,75 @@ public class DataManager {
     return stat;
   }
 
+  public Double getMaxTemperatureFromSummary(){
+    Double max = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (max == null){
+        max = stat.getTemp_max();
+      }else{
+        if (stat.getTemp_max() > max){
+          max = stat.getTemp_max();
+        }
+      }
+    }
+    return max;
+  }
+  public Double getMinTemperatureFromSummary(){
+    Double min = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (min == null){
+        min = stat.getTemp_min();
+      }else{
+        if (stat.getTemp_min() < min){
+          min = stat.getTemp_min();
+        }
+      }
+    }
+    return min;
+  }
+  public Double getMaxSalinityFromSummary(){
+    Double max = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (max == null){
+        max = stat.getSalinity_max();
+      }else{
+        if (stat.getSalinity_max() > max){
+          max = stat.getSalinity_max();
+        }
+      }
+    }
+    return max;
+  }
+  public Double getMinSalinityFromSummary(){
+    Double min = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (min == null){
+        min = stat.getSalinity_min();
+      }else{
+        if (stat.getSalinity_min() < min){
+          min = stat.getSalinity_min();
+        }
+      }
+    }
+    return min;
+  }
+
   public WaterColumn getCurrentWaterColumn(){
     return mCurrentWaterColumn;
   }
