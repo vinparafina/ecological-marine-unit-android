@@ -92,7 +92,11 @@ public class WaterColumnFragment extends Fragment implements WaterColumnContract
   }
 
   public void setWaterColumn(WaterColumn waterColumn){
+
     mWaterColumn = waterColumn;
+    if (mButtonContainer != null){
+      showWaterColumn(waterColumn);
+    }
   }
   /**
    * Dynamically add a button for each EMU represented
