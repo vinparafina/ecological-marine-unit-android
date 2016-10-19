@@ -485,36 +485,36 @@ public class DataManager {
     observation.setThickness(Integer.parseInt(extractValueFromMap(mContext.getString(R.string.thickness),map)));
 
     String temp = extractValueFromMap("temp", map);
-    if (temp != null){
+    if (temp != null && temp.length() > 0){
       observation.setTemperature(Double.parseDouble(temp));
     }
 
     String salinity = extractValueFromMap("salinity", map);
-    if (salinity != null){
+    if (salinity != null && salinity.length() > 0){
       observation.setSalinity(Double.parseDouble(salinity));
     }
 
     String dissolvedOx = extractValueFromMap("dissO2", map);
-    if (dissolvedOx != null){
+    if (dissolvedOx != null  && dissolvedOx.length() > 0 ){
       observation.setOxygen(Double.parseDouble(dissolvedOx));
     }
 
     String phosphate = extractValueFromMap("phosphate", map);
-    if (phosphate != null){
+    if (phosphate != null && phosphate.length() > 0 ){
       observation.setPhosphate(Double.parseDouble(phosphate));
     }
 
     String silicate = extractValueFromMap("silicate", map);
-    if (silicate !=  null){
+    if (silicate !=  null  && silicate.length() > 0 ){
       observation.setSilicate(Double.parseDouble(silicate));
     }
 
     String nitrate = extractValueFromMap("nitrate", map);
-    if (nitrate != null){
+    if (nitrate != null  && nitrate.length() > 0 ){
       observation.setNitrate(Double.parseDouble(nitrate));
     }
 
-    Log.i("Observation", "observation: " + observation.toString());
+    //Log.i("Observation", "observation: " + observation.toString());
     return observation;
   }
   private EMUStat createEMUStat(Map<String,Object> map){
@@ -523,80 +523,80 @@ public class DataManager {
     stat.setEmu_name(Integer.parseInt(extractValueFromMap("Cluster37", map)));
 
     String min_temp = extractValueFromMap("MIN_temp", map);
-    if (min_temp != null){
+    if (min_temp != null && min_temp.length() > 0 ){
       stat.setTemp_min(Double.parseDouble(min_temp));
     }
     String max_temp = extractValueFromMap("MAX_temp", map);
-    if (max_temp != null){
+    if (max_temp != null  && max_temp.length() > 0 ){
       stat.setTemp_max(Double.parseDouble(max_temp));
     }
     String mean_temp = extractValueFromMap("MEAN_temp", map);
-    if (mean_temp != null){
+    if (mean_temp != null  && mean_temp.length() > 0 ){
       stat.setTemp_mean(Double.parseDouble(mean_temp));
     }
 
     String min_salinity = extractValueFromMap("MIN_salinity", map);
-    if (min_salinity != null){
+    if (min_salinity != null  && min_salinity.length() > 0 ){
       stat.setSalinity_min(Double.parseDouble(min_salinity));
     }
     String max_salinity = extractValueFromMap("MAX_salinity", map);
-    if (max_salinity != null){
+    if (max_salinity != null && max_salinity.length() > 0 ){
       stat.setSalinity_max(Double.parseDouble(max_salinity));
     }
     String mean_salinity = extractValueFromMap("MEAN_salinity", map);
-    if (mean_salinity != null){
+    if (mean_salinity != null && mean_salinity.length() > 0 ){
       stat.setSalinity_mean(Double.parseDouble(mean_salinity));
     }
 
     String min_disso2 = extractValueFromMap("MIN_dissO2", map);
-    if (min_disso2 != null){
+    if (min_disso2 != null  && min_disso2.length() > 0){
       stat.setDisso2_min(Double.parseDouble(min_disso2));
     }
     String max_disso2 = extractValueFromMap("MAX_dissO2", map);
-    if (max_disso2 != null){
+    if (max_disso2 != null && max_disso2.length() > 0 ){
       stat.setDisso2_max(Double.parseDouble(max_disso2));
     }
     String mean_disso2 = extractValueFromMap("MEAN_dissO2", map);
-    if (mean_disso2 != null){
+    if (mean_disso2 != null && mean_disso2.length() > 0 ){
       stat.setDisso2_mean(Double.parseDouble(mean_disso2));
     }
 
     String min_phosphate = extractValueFromMap("MIN_phosphate", map);
-    if (min_phosphate != null){
+    if (min_phosphate != null && min_phosphate.length() > 0 ){
       stat.setPhosphate_min(Double.parseDouble(min_phosphate));
     }
     String max_phosphate = extractValueFromMap("MAX_phosphate", map);
-    if (max_disso2 != null){
+    if (max_disso2 != null && max_disso2.length() > 0 ){
       stat.setPhosphate_max(Double.parseDouble(max_phosphate));
     }
     String mean_phosphate = extractValueFromMap("MEAN_phosphate", map);
-    if (mean_phosphate != null){
+    if (mean_phosphate != null && mean_phosphate.length() > 0){
       stat.setPhosphate_mean(Double.parseDouble(mean_phosphate));
     }
 
     String min_silicate = extractValueFromMap("MIN_silicate", map);
-    if (min_silicate != null){
+    if (min_silicate != null && min_silicate.length() > 0){
       stat.setSilicate_min(Double.parseDouble(min_silicate));
     }
     String max_silicate = extractValueFromMap("MAX_silicate", map);
-    if (max_silicate != null){
+    if (max_silicate != null && max_silicate.length() > 0 ){
       stat.setSilicate_max(Double.parseDouble(max_silicate));
     }
     String mean_silicate = extractValueFromMap("MEAN_silicate", map);
-    if (mean_silicate != null){
+    if (mean_silicate != null && mean_silicate.length() > 0 ){
       stat.setSilicate_mean(Double.parseDouble(mean_silicate));
     }
 
     String min_nitrate = extractValueFromMap("MIN_nitrate", map);
-    if (min_nitrate != null){
+    if (min_nitrate != null && min_nitrate.length() > 0 ){
       stat.setNitrate_min(Double.parseDouble(min_nitrate));
     }
     String max_nitrate = extractValueFromMap("MAX_nitrate", map);
-    if (max_nitrate != null){
+    if (max_nitrate != null && max_nitrate.length() > 0 ){
       stat.setNitrate_max(Double.parseDouble(max_nitrate));
     }
     String mean_nitrate = extractValueFromMap("MEAN_nitrate", map);
-    if (mean_nitrate != null){
+    if (mean_nitrate != null && mean_nitrate.length()  > 0){
       stat.setNitrate_mean(Double.parseDouble(mean_nitrate));
     }
 
