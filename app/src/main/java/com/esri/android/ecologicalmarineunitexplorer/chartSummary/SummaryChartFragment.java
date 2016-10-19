@@ -1,5 +1,6 @@
 package com.esri.android.ecologicalmarineunitexplorer.chartSummary;
 
+import android.app.ProgressDialog;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -47,6 +48,7 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
 
   private View mRoot;
   private SummaryChartContract.Presenter mPresenter;
+  private ProgressDialog mProgressDialog;
 
   public static SummaryChartFragment newInstance(){
     return new SummaryChartFragment();
@@ -123,6 +125,7 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
   @Override public void setPresenter(SummaryChartContract.Presenter presenter) {
     mPresenter = presenter;
   }
+
   private int getIdForChartView(int index){
     int id = 0;
     switch (index){
@@ -146,5 +149,25 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
         break;
     }
     return id;
+  }
+  /**
+   * Display progress bar with given message and title
+   * @param message - String representing message to display
+   * @param title - String progress window title
+   */
+  @Override public void showProgressBar(String message, String title) {
+    if (mProgressDialog == null){
+      mProgressDialog = new ProgressDialog(getActivity());
+    }
+    mProgressDialog.setTitle(title);
+    mProgressDialog.setMessage(message);
+    mProgressDialog.show();
+  }
+
+  /**
+   * Hide progress bar
+   */
+  @Override public void hideProgressBar() {
+    mProgressDialog.hide();
   }
 }
