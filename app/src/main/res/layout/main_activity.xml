@@ -49,9 +49,16 @@
                          android:layout_height="match_parent">
 
             </FrameLayout>
+
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="0dp"
+                      android:id="@+id/txtSummary"
+                      android:text="The water column at this location contains 6 EMU layers"/>
+
             <FrameLayout android:id="@+id/summary_container"
                          android:layout_width="match_parent"
                          android:layout_height="match_parent"
+                         android:layout_margin="0dp"
                          app:layout_behavior="@string/appbar_scrolling_view_behavior">
             </FrameLayout>
 

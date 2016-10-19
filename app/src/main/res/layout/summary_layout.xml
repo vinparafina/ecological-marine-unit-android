@@ -4,25 +4,24 @@
         <variable name="eum"
                   type="com.esri.android.ecologicalmarineunitexplorer.data.EMU"/>
     </data>
-    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical"
-                      android:id="@+id/mapContent">
-        </LinearLayout>
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent" >
+
 
         <LinearLayout
                 android:id="@+id/summaryContent"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:elevation="@dimen/cardview_default_elevation" android:paddingTop="0dp">
+                android:elevation="@dimen/cardview_default_elevation"
+                android:paddingTop="0dp" android:paddingRight="@dimen/activity_horizontal_margin">
+
             <LinearLayout android:layout_width="match_parent"
                           android:orientation="horizontal"
                           android:layout_height="wrap_content" android:weightSum="1">
+
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                           android:textAppearance="@style/TextAppearance.AppCompat.Headline" android:text="EMU "/>
+
                 <TextView android:layout_width="161dp"
                           android:layout_height="wrap_content"
                           android:id="@+id/txtName" android:textAppearance="@style/TextAppearance.AppCompat.Headline"
@@ -35,21 +34,21 @@
             </LinearLayout>
             <Space
                     android:layout_width="match_parent"
-                    android:layout_height="20dp"/>
+                    android:layout_height="10dp"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Physical summary"/>
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:id="@+id/physical_summary"/>
             <Space
                     android:layout_width="match_parent"
-                    android:layout_height="20dp"/>
+                    android:layout_height="10dp"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nutrient summary"/>
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:id="@+id/nutrient_summary"/>
             <Space
                     android:layout_width="match_parent"
-                    android:layout_height="20dp"/>
+                    android:layout_height="10dp"/>
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:id="@+id/txt_thickness"/>
