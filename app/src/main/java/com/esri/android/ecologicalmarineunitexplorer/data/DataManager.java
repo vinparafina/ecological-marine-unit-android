@@ -263,7 +263,142 @@ public class DataManager {
     }
     return min;
   }
+  public Double getMaxOxygenFromSummary(){
+    Double max = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
 
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (max == null){
+        max = stat.getDisso2_max();
+      }else{
+        if (stat.getDisso2_max() > max){
+          max = stat.getDisso2_max();
+        }
+      }
+    }
+    return max;
+  }
+  public Double getMinOxygenFromSummary(){
+    Double min = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (min == null){
+        min = stat.getDisso2_min();
+      }else{
+        if (stat.getDisso2_min() < min){
+          min = stat.getDisso2_min();
+        }
+      }
+    }
+    return min;
+  }
+  public Double getMaxPhosphateFromSummary(){
+    Double max = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (max == null){
+        max = stat.getPhosphate_max();
+      }else{
+        if (stat.getPhosphate_max() > max){
+          max = stat.getPhosphate_max();
+        }
+      }
+    }
+    return max;
+  }
+  public Double getMinPhosphateFromSummary(){
+    Double min = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (min == null){
+        min = stat.getPhosphate_min();
+      }else{
+        if (stat.getPhosphate_min() < min){
+          min = stat.getPhosphate_min();
+        }
+      }
+    }
+    return min;
+  }
+  public Double getMaxNitrateFromSummary(){
+    Double max = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (max == null){
+        max = stat.getNitrate_max();
+      }else{
+        if (stat.getNitrate_max() > max){
+          max = stat.getNitrate_max();
+        }
+      }
+    }
+    return max;
+  }
+  public Double getMinNitrateFromSummary(){
+    Double min = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (min == null){
+        min = stat.getNitrate_min();
+      }else{
+        if (stat.getNitrate_min() < min){
+          min = stat.getNitrate_min();
+        }
+      }
+    }
+    return min;
+  }
+  public Double getMaxSilicateFromSummary(){
+    Double max = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (max == null){
+        max = stat.getSilicate_max();
+      }else{
+        if (stat.getSilicate_max() > max){
+          max = stat.getSilicate_max();
+        }
+      }
+    }
+    return max;
+  }
+  public Double getMinSilicateFromSummary(){
+    Double min = null;
+    Collection stats = summary_table.values();
+    Iterator<EMUStat> iter = stats.iterator();
+
+    while (iter.hasNext()){
+      EMUStat stat = iter.next();
+      if (min == null){
+        min = stat.getSilicate_min();
+      }else{
+        if (stat.getSilicate_min() < min){
+          min = stat.getSilicate_min();
+        }
+      }
+    }
+    return min;
+  }
   public WaterColumn getCurrentWaterColumn(){
     return mCurrentWaterColumn;
   }

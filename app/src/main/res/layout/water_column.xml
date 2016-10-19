@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="60dp"
               android:layout_height="match_parent"
               android:id="@+id/water_column_linear_layout_top"
               android:elevation="@dimen/cardview_default_elevation" android:paddingLeft="16dp"
-              android:paddingRight="8dp">
-
-    <TextView android:layout_width="match_parent"
-              android:layout_height="wrap_content" android:text="0 m"/>
+              android:paddingRight="8dp" android:layout_width="70dp" android:layout_marginTop="10dp">
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
                   android:id="@+id/buttonContainer"
@@ -19,6 +15,6 @@
     </LinearLayout>
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:id="@+id/txtBottom"
-              android:layout_marginTop="-20dp"/>
+              android:id="@+id/txtBottom" android:text="-5300m"
+              android:layout_marginTop="-20dp" android:textSize="12sp"/>
 </LinearLayout>

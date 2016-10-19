@@ -95,12 +95,26 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
 
     dataList.add(0, buildTempData(observation, stat));
     dataList.add(1, buildSalinityData(observation,stat));
+    dataList.add(2, buildOxygenData(observation,stat));
+    dataList.add(3, buildNitrateData(observation,stat));
+    dataList.add(4, buildPhosphateData(observation,stat));
+    dataList.add(5, buildSilicateData(observation,stat));
 
     mDataList = dataList;
     double tempOfCurrentEMu = observation.getTemperature();
     double salinityOfcurrentEMu = observation.getSalinity();
+    double oxygenOfCurrentEmu = observation.getOxygen();
+    double phosphateOfCurrentEmu = observation.getPhosphate();
+    double silicateOfCurrentEmu = observation.getSilicate();
+    double nitrateOfCurrentEmu = observation.getNitrate();
+
     mView.setTemperatureText(tempOfCurrentEMu);
     mView.setSalinityText(salinityOfcurrentEMu);
+    mView.setOxygenText(oxygenOfCurrentEmu);
+    mView.setPhosphateText(phosphateOfCurrentEmu);
+    mView.setSilicateText(silicateOfCurrentEmu);
+    mView.setNitrateText(nitrateOfCurrentEmu);
+
     mView.showChartData(mDataList);
   }
 
@@ -133,6 +147,69 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     Log.i("SummaryChartPreseter", "Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
     //entries.add(new CandleEntry(1.5f , 90, 70, 85, 75f)); //index, shadowH, shadowL, open, close
 
+    combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close ));
+    combinedData.setData(generateScatterData(averageTemp));
+    return  combinedData;
+  }
+  private CombinedData buildOxygenData(EMUObservation observation, EMUStat stat){
+    CombinedData combinedData = new CombinedData();
+    float xIndex = 1.5f;
+    float close = (float) stat.getDisso2_min().doubleValue();
+    float open = (float) stat.getDisso2_max().doubleValue();
+    float shadowH = (float)mDataManager.getMaxOxygenFromSummary().doubleValue();
+    float shadowL = (float) mDataManager.getMinOxygenFromSummary().doubleValue();
+
+    float averageTemp = (float)observation.getOxygen().doubleValue();
+    Log.i("SummaryChartPreseter", "Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    //entries.add(new CandleEntry(1.5f , 90, 70, 85, 75f)); //index, shadowH, shadowL, open, close
+
+    combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close ));
+    combinedData.setData(generateScatterData(averageTemp));
+    return  combinedData;
+  }
+  private CombinedData buildPhosphateData(EMUObservation observation, EMUStat stat){
+    CombinedData combinedData = new CombinedData();
+    float xIndex = 1.5f;
+    float close = (float) stat.getPhosphate_min().doubleValue();
+    float open = (float) stat.getPhosphate_max().doubleValue();
+    float shadowH = (float)mDataManager.getMaxPhosphateFromSummary().doubleValue();
+    float shadowL = (float) mDataManager.getMinPhosphateFromSummary().doubleValue();
+
+    float averageTemp = (float)observation.getPhosphate().doubleValue();
+    Log.i("SummaryChartPreseter", "Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    //entries.add(new CandleEntry(1.5f , 90, 70, 85, 75f)); //index, shadowH, shadowL, open, close
+
+    combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close ));
+    combinedData.setData(generateScatterData(averageTemp));
+    return  combinedData;
+  }
+  private CombinedData buildSilicateData(EMUObservation observation, EMUStat stat){
+    CombinedData combinedData = new CombinedData();
+    float xIndex = 1.5f;
+    float close = (float) stat.getSilicate_min().doubleValue();
+    float open = (float) stat.getSilicate_max().doubleValue();
+    float shadowH = (float)mDataManager.getMaxSilicateFromSummary().doubleValue();
+    float shadowL = (float) mDataManager.getMinSilicateFromSummary().doubleValue();
+
+    float averageTemp = (float)observation.getSilicate().doubleValue();
+    Log.i("SummaryChartPreseter", "Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    //entries.add(new CandleEntry(1.5f , 90, 70, 85, 75f)); //index, shadowH, shadowL, open, close
+
+    combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close ));
+    combinedData.setData(generateScatterData(averageTemp));
+    return  combinedData;
+  }
+  private CombinedData buildNitrateData(EMUObservation observation, EMUStat stat){
+    CombinedData combinedData = new CombinedData();
+    float xIndex = 1.5f;
+    float close = (float) stat.getNitrate_min().doubleValue();
+    float open = (float) stat.getNitrate_max().doubleValue();
+    float shadowH = (float)mDataManager.getMaxNitrateFromSummary().doubleValue();
+    float shadowL = (float) mDataManager.getMinNitrateFromSummary().doubleValue();
+
+    float averageTemp = (float)observation.getNitrate().doubleValue();
+    Log.i("SummaryChartPreseter", "Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    //entries.add(new CandleEntry(1.5f , 90, 70, 85, 75f)); //index, shadowH, shadowL, open, close
 
     combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close ));
     combinedData.setData(generateScatterData(averageTemp));

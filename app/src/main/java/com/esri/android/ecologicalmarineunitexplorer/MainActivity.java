@@ -174,13 +174,14 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     }
   }
 
-  private void removeMapView(){
+  private void hideMapView(){
     final FragmentManager fm = getSupportFragmentManager();
     MapFragment mapFragment =  (MapFragment) fm.findFragmentById(R.id.map_container);
     if (mapFragment != null){
-      FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-      transaction.remove(mapFragment);
-      transaction.commit();
+      FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
+      LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(0,
+          0);
+      mapLayout.setLayoutParams(layoutParams);
     }
   }
 
@@ -202,21 +203,6 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
   }
 
   private void shrinkMap(){
-    final FragmentManager fm = getSupportFragmentManager();
-
-    MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
-
-    if (mapFragment == null) {
-      mapFragment = MapFragment.newInstance();
-      MapPresenter mapPresenter = new MapPresenter(mapFragment, mDataManager);
-      ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), mapFragment, R.id.map_container, "map fragment");
-    }
-
-    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-    transaction.replace(R.id.map_container, mapFragment);
-    transaction.commit();
-
     // Adjust the map's layout
     FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
     LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,7);
@@ -284,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     removeSummaryAndWaterColumnViews();
 
     // Remove map
-    removeMapView();
+    hideMapView();
 
     FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
     layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,

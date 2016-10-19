@@ -36,6 +36,10 @@ public interface SummaryChartContract {
       void showChartData(List<CombinedData> dataList);
       void setTemperatureText(double temperatureText);
       void setSalinityText(double salinityText);
+      void setOxygenText(double oxygenText);
+      void setPhosphateText(double phosphateText);
+      void setSilicateText(double silicateText);
+      void setNitrateText(double nitrateText);
   }
 
   interface Presenter extends BasePresenter {

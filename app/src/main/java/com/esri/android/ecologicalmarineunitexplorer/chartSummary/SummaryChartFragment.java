@@ -84,6 +84,27 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
     TextView textView = (TextView) mRoot.findViewById(R.id.txtSalinity);
     textView.setText(Double.valueOf(new DecimalFormat("#.##").format(salinityText)) + "");
   }
+
+  @Override public void setOxygenText(double oxygenText) {
+    TextView textView = (TextView) mRoot.findViewById(R.id.txtOxygen);
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(oxygenText)) + "");
+  }
+
+  @Override public void setPhosphateText(double phosphateText) {
+    TextView textView = (TextView) mRoot.findViewById(R.id.txtPhosphate);
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(phosphateText)) + "");
+  }
+
+  @Override public void setSilicateText(double silicateText) {
+    TextView textView = (TextView) mRoot.findViewById(R.id.txtSilicate);
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(silicateText)) + "");
+  }
+
+  @Override public void setNitrateText(double nitrateText) {
+    TextView textView = (TextView) mRoot.findViewById(R.id.txtNitrate);
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(nitrateText)) + "");
+  }
+
   private void prepareChartView(int id, CombinedData data){
     CombinedChart chart = (CombinedChart) mRoot.findViewById(id);
     chart.getPaint(Chart.PAINT_DESCRIPTION).setTextAlign(Paint.Align.CENTER);
@@ -96,8 +117,6 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
 
     chart.setData(data);
     chart.invalidate();
-
-    Log.i("ChartFragment", "Height = " + chart.getHeight() + " width = "+ chart.getWidth());
 
   }
 

@@ -109,7 +109,7 @@ public class WaterColumnFragment extends Fragment implements WaterColumnContract
     Set<EMUObservation> emuObservationSet = waterColumn.getEmuSet();
     float depth = (float) waterColumn.getDepth();
     TextView tv = (TextView) mRoot.findViewById(R.id.txtBottom);
-    tv.setText(waterColumn.getDepth()+" m");
+    tv.setText("-"+waterColumn.getDepth()+" m");
 
     int buttonId = 0;
     for (EMUObservation observation: emuObservationSet){
