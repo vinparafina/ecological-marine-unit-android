@@ -40,6 +40,8 @@ public interface SummaryChartContract {
       void setPhosphateText(double phosphateText);
       void setSilicateText(double silicateText);
       void setNitrateText(double nitrateText);
+      void showProgressBar(String message, String title);
+      void hideProgressBar();
   }
 
   interface Presenter extends BasePresenter {
