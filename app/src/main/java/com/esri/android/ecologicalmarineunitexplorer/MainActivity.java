@@ -36,9 +36,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import com.esri.android.ecologicalmarineunitexplorer.chartSummary.SummaryChartFragment;
 import com.esri.android.ecologicalmarineunitexplorer.chartSummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
+import com.esri.android.ecologicalmarineunitexplorer.data.EMUObservation;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapFragment;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapPresenter;
@@ -47,6 +49,9 @@ import com.esri.android.ecologicalmarineunitexplorer.summary.SummaryPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.util.ActivityUtils;
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnFragment;
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnPresenter;
+import com.esri.arcgisruntime.geometry.Point;
+
+import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity implements WaterColumnFragment.OnWaterColumnSegmentClickedListener,
     SummaryFragment.OnRectangleTappedListener, SummaryFragment.OnDetailClickedListener {
@@ -123,6 +128,9 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
         // Add back the map
         shrinkMap();
+        WaterColumn waterColumn = mDataManager.getCurrentWaterColumn();
+        // Add back text summary
+        showTextSummary(waterColumn);
       }
     });
   }
@@ -205,8 +213,8 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
   private void shrinkMap(){
     // Adjust the map's layout
     FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
-    LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,7);
-    layoutParams.setMargins(0, 0,36,0);
+    LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,5);
+    layoutParams.setMargins(0, 36,36,0);
     mapLayout.setLayoutParams(layoutParams);
     mapLayout.requestLayout();
   }
@@ -235,14 +243,18 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
     // Adjust the map's layout
     FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
-    LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,7);
-    layoutParams.setMargins(0, 0,36,0);
+    LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,5);
+    layoutParams.setMargins(0, 36,36,0);
     mapLayout.setLayoutParams(layoutParams);
     mapLayout.requestLayout();
 
+    // Adjust the summary containing the recycler view
     FrameLayout summaryLayout = (FrameLayout) findViewById(R.id.summary_container);
     summaryLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,9));
     summaryLayout.requestLayout();
+
+    //Adjust the summary text layout
+    showTextSummary(waterColumn);
 
     // Replace whatever is in the summary_container view with this fragment,
     // and add the transaction to the back stack so the user can navigate back
@@ -272,6 +284,9 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     // Remove map
     hideMapView();
 
+    // Remove text summary
+    hideTextSummary();
+
     FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
     layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
@@ -283,18 +298,33 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     if (chartFragment == null){
       chartFragment = SummaryChartFragment.newInstance();
       mSummaryChartPresenter = new SummaryChartPresenter(emuName, chartFragment, mDataManager);
-
     }
-
 
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     transaction.replace(R.id.chartContainer, chartFragment);
-   // transaction.addToBackStack("chart detail fragment");
     transaction.commit();
 
-//    mSummaryChartPresenter.getDetailForSummary(emuName);
     setUpChartSummaryToolbar(emuName);
 
+  }
+  private void hideTextSummary(){
+    TextView textView = (TextView) findViewById(R.id.txtSummary) ;
+    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,0);
+    textView.setLayoutParams(layoutParams);
+    textView.requestLayout();
+
+  }
+  private void showTextSummary(WaterColumn waterColumn){
+    // Get the current location for the column
+    Point p = waterColumn.getLocation();
+    TextView textView = (TextView) findViewById(R.id.txtSummary) ;
+    String x = new DecimalFormat("#.##").format(p.getX());
+    String y = new DecimalFormat("#.##").format(p.getY());
+    textView.setText("The water column at " + y + ", "+ x +" (lat/lng) contains " + waterColumn.getEmuSet().size() + " EMU layers, extending to a depth of "+ waterColumn.getDepth()+" meters.");
+    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,2);
+    layoutParams.setMargins(0,0,36,0);
+    textView.setLayoutParams(layoutParams);
+    textView.requestLayout();
 
   }
   /**
