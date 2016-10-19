@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -38,7 +38,7 @@ ext {
     supportLibraryVersion = '23.4.0'
     junitVersion = '4.12'
     runnerVersion = '0.4.1'
-    runtimeVersion = '100.0.0-1488'
+    runtimeVersion = '100.0.0-1493'
     robotiumVersion = '5.6.3'
     espressoCoreVersion = '2.2.2'
     guavaVersion = '18.0'
