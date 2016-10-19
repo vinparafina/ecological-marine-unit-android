@@ -42,6 +42,7 @@ public interface MapContract {
     void showClickedLocation(Point point);
     void showProgressBar(String message, String title);
     void hideProgressBar();
+    void setMapAttribution(boolean toggle);
   }
   interface Presenter extends BasePresenter {
 

@@ -36,6 +36,7 @@ import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
+import com.esri.arcgisruntime.mapping.view.GeoView;
 
 import java.util.List;
 
@@ -47,8 +48,8 @@ public class MapPresenter implements MapContract.Presenter {
   private DataManager mDataManager;
   private final double GALAPAGOS_LAT = -0.3838312;
   private final double GALAPAGOS_LONG = -91.5727346;
-  private final String DIALOG_MESSAGE = "Loading map data...";
-  private final String DIALOG_TITLE = "Message";
+  private final String DIALOG_MESSAGE = "Rounding up the EMUs...";
+  private final String DIALOG_TITLE = "EMU Map Loading";
   private final String TILED_LAYER_URL = "http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac";
   private final String NO_EMU_FOUND = "Please select an ocean location";
   private final double BUFFER_SIZE = 32000;
@@ -85,7 +86,7 @@ public class MapPresenter implements MapContract.Presenter {
    *              place a user clicked on the map
    */
   @Override public void setSelectedPoint(Point point) {
-    mMapView.showProgressBar("Retrieving data...", "Data Load");
+    mMapView.showProgressBar("Fetching details about the location...", "Preparing Location Summary");
     mMapView.showClickedLocation(point);
     Polygon polygon = getBufferPolygonForPoint(point, BUFFER_SIZE);
     PolygonBuilder builder = new PolygonBuilder(polygon);
@@ -97,6 +98,7 @@ public class MapPresenter implements MapContract.Presenter {
         if (waterColumn == null){
           mMapView.showMessage(NO_EMU_FOUND);
         }else{
+          mMapView.setMapAttribution(false);
           mMapView.showSummary(waterColumn);
         }
       }

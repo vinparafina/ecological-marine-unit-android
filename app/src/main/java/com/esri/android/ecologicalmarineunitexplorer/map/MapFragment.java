@@ -18,7 +18,6 @@ import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.Layer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
@@ -79,13 +78,6 @@ public class MapFragment extends Fragment implements MapContract.View {
       final Bundle savedInstance){
 
     mRoot = layoutInflater.inflate(R.layout.map_view, container,false);
-
-
-    if (mSelectedPoint != null){
-      showClickedLocation(mSelectedPoint);
-      Log.i("MapFragment", "Reconstituting state in 'onCreateView'");
-    }
-
     mPresenter.start();
     return mRoot;
   }
@@ -220,6 +212,10 @@ public class MapFragment extends Fragment implements MapContract.View {
    */
   @Override public void hideProgressBar() {
     mProgressDialog.hide();
+  }
+
+  @Override public void setMapAttribution(boolean toggle) {
+    mMapView.setAttributionTextVisible(toggle);
   }
 
   public class MapTouchListener extends DefaultMapViewOnTouchListener {
