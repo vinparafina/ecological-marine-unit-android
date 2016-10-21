@@ -54,6 +54,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
   }
 
   @Override public void getWaterProfile(Point point) {
+    mView.showProgressBar("Building scatter plots", "Preparing Water Profile");
     mDataManager.queryForEMUColumnProfile(mColumnLocation, new ServiceApi.ColumnProfileCallback() {
       @Override public void onProfileLoaded(WaterProfile waterProfile) {
         if (waterProfile.measurementCount() > 0){
@@ -63,7 +64,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
           // Notify user
           mView.showMessage("No profile data found");
         }
-
+        mView.hideProgressBar();
       }
     });
   }

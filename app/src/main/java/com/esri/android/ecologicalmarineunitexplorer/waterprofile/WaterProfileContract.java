@@ -33,6 +33,8 @@ public interface WaterProfileContract {
   interface View extends BaseView<Presenter> {
     void showWaterProfile( ScatterData scatterData);
     void showMessage(String message);
+    void showProgressBar(String message, String title);
+    void hideProgressBar();
   }
   interface Presenter extends BasePresenter {
     void prepareDataForCharts(WaterProfile profile);

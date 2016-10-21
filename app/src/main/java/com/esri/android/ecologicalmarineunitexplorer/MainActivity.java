@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     hideMapView();
 
     setUpWaterProfileToolbar();
-    
+
     FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
     layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));

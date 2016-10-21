@@ -1,5 +1,6 @@
 package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 
+import android.app.ProgressDialog;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,6 +44,7 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
 
   private View mRoot;
   private WaterProfileContract.Presenter mPresenter;
+  private ProgressDialog mProgressDialog;
 
   public static WaterProfileFragment newInstance() {
     WaterProfileFragment fragment = new WaterProfileFragment();
@@ -71,11 +73,23 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
     chart.getLegend().setEnabled(false);
     chart.setData(scatterData);
     chart.invalidate();
-
   }
 
   @Override public void showMessage(String message) {
     Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+  }
+
+  @Override public void showProgressBar(String message, String title) {
+    if (mProgressDialog == null){
+      mProgressDialog = new ProgressDialog(getActivity());
+    }
+    mProgressDialog.setTitle(title);
+    mProgressDialog.setMessage(message);
+    mProgressDialog.show();
+  }
+
+  @Override public void hideProgressBar() {
+    mProgressDialog.dismiss();
   }
 
   @Override public void setPresenter(WaterProfileContract.Presenter presenter) {
