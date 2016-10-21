@@ -26,14 +26,17 @@
 package com.esri.android.ecologicalmarineunitexplorer;
 
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +44,7 @@ import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartFr
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
+import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapFragment;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.summary.SummaryFragment;
@@ -48,6 +52,9 @@ import com.esri.android.ecologicalmarineunitexplorer.summary.SummaryPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.util.ActivityUtils;
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnFragment;
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnPresenter;
+import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileContract;
+import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileFragment;
+import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfilePresenter;
 import com.esri.arcgisruntime.geometry.Point;
 
 import java.text.DecimalFormat;
@@ -74,6 +81,46 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
     // Set up fragments
     setUpMagFragment();
+
+    // Attach listener to button
+    Button button = (Button) findViewById(R.id.btnProfile);
+    button.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        // Grab the location from the water column
+        // and show the WaterColumnProfile fragment
+        Point point = mDataManager.getCurrentWaterColumn().getLocation();
+        showWaterColumnProfile(point);
+      }
+    });
+  }
+
+  private void showWaterColumnProfile(Point point) {
+    // Remove water column, summary, text and button
+    removeSummaryAndWaterColumnViews();
+    hideTextSummary();
+    hideMapView();
+
+    setUpWaterProfileToolbar();
+    
+    FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
+    layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
+    layout.requestLayout();
+
+    final FragmentManager fm = getSupportFragmentManager();
+    WaterProfileFragment waterProfileFragment = null;
+    Fragment f  =  fm.findFragmentById(R.id.chartContainer);
+    if (f instanceof WaterProfileFragment){
+      waterProfileFragment = (WaterProfileFragment)f;
+    }else{
+      waterProfileFragment = WaterProfileFragment.newInstance();
+    }
+
+    WaterProfilePresenter presenter = new WaterProfilePresenter(point, waterProfileFragment, mDataManager);
+
+    FragmentTransaction transaction = fm.beginTransaction();
+    transaction.replace(R.id.chartContainer, waterProfileFragment);
+    transaction.commit();
   }
 
   /**
@@ -163,7 +210,38 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
       }
     });
+  }
 
+  private void setUpWaterProfileToolbar(){
+    final Toolbar toolbar = (Toolbar) this.findViewById(R.id.toolbar);
+    ((AppCompatActivity) this).setSupportActionBar(toolbar);
+    ((AppCompatActivity) this).getSupportActionBar().setTitle("Water Column Profile");
+    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
+    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+
+        //Remove profile
+        removeWaterColumnProfie();
+        // Show summary
+        showSummary();
+
+        // Add back the map
+        shrinkMap();
+        WaterColumn waterColumn = mDataManager.getCurrentWaterColumn();
+        // Add back text summary
+        showTextSummary(waterColumn);
+      }
+    });
+  }
+
+  private void removeWaterColumnProfie(){
+    final FragmentManager fm = getSupportFragmentManager();
+    WaterProfileFragment fragment = (WaterProfileFragment) fm.findFragmentById(R.id.chartContainer);
+    if (fragment != null){
+      FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+      transaction.remove(fragment);
+      transaction.commit();
+    }
   }
   private void removeSummaryAndWaterColumnViews(){
     final FragmentManager fm = getSupportFragmentManager();
@@ -305,18 +383,21 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     transaction.commit();
 
     setUpChartSummaryToolbar(emuName);
-
   }
+
   private void hideTextSummary(){
     TextView textView = (TextView) findViewById(R.id.txtSummary) ;
     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,0);
     textView.setLayoutParams(layoutParams);
+    Button button = (Button) findViewById(R.id.btnProfile);
+    button.setLayoutParams(layoutParams);
     textView.requestLayout();
-
+    button.requestLayout();
   }
-  private void showTextSummary(WaterColumn waterColumn){
+
+  private void showTextSummary(final WaterColumn waterColumn){
     // Get the current location for the column
-    Point p = waterColumn.getLocation();
+    final Point p = waterColumn.getLocation();
     TextView textView = (TextView) findViewById(R.id.txtSummary) ;
     String x = new DecimalFormat("#.##").format(p.getX());
     String y = new DecimalFormat("#.##").format(p.getY());
@@ -326,7 +407,14 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     textView.setLayoutParams(layoutParams);
     textView.requestLayout();
 
+    Button button = (Button) findViewById(R.id.btnProfile);
+    LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT);
+    buttonLayoutParams.setMargins(0,0,10,0);
+    button.setLayoutParams(buttonLayoutParams);
+    button.requestLayout();
   }
+
   /**
    * When a water column segment is tapped, show the
    * associated item in the SummaryFragment

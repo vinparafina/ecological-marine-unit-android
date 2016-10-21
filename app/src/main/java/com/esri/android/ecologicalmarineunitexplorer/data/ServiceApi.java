@@ -23,6 +23,7 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
+import java.util.Map;
 
 public interface ServiceApi {
   interface SummaryCallback {
@@ -32,4 +33,7 @@ public interface ServiceApi {
     void onStatsLoaded();
   }
 
+  interface ColumnProfileCallback{
+    void onProfileLoaded(WaterProfile profile);
+  }
 }

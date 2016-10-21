@@ -27,10 +27,12 @@ import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
 import com.esri.android.ecologicalmarineunitexplorer.BaseView;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
 import com.esri.arcgisruntime.geometry.Point;
+import com.github.mikephil.charting.data.ScatterData;
 
 public interface WaterProfileContract {
   interface View extends BaseView<Presenter> {
-    void showWaterProfile(WaterProfile profile);
+    void showWaterProfile( ScatterData scatterData);
+    void showMessage(String message);
   }
   interface Presenter extends BasePresenter {
     void prepareDataForCharts(WaterProfile profile);

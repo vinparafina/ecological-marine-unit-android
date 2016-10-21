@@ -52,10 +52,8 @@ public class WaterColumnFragment extends Fragment implements WaterColumnContract
   private WaterColumn mWaterColumn;
   private OnWaterColumnSegmentClickedListener mCallback;
   private Button mSelectedButton;
+  private WaterColumnContract.Presenter mPresenter;
 
-  @Override public void setPresenter(MapContract.Presenter presenter) {
-
-  }
 
   // Define behavior for column clicking
   public interface OnWaterColumnSegmentClickedListener {
@@ -138,6 +136,10 @@ public class WaterColumnFragment extends Fragment implements WaterColumnContract
       mButtonContainer.addView(button);
       buttonId = buttonId + 1;
     }
+  }
+
+  @Override public void setPresenter(WaterColumnContract.Presenter presenter) {
+    mPresenter = presenter;
   }
 
   /**

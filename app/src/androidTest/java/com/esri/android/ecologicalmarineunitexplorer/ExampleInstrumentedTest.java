@@ -26,7 +26,6 @@ package com.esri.android.ecologicalmarineunitexplorer;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ExecutionError;
 import android.support.test.runner.AndroidJUnit4;
 
 import android.util.Log;
@@ -38,7 +37,6 @@ import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.*;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -61,7 +59,7 @@ public class ExampleInstrumentedTest {
 
     final DataManager dataManager = DataManager.getDataManagerInstance(appContext);
 
-    dataManager.getStatisticsForEMUs(new ServiceApi.StatCallback() {
+    dataManager.queryEMUSummaryStatistics(new ServiceApi.StatCallback() {
       @Override public void onStatsLoaded() {
         EMUStat stat = dataManager.getStatForEMU(24);
         Log.d("TEST", stat.toString());

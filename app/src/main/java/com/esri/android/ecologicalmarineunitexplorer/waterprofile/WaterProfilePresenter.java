@@ -23,5 +23,74 @@ package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
  *
  */
 
-public class WaterProfilePresenter {
+import android.support.annotation.NonNull;
+import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
+import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
+import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
+import com.esri.arcgisruntime.geometry.Point;
+import com.github.mikephil.charting.charts.ScatterChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
+import java.util.*;
+
+public class WaterProfilePresenter implements WaterProfileContract.Presenter {
+  private final Point mColumnLocation;
+  private final WaterProfileContract.View mView;
+  private final DataManager mDataManager;
+  private final Map<String, ScatterData> mChartData = new HashMap<>();
+
+  public WaterProfilePresenter(@NonNull Point p, @NonNull WaterProfileContract.View view, @NonNull DataManager dataManager) {
+    mColumnLocation = p;
+    mView = view;
+    mView.setPresenter(this);
+    mDataManager = dataManager;
+  }
+
+  @Override public void prepareDataForCharts(WaterProfile profile) {
+
+  }
+
+  @Override public void getWaterProfile(Point point) {
+    mDataManager.queryForEMUColumnProfile(mColumnLocation, new ServiceApi.ColumnProfileCallback() {
+      @Override public void onProfileLoaded(WaterProfile waterProfile) {
+        if (waterProfile.measurementCount() > 0){
+          ScatterData chartData = buildChartDataForProperty(waterProfile, "TEMPERATURE");
+          mView.showWaterProfile(chartData);
+        }else{
+          // Notify user
+          mView.showMessage("No profile data found");
+        }
+
+      }
+    });
+  }
+
+  @Override public void start() {
+    getWaterProfile(mColumnLocation);
+
+  }
+  private ScatterData buildChartDataForProperty(WaterProfile profile, String property){
+    ScatterData data = new ScatterData();
+    // Get all the measurements for the property
+    Map<Double,Double> propertyMeasurementByDepth = profile.getMeasurementsForProperty(property);
+    ArrayList<Entry> entries = new ArrayList<>();
+    Set<Double> depths = propertyMeasurementByDepth.keySet();
+    for (Double depth : depths){
+      float y = (float) depth.doubleValue();
+      float x = (float) propertyMeasurementByDepth.get(depth).doubleValue();
+      entries.add(new Entry(x, y));
+    }
+
+    ScatterDataSet set = new ScatterDataSet(entries, "Scatter DataSet");
+    set.setColor(ColorTemplate.COLORFUL_COLORS[0]);
+    set.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+    set.setScatterShapeSize(5f);
+    set.setDrawValues(false);
+    data.addDataSet(set);
+    return  data;
+  }
+
 }

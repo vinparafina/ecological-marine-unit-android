@@ -23,5 +23,48 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
+import com.esri.arcgisruntime.geometry.Point;
+
+import java.util.*;
+
+/**
+ * An object representing a collection of Measurements for a
+ * specific location in the ocean
+ */
 public class WaterProfile {
+
+  private Point mLocation;
+  private Set<Measurement> mMeasurementSet ;
+
+  public WaterProfile(Point location){
+    mLocation = location;
+    mMeasurementSet = new TreeSet<>();
+  }
+
+  public void addMeasurement(Measurement m){
+    mMeasurementSet.add(m);
+  }
+
+  /**
+   * Return a list of Double values for a given
+   * property.  The list is ordered by increasing
+   * depth.
+   * @param property
+   * @return
+   */
+  public Map<Double,Double> getMeasurementsForProperty(String property){
+    Map<Double,Double> measurementsByDepth = new TreeMap<>();
+    int x = 0;
+    for (Measurement measurement : mMeasurementSet){
+      measurementsByDepth.put(measurement.getDepth(), measurement.getValueForProperty(property));
+    }
+    return measurementsByDepth;
+  }
+  /**
+   * Return measurement count
+   * @return int representing count of measurements
+   */
+  public int measurementCount(){
+    return mMeasurementSet.size();
+  }
 }

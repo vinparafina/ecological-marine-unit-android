@@ -1,6 +1,19 @@
 package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+import com.esri.android.ecologicalmarineunitexplorer.R;
+import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
+import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.ScatterChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.ScatterData;
 
 /* Copyright 2016 Esri
  *
@@ -26,5 +39,46 @@ import android.support.v4.app.Fragment;
  *
  */
 
-public class WaterProfileFragment extends Fragment {
+public class WaterProfileFragment extends Fragment implements WaterProfileContract.View {
+
+  private View mRoot;
+  private WaterProfileContract.Presenter mPresenter;
+
+  public static WaterProfileFragment newInstance() {
+    WaterProfileFragment fragment = new WaterProfileFragment();
+    return fragment;
+  }
+  @Override
+  @Nullable
+  public View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
+      final Bundle savedInstance){
+    mRoot = layoutInflater.inflate(R.layout.water_profile, container, false);
+    mPresenter.start();
+    return  mRoot;
+  }
+
+  @Override public void showWaterProfile(ScatterData scatterData) {
+    ScatterChart chart = (ScatterChart) mRoot.findViewById(R.id.propertyChart);
+
+    chart.getAxisLeft().setInverted(false);
+    chart.getXAxis().setEnabled(true);
+    chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+    chart.getXAxis().setAxisMinValue(scatterData.getXMin()-1);
+    chart.getAxisRight().setEnabled(false);
+    chart.getAxisLeft().setDrawGridLines(true);
+    chart.setDrawGridBackground(true);
+    chart.setDescription("");
+    chart.getLegend().setEnabled(false);
+    chart.setData(scatterData);
+    chart.invalidate();
+
+  }
+
+  @Override public void showMessage(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+  }
+
+  @Override public void setPresenter(WaterProfileContract.Presenter presenter) {
+    mPresenter = presenter;
+  }
 }
