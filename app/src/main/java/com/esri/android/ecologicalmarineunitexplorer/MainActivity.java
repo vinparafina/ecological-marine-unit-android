@@ -37,10 +37,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.esri.android.ecologicalmarineunitexplorer.chartSummary.SummaryChartFragment;
-import com.esri.android.ecologicalmarineunitexplorer.chartSummary.SummaryChartPresenter;
+import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartFragment;
+import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
-import com.esri.android.ecologicalmarineunitexplorer.data.EMUObservation;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapFragment;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapPresenter;
@@ -54,7 +53,7 @@ import com.esri.arcgisruntime.geometry.Point;
 import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity implements WaterColumnFragment.OnWaterColumnSegmentClickedListener,
-    SummaryFragment.OnRectangleTappedListener, SummaryFragment.OnDetailClickedListener {
+    SummaryFragment.OnViewIndexChange, SummaryFragment.OnDetailClickedListener {
 
 
   private SummaryPresenter mSummaryPresenter;
@@ -216,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,5);
     layoutParams.setMargins(0, 36,36,0);
     mapLayout.setLayoutParams(layoutParams);
+
     mapLayout.requestLayout();
   }
 
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     }
   }
 
-  @Override public void onRectangleTap(int position) {
+  @Override public void onChange(int position) {
     final FragmentManager fm = getSupportFragmentManager();
     WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.column_container);
     if (waterColumnFragment != null ){

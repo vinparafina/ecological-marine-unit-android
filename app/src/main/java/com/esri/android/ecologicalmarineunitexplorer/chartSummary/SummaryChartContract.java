@@ -1,4 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.chartSummary;
+package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

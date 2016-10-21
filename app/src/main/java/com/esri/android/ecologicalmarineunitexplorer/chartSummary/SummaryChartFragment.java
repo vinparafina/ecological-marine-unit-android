@@ -1,16 +1,13 @@
-package com.esri.android.ecologicalmarineunitexplorer.chartSummary;
+package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
 
 import android.app.ProgressDialog;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.github.mikephil.charting.charts.Chart;

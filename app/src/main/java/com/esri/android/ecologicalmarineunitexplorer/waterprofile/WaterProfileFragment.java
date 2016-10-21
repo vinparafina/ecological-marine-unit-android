@@ -1,4 +1,7 @@
-package com.esri.android.ecologicalmarineunitexplorer.watercolumn;
+package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
+
+import android.support.v4.app.Fragment;
+
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,16 +26,5 @@ package com.esri.android.ecologicalmarineunitexplorer.watercolumn;
  *
  */
 
-import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
-import com.esri.android.ecologicalmarineunitexplorer.BaseView;
-import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
-
-public interface WaterColumnContract {
-  interface View extends BaseView<Presenter> {
-    void setWaterColumn(WaterColumn waterColumn);
-    void showWaterColumn(WaterColumn waterColumn);
-  }
-  interface Presenter extends BasePresenter{
-    void setWaterColumn(WaterColumn waterColumn);
-  }
+public class WaterProfileFragment extends Fragment {
 }

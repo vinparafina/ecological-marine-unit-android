@@ -1,9 +1,8 @@
-package com.esri.android.ecologicalmarineunitexplorer.chartSummary;
+package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.*;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.data.*;

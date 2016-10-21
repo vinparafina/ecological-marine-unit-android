@@ -6,11 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +58,7 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
   private WaterColumn mWaterColumn;
   private EMUAdapter mEmuAdapter;
   private SummaryContract.Presenter mPresenter;
-  private OnRectangleTappedListener mCallback;
+  private OnViewIndexChange mCallback;
   private OnDetailClickedListener mButtonListener;
 
   public static SummaryFragment newInstance() {
@@ -69,10 +66,9 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
     return fragment;
   }
 
-  // Define behavior for rectangle in summary view
-  // when it is tapped/clicked.
-  public interface OnRectangleTappedListener {
-    public void onRectangleTap(int position);
+  // Listen for changes in index position of the recycler view
+  public interface OnViewIndexChange {
+    public void onChange(int position);
   }
 
   // Define the behavior for DETAIL button
@@ -106,7 +102,7 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
     // This makes sure that the container activity has implemented
     // the callback interface. If not, it throws an exception
     try {
-      mCallback = (OnRectangleTappedListener) activity;
+      mCallback = (OnViewIndexChange) activity;
       mButtonListener = (OnDetailClickedListener) activity;
     } catch (ClassCastException e) {
       throw new ClassCastException(activity.toString()
@@ -141,9 +137,14 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
   public class EMUAdapter extends RecyclerView.Adapter<RecycleViewHolder>{
 
     private List<EMUObservation> emuObservations = Collections.emptyList();
+    private Context mContext;
+    private int size;
+
 
     public EMUAdapter(final Context context, final int resource, final List<EMUObservation> observations){
       emuObservations = observations;
+      mContext = context;
+      size = emuObservations.size();
     }
 
     @Override public RecycleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -167,17 +168,21 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
       int top = observation.getTop();
       holder.txtTop.setText(getString(R.string.below_surface_description) + top + getString(R.string.meters));
       holder.rectangle.setBackgroundColor(Color.parseColor(EmuHelper.getColorForEMUCluster(getActivity().getApplicationContext(),observation.getEmu().getName())));
-      holder.rectangle.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-          mCallback.onRectangleTap(position);
-        }
-      });
       holder.details.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
            mButtonListener.onButtonClick(observation.getEmu().getName());
          }
        });
+
+      // Show/hide arrows
+      if (position == (size -1)){
+        holder.arrowDown.setVisibility(View.INVISIBLE);
+      }else{
+        holder.arrowDown.setVisibility(View.VISIBLE);
+      }
       holder.bind(observation);
+      // View index has changed, notify.
+      mCallback.onChange(position);
     }
 
 
@@ -194,6 +199,7 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
     public final TextView txtTop;
     public final ImageView rectangle;
     public final Button details;
+    public final ImageView arrowDown;
 
     public RecycleViewHolder(final View emuView){
       super(emuView);
@@ -204,6 +210,7 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
       txtTop = (TextView) emuView.findViewById(R.id.txt_top);
       rectangle = (ImageView) emuView.findViewById(R.id.emu_rectangle);
       details = (Button) emuView.findViewById(R.id.btnDetail);
+      arrowDown = (ImageView) emuView.findViewById(R.id.arrowDown);
 
     }
     public final void bind(final EMUObservation observation){

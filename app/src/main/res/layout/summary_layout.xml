@@ -4,7 +4,9 @@
         <variable name="eum"
                   type="com.esri.android.ecologicalmarineunitexplorer.data.EMU"/>
     </data>
-    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent" >
+    <RelativeLayout android:layout_width="match_parent"
+                    android:id="@+id/relLayout"
+                    android:layout_height="match_parent" >
 
 
         <LinearLayout
@@ -62,6 +64,8 @@
                     android:text="DETAILS"
                     android:layout_height="wrap_content" android:layout_gravity="right"/>
 
+            <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:id="@+id/arrowDown" android:src="@drawable/ic_keyboard_arrow_down_black_24px"/>
         </LinearLayout>
     </RelativeLayout>
 

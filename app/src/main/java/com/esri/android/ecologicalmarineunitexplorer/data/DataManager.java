@@ -60,6 +60,15 @@ public class DataManager {
 
   private Map<Integer, EMUStat> summary_table = new HashMap<>();
 
+  private static Double MAX_NITRATE = null;
+  private static Double MAX_OXYGEN = null;
+  private static Double MAX_PHOSPHATE = null;
+  private static Double MAX_SALINITY = null;
+  private static Double MAX_SILICATE = null;
+  private static Double MAX_TEMPATURE = null;
+
+  private static Double M
+
 
   private DataManager(Context applicationContext){
 
