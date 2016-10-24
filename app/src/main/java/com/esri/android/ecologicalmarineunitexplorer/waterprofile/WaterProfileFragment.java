@@ -17,8 +17,10 @@ import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
 import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.ScatterData;
 
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
   private WaterProfileContract.Presenter mPresenter;
   private ChartAdapter mChartAdapter;
   private ProgressDialog mProgressDialog;
-  private List<ScatterData> mChartDataList = new ArrayList<>();
+  private List<CombinedData> mChartDataList = new ArrayList<>();
 
   public static WaterProfileFragment newInstance() {
     WaterProfileFragment fragment = new WaterProfileFragment();
@@ -76,7 +78,7 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
     return  mChartRecyclerView;
   }
 
-  @Override public void showWaterProfiles(List<ScatterData> dataList ) {
+  @Override public void showWaterProfiles(List<CombinedData> dataList ) {
     mChartDataList = dataList;
     ScatterChart chart = (ScatterChart) mChartRecyclerView.findViewById(R.id.propertyChart);
     if (mChartAdapter != null){
@@ -107,8 +109,9 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
 
   public class ChartAdapter extends RecyclerView.Adapter<ChartViewHolder>{
 
-    public ChartAdapter(final Context context, final int resource, final List<ScatterData> scatterData){
-      mChartDataList = scatterData;
+    public ChartAdapter(final Context context, final int resource, final List<CombinedData> combinedData){
+      mChartDataList = combinedData;
+      // Determine the color for each of the
     }
 
     @Override public ChartViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -118,8 +121,9 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
     }
 
     @Override public void onBindViewHolder(ChartViewHolder holder, int position) {
-      final ScatterData scatterData = mChartDataList.get(position);
-      String property = scatterData.getDataSetLabels()[0];
+      final CombinedData scatterData = mChartDataList.get(position);
+      String [] labels = scatterData.getDataSetLabels();
+      String property = scatterData.getDataSetLabels()[labels.length -1];
       holder.txtChartTitle.setText( property + " Over Depth");
       holder.chart.setData(scatterData);
       holder.chart.getAxisLeft().setInverted(false);
@@ -145,13 +149,16 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
   public class ChartViewHolder extends RecyclerView.ViewHolder{
     public final TextView txtChartTitle;
     public final TextView txtXAxisTitle;
-    public final ScatterChart chart;
+    public final CombinedChart chart;
 
     public ChartViewHolder(final View view){
       super(view);
       txtChartTitle = (TextView) view.findViewById(R.id.txtChartTitle);
       txtXAxisTitle = (TextView) view.findViewById(R.id.txtXAxisTitle);
-      chart = (ScatterChart) view.findViewById(R.id.propertyChart);
+      chart = (CombinedChart) view.findViewById(R.id.propertyChart);
+      chart.setDrawOrder(new CombinedChart.DrawOrder[]{ CombinedChart.DrawOrder.LINE,
+           CombinedChart.DrawOrder.SCATTER
+      });
     }
 
   }

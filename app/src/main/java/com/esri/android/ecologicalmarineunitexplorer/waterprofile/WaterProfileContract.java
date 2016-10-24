@@ -27,13 +27,14 @@ import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
 import com.esri.android.ecologicalmarineunitexplorer.BaseView;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
 import com.esri.arcgisruntime.geometry.Point;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.ScatterData;
 
 import java.util.List;
 
 public interface WaterProfileContract {
   interface View extends BaseView<Presenter> {
-    void showWaterProfiles( List<ScatterData> scatterDataList);
+    void showWaterProfiles( List<CombinedData> dataList);
     void showMessage(String message);
     void showProgressBar(String message, String title);
     void hideProgressBar();

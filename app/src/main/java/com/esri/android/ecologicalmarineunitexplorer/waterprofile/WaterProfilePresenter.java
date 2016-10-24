@@ -25,14 +25,16 @@ package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
-import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
-import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
+import android.util.Log;
+import com.esri.android.ecologicalmarineunitexplorer.data.*;
+import com.esri.android.ecologicalmarineunitexplorer.util.EmuHelper;
 import com.esri.arcgisruntime.geometry.Point;
 import com.github.mikephil.charting.charts.ScatterChart;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.ScatterData;
-import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.*;
+import com.github.mikephil.charting.formatter.FillFormatter;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.*;
@@ -59,14 +61,17 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
     mDataManager.queryForEMUColumnProfile(mColumnLocation, new ServiceApi.ColumnProfileCallback() {
       @Override public void onProfileLoaded(WaterProfile waterProfile) {
         if (waterProfile.measurementCount() > 0){
-          List<ScatterData> dataList = new ArrayList<ScatterData>();
-          dataList.add( buildChartDataForProperty(waterProfile, "TEMPERATURE"));
-          dataList.add( buildChartDataForProperty(waterProfile, "SALINITY"));
-          dataList.add( buildChartDataForProperty(waterProfile, "DISSOLVED_OXYGEN"));
-          dataList.add( buildChartDataForProperty(waterProfile, "PHOSPHATE"));
-          dataList.add( buildChartDataForProperty(waterProfile, "SILICATE"));
-          dataList.add( buildChartDataForProperty(waterProfile, "NITRATE"));
-          mView.showWaterProfiles(dataList);
+
+          List<CombinedData> combinedDataList = new ArrayList<CombinedData>();
+
+          combinedDataList.add(buildCombinedData(waterProfile,"TEMPERATURE"));
+          combinedDataList.add(buildCombinedData(waterProfile,"SALINITY"));
+          combinedDataList.add(buildCombinedData(waterProfile,"DISSOLVED_OXYGEN"));
+          combinedDataList.add(buildCombinedData(waterProfile,"PHOSPHATE"));
+          combinedDataList.add(buildCombinedData(waterProfile,"SILICATE"));
+          combinedDataList.add(buildCombinedData(waterProfile,"NITRATE"));
+
+          mView.showWaterProfiles(combinedDataList);
         }else{
           // Notify user
           mView.showMessage("No profile data found");
@@ -76,6 +81,15 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
     });
   }
 
+  private CombinedData buildCombinedData(WaterProfile waterProfile, String property){
+    CombinedData data = new CombinedData();
+    ScatterData scatterData = buildChartDataForProperty(waterProfile, property);
+    data.setData(scatterData);
+    LineData emuLayerData = buildEMULayers(data.getXMax() );
+    data.setData(emuLayerData);
+    return data;
+
+  }
   @Override public void start() {
     getWaterProfiles(mColumnLocation);
 
@@ -99,6 +113,43 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
     set.setDrawValues(false);
     data.addDataSet(set);
     return  data;
+  }
+  private LineData buildEMULayers(float max){
+    LineData data = new LineData();
+    WaterColumn column = mDataManager.getCurrentWaterColumn();
+
+    Set<EMUObservation> observations = column.getEmuSet();
+    for (final EMUObservation observation : observations){
+      ArrayList<Entry> entries = new ArrayList<Entry>();
+
+
+      for (int index = 0; index <= max; index++) {
+        entries.add(new Entry(index, observation.getTop()));
+      }
+
+      LineDataSet set = new LineDataSet(entries, "Line DataSet");
+      set.setAxisDependency(YAxis.AxisDependency.LEFT);
+      set.setFillColor(Color.parseColor(EmuHelper.getColorForEMUCluster(observation.getEmu().getName())));
+
+      set.setFillAlpha(255);
+      Log.i("WaterProfilePresenter", "EMU color = " + EmuHelper.getColorForEMUCluster(observation.getEmu().getName()) + " Top = " + observation.getTop()+ " thickness = " + observation.getThickness());
+      set.setDrawCircles(false);
+      set.setDrawValues(false);
+      set.setDrawFilled(true);
+      set.setHighLightColor(Color.rgb(244, 117, 117));
+      set.setDrawCircleHole(false);
+      set.setFillFormatter(new FillFormatter() {
+        @Override
+        public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+          int fillLine = observation.getTop() - observation.getThickness();
+          Log.i("WaterProfilePresenter", "Fill line position = " + fillLine );
+          return observation.getTop() - observation.getThickness();
+        }
+      });
+      data.addDataSet(set);
+    }
+
+    return data;
   }
 
 }

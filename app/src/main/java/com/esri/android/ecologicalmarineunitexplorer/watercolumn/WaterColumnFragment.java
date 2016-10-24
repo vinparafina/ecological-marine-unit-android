@@ -151,7 +151,7 @@ public class WaterColumnFragment extends Fragment implements WaterColumnContract
     StateListDrawable stateListDrawable = new StateListDrawable();
 
     GradientDrawable defaultShape = new GradientDrawable();
-    int color = Color.parseColor(EmuHelper.getColorForEMUCluster(getContext(), emuName));
+    int color = Color.parseColor(EmuHelper.getColorForEMUCluster( emuName));
     defaultShape.setColor(color);
 
     GradientDrawable selectedPressShape = new GradientDrawable();

@@ -23,9 +23,6 @@ package com.esri.android.ecologicalmarineunitexplorer.util;
  *
  */
 
-import android.content.Context;
-import com.esri.android.ecologicalmarineunitexplorer.R;
-
 public class EmuHelper {
   /**
    * Most EMU clusters have a color associated with them.
@@ -33,77 +30,77 @@ public class EmuHelper {
    * @param emuName - an int representing the EMU name
    * @return colorCode - a string representing a hex color code.
    */
-  public static String getColorForEMUCluster(Context context, int emuName){
+  public static String getColorForEMUCluster( int emuName){
     String colorCode = null;
     switch (emuName){
       case 3:
-        colorCode = context.getString(R.string.Cluster3);
+        colorCode = "#708cd9";
         break;
       case 5:
-        colorCode = context.getString(R.string.Cluster5);
+        colorCode = "#a0d7d1";
         break;
       case 8:
-        colorCode = context.getString(R.string.Cluster8);
+        colorCode = "#ccb0ba";
         break;
       case 9:
-        colorCode = context.getString(R.string.Cluster9);
+        colorCode = "#c5b6d0";
         break;
       case 10:
-        colorCode = context.getString(R.string.Cluster10);
+        colorCode = "#7570e6";
         break;
       case 11:
-        colorCode = context.getString(R.string.Cluster11);
+        colorCode = "#cabfd9";
         break;
       case 13:
-        colorCode = context.getString(R.string.Cluster13);
+        colorCode = "#364799";
         break;
       case 14:
-        colorCode = context.getString(R.string.Cluster14);
+        colorCode = "#465290";
         break;
       case 18:
-        colorCode = context.getString(R.string.Cluster18);
+        colorCode = "#eb96cc";
         break;
       case 19:
-        colorCode = context.getString(R.string.Cluster19);
+        colorCode = "#b9caf6";
         break;
       case 21:
-        colorCode = context.getString(R.string.Cluster21);
+        colorCode = "#ebbccd";
         break;
       case 23:
-        colorCode = context.getString(R.string.Cluster23);
+        colorCode = "#a0d7d1";
         break;
       case 24:
-        colorCode = context.getString(R.string.Cluster24);
+        colorCode = "#eba9d4";
         break;
       case 25:
-        colorCode = context.getString(R.string.Cluster25);
+        colorCode = "#a0d7d1";
         break;
       case 26:
-        colorCode = context.getString(R.string.Cluster26);
+        colorCode = "#9365e6";
         break;
       case 29:
-        colorCode = context.getString(R.string.Cluster29);
+        colorCode = "#4792c9";
         break;
       case 30:
-        colorCode = context.getString(R.string.Cluster30);
+        colorCode = "#b4d7e7";
         break;
       case 31:
-        colorCode = context.getString(R.string.Cluster31);
+        colorCode = "#9ad4e6";
         break;
       case 33:
-        colorCode = context.getString(R.string.Cluster33);
+        colorCode = "#7591ff";
         break;
       case 35:
-        colorCode = context.getString(R.string.Cluster35);
+        colorCode = "#9edbff";
         break;
       case 36:
-        colorCode = context.getString(R.string.Cluster36);
+        colorCode = "#1a52aa";
         break;
       case 37:
-        colorCode = context.getString(R.string.Cluster37);
+        colorCode = "#4792c9";
         break;
       default:
-        colorCode = "#b6f442";
+        colorCode ="#b6f442";
     }
     return colorCode;
   }

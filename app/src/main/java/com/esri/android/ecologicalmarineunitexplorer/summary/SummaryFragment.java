@@ -167,7 +167,7 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
       holder.txtSummary.setText(observation.getEmu().getPhysicalSummary());
       int top = observation.getTop();
       holder.txtTop.setText(getString(R.string.below_surface_description) + top + getString(R.string.meters));
-      holder.rectangle.setBackgroundColor(Color.parseColor(EmuHelper.getColorForEMUCluster(getActivity().getApplicationContext(),observation.getEmu().getName())));
+      holder.rectangle.setBackgroundColor(Color.parseColor(EmuHelper.getColorForEMUCluster(observation.getEmu().getName())));
       holder.details.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
            mButtonListener.onButtonClick(observation.getEmu().getName());
