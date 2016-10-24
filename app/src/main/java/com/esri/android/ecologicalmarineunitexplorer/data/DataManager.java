@@ -179,6 +179,7 @@ public class DataManager {
   private Measurement createMeasurement(Map<String, Object> map) {
     Measurement m = new Measurement();
 
+
     // EMU name
     Integer name = Integer.parseInt(extractValueFromMap("Cluster37", map));
     m.setEmu(name);
@@ -188,28 +189,57 @@ public class DataManager {
     m.setDepth(depth);
 
     // Dissolved oxygen
-    Double dissolvedOx = Double.parseDouble(extractValueFromMap("dissO2", map));
-    m.setDissolvedOxygen(dissolvedOx != null ? dissolvedOx : 0d);
+    try{
+      Double dissolvedOx = Double.parseDouble(extractValueFromMap("dissO2", map));
+      m.setDissolvedOxygen(dissolvedOx != null ? dissolvedOx : 0d);
+    }catch (NumberFormatException ne){
+      m.setDissolvedOxygen(0d);
+    }
+
 
     // Salinity
-    Double salinity = Double.parseDouble(extractValueFromMap("salinity", map));
-    m.setSalinity(salinity);
+    try {
+      Double salinity = Double.parseDouble(extractValueFromMap("salinity", map));
+      m.setSalinity(salinity != null ? salinity : 0d);
+    }catch (NumberFormatException ne){
+      m.setSalinity(0d);
+    }
 
     // Temperature
-    Double temp = Double.parseDouble(extractValueFromMap("temp", map));
-    m.setTemperature(temp);
+    try{
+      Double temp = Double.parseDouble(extractValueFromMap("temp", map));
+      m.setTemperature(temp != null ? temp : 0d);
+    }catch (NumberFormatException ne){
+      m.setTemperature(0d);
+    }
+
 
     // Silicate
-    Double silicate = Double.parseDouble(extractValueFromMap("silicate", map));
-    m.setSilicate(silicate);
+    try{
+      Double silicate = Double.parseDouble(extractValueFromMap("silicate", map));
+      m.setSilicate(silicate != null ? silicate : 0d);
+    }catch (NumberFormatException ne){
+      m.setSilicate(0d);
+    }
+
 
     // Nitrate
-    Double nitrate = Double.parseDouble(extractValueFromMap("nitrate", map));
-    m.setNitrate(nitrate);
+    try{
+      Double nitrate = Double.parseDouble(extractValueFromMap("nitrate", map));
+      m.setNitrate(nitrate != null ? nitrate : 0d);
+    } catch ( NumberFormatException ne){
+      m.setNitrate(0d);
+    }
+
 
     // Phosphate
-    Double phoshpate = Double.parseDouble(extractValueFromMap("phosphate", map));
-    m.setPhosphate(phoshpate);
+    try{
+      Double phoshpate = Double.parseDouble(extractValueFromMap("phosphate", map));
+      m.setPhosphate(phoshpate != null ? phoshpate : 0d );
+    }catch (NumberFormatException ne){
+      m.setPhosphate(0d);
+    }
+
 
     return m;
   }
