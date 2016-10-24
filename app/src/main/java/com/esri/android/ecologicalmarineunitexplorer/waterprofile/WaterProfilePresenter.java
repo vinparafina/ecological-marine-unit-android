@@ -23,6 +23,7 @@ package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
  *
  */
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
 import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
@@ -53,13 +54,19 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
 
   }
 
-  @Override public void getWaterProfile(Point point) {
+  @Override public void getWaterProfiles(Point point) {
     mView.showProgressBar("Building scatter plots", "Preparing Water Profile");
     mDataManager.queryForEMUColumnProfile(mColumnLocation, new ServiceApi.ColumnProfileCallback() {
       @Override public void onProfileLoaded(WaterProfile waterProfile) {
         if (waterProfile.measurementCount() > 0){
-          ScatterData chartData = buildChartDataForProperty(waterProfile, "TEMPERATURE");
-          mView.showWaterProfile(chartData);
+          List<ScatterData> dataList = new ArrayList<ScatterData>();
+          dataList.add( buildChartDataForProperty(waterProfile, "TEMPERATURE"));
+          dataList.add( buildChartDataForProperty(waterProfile, "SALINITY"));
+          dataList.add( buildChartDataForProperty(waterProfile, "DISSOLVED_OXYGEN"));
+          dataList.add( buildChartDataForProperty(waterProfile, "PHOSPHATE"));
+          dataList.add( buildChartDataForProperty(waterProfile, "SILICATE"));
+          dataList.add( buildChartDataForProperty(waterProfile, "NITRATE"));
+          mView.showWaterProfiles(dataList);
         }else{
           // Notify user
           mView.showMessage("No profile data found");
@@ -70,7 +77,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
   }
 
   @Override public void start() {
-    getWaterProfile(mColumnLocation);
+    getWaterProfiles(mColumnLocation);
 
   }
   private ScatterData buildChartDataForProperty(WaterProfile profile, String property){
@@ -85,8 +92,8 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
       entries.add(new Entry(x, y));
     }
 
-    ScatterDataSet set = new ScatterDataSet(entries, "Scatter DataSet");
-    set.setColor(ColorTemplate.COLORFUL_COLORS[0]);
+    ScatterDataSet set = new ScatterDataSet(entries, property);
+    set.setColor(Color.BLACK);
     set.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
     set.setScatterShapeSize(5f);
     set.setDrawValues(false);
