@@ -23,7 +23,9 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
-import java.util.Map;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
+
+import java.util.List;
 
 public interface ServiceApi {
   interface SummaryCallback {
@@ -35,5 +37,10 @@ public interface ServiceApi {
 
   interface ColumnProfileCallback{
     void onProfileLoaded(WaterProfile profile);
+  }
+
+  interface GeocodingCallback{
+    void onGecodeResult(List<GeocodeResult> results
+    );
   }
 }

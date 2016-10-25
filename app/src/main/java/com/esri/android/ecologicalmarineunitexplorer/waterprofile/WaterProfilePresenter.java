@@ -35,7 +35,7 @@ import com.github.mikephil.charting.data.*;
 import com.github.mikephil.charting.formatter.FillFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Utils;
 
 import java.util.*;
 
@@ -83,9 +83,9 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
 
   private CombinedData buildCombinedData(WaterProfile waterProfile, String property){
     CombinedData data = new CombinedData();
-    ScatterData scatterData = buildChartDataForProperty(waterProfile, property);
+    ScatterData scatterData = buildScatterDataForProperty(waterProfile, property);
     data.setData(scatterData);
-    LineData emuLayerData = buildEMULayers(data.getXMax() );
+    LineData emuLayerData = buildEMULayers(data.getXMin() - 1, data.getXMax() + 1);
     data.setData(emuLayerData);
     return data;
 
@@ -94,7 +94,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
     getWaterProfiles(mColumnLocation);
 
   }
-  private ScatterData buildChartDataForProperty(WaterProfile profile, String property){
+  private ScatterData buildScatterDataForProperty(WaterProfile profile, String property){
     ScatterData data = new ScatterData();
     // Get all the measurements for the property
     Map<Double,Double> propertyMeasurementByDepth = profile.getMeasurementsForProperty(property);
@@ -114,16 +114,17 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
     data.addDataSet(set);
     return  data;
   }
-  private LineData buildEMULayers(float max){
+  private LineData buildEMULayers(float xmin, float xmax){
     LineData data = new LineData();
     WaterColumn column = mDataManager.getCurrentWaterColumn();
+
 
     Set<EMUObservation> observations = column.getEmuSet();
     for (final EMUObservation observation : observations){
       ArrayList<Entry> entries = new ArrayList<Entry>();
 
 
-      for (int index = 0; index <= max; index++) {
+      for (float index = xmin; index <= xmax; index++) {
         entries.add(new Entry(index, observation.getTop()));
       }
 
@@ -132,7 +133,6 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
       set.setFillColor(Color.parseColor(EmuHelper.getColorForEMUCluster(observation.getEmu().getName())));
 
       set.setFillAlpha(255);
-      Log.i("WaterProfilePresenter", "EMU color = " + EmuHelper.getColorForEMUCluster(observation.getEmu().getName()) + " Top = " + observation.getTop()+ " thickness = " + observation.getThickness());
       set.setDrawCircles(false);
       set.setDrawValues(false);
       set.setDrawFilled(true);
@@ -142,7 +142,6 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
         @Override
         public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
           int fillLine = observation.getTop() - observation.getThickness();
-          Log.i("WaterProfilePresenter", "Fill line position = " + fillLine );
           return observation.getTop() - observation.getThickness();
         }
       });

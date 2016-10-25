@@ -1,6 +1,7 @@
 package com.esri.android.ecologicalmarineunitexplorer.map;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,21 +10,26 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.R;
+import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.Layer;
+import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
+
+import java.util.List;
 
 /* Copyright 2016 Esri
  *
@@ -110,12 +116,28 @@ public class MapFragment extends Fragment implements MapContract.View {
     mMapView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
       @Override public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
           int oldRight, int oldBottom) {
-        if (mSelectedPoint != null){
-          mMapView.setViewpointCenterAsync(mSelectedPoint, MAP_SCALE);
-        }
+        setViewpoint();
       }
     });
 
+  }
+
+  @Override public void setViewpoint(){
+    if (mSelectedPoint != null){
+      mMapView.setViewpointCenterAsync(mSelectedPoint, MAP_SCALE);
+    }
+  }
+
+  @Override public void setSelectedPoint(Point p) {
+    mSelectedPoint = p;
+  }
+
+  @Override public SpatialReference getSpatialReference() {
+    SpatialReference sr = null;
+    if (mMap != null && mMap.getLoadStatus() == LoadStatus.LOADED){
+      sr = mMap.getSpatialReference();
+    }
+    return sr;
   }
 
   /**
@@ -235,8 +257,8 @@ public class MapFragment extends Fragment implements MapContract.View {
       android.graphics.Point mapPoint = new android.graphics.Point((int) motionEvent.getX(),
           (int) motionEvent.getY());
       //Log.i("ScreenLocation", "screen position = x= " + mapPoint.x + " y= "+ mapPoint.y);
-      mSelectedPoint = getScreenToLocation(mapPoint);
-      mPresenter.setSelectedPoint(mSelectedPoint);
+      //mSelectedPoint = getScreenToLocation(mapPoint);
+      mPresenter.setSelectedPoint(getScreenToLocation(mapPoint));
       return true;
     }
   }

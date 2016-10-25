@@ -37,6 +37,7 @@ import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.GeoView;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class MapPresenter implements MapContract.Presenter {
   private final String DIALOG_TITLE = "EMU Map Loading";
   private final String TILED_LAYER_URL = "http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac";
   private final String NO_EMU_FOUND = "Please select an ocean location";
+  private final String NO_LOCATION_FOUND = "No location found for ";
   private final double BUFFER_SIZE = 32000;
 
   public MapPresenter(@NonNull final MapContract.View mapView, @NonNull final DataManager dataManager){
@@ -85,19 +87,23 @@ public class MapPresenter implements MapContract.Presenter {
    * @param point - A geolocation representing the
    *              place a user clicked on the map
    */
-  @Override public void setSelectedPoint(Point point) {
+  @Override public void setSelectedPoint(final Point point) {
+
     mMapView.showProgressBar("Fetching details about the location...", "Preparing Location Summary");
-    mMapView.showClickedLocation(point);
+
     Polygon polygon = getBufferPolygonForPoint(point, BUFFER_SIZE);
     PolygonBuilder builder = new PolygonBuilder(polygon);
     Envelope envelope = builder.getExtent();
     mDataManager.queryForEmuAtLocation(envelope, new ServiceApi.SummaryCallback() {
       @Override public void onWaterColumnsLoaded(WaterColumn column) {
+
         mMapView.hideProgressBar();
         WaterColumn waterColumn =   column;
         if (waterColumn == null){
           mMapView.showMessage(NO_EMU_FOUND);
         }else{
+          mMapView.setSelectedPoint(point);
+          mMapView.showClickedLocation(point);
           mMapView.setMapAttribution(false);
           mMapView.showSummary(waterColumn);
         }
@@ -115,7 +121,6 @@ public class MapPresenter implements MapContract.Presenter {
    */
   @Override public Polygon getBufferPolygonForPoint(Point point, double distance) {
     return GeometryEngine.buffer(point, distance);
-
   }
 
   /**
@@ -123,5 +128,22 @@ public class MapPresenter implements MapContract.Presenter {
    */
   @Override public void mapLoaded() {
     mMapView.hideProgressBar();
+  }
+
+  /**
+   * Geocode the given string and search for EMUs.
+   * @param addresss - The string entered into the search view
+   */
+  @Override public void geocodeAddress(final String addresss) {
+    mDataManager.queryForAddress(addresss, mMapView.getSpatialReference(),  new ServiceApi.GeocodingCallback() {
+      @Override public void onGecodeResult(List<GeocodeResult> results) {
+        if (results == null){
+          mMapView.showMessage(NO_LOCATION_FOUND + addresss);
+        }else{
+          GeocodeResult result = results.get(0);
+          setSelectedPoint(result.getDisplayLocation());
+        }
+      }
+    });
   }
 }

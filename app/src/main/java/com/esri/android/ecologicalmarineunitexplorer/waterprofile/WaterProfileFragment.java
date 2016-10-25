@@ -22,6 +22,7 @@ import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,8 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
   public final void onCreate(@NonNull final Bundle savedInstance){
     super.onCreate(savedInstance);
     mChartAdapter =  new ChartAdapter(getContext(), R.id.chartContainer, mChartDataList);
+    // MP Android chart
+    Utils.init(getContext());
   }
   @Override
   @Nullable
@@ -124,7 +127,7 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
       final CombinedData scatterData = mChartDataList.get(position);
       String [] labels = scatterData.getDataSetLabels();
       String property = scatterData.getDataSetLabels()[labels.length -1];
-      holder.txtChartTitle.setText( property + " Over Depth");
+      holder.txtChartTitle.setText( property + " vs. Ocean Depth (m)");
       holder.chart.setData(scatterData);
       holder.chart.getAxisLeft().setInverted(false);
       holder.chart.getXAxis().setEnabled(true);

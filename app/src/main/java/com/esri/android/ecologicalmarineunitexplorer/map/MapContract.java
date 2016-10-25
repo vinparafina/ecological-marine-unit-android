@@ -28,6 +28,7 @@ import com.esri.android.ecologicalmarineunitexplorer.BaseView;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.Layer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 
@@ -43,12 +44,16 @@ public interface MapContract {
     void showProgressBar(String message, String title);
     void hideProgressBar();
     void setMapAttribution(boolean toggle);
+    void setViewpoint();
+    void setSelectedPoint(Point p);
+    SpatialReference getSpatialReference();
   }
   interface Presenter extends BasePresenter {
 
     void setSelectedPoint(Point point);
     Polygon getBufferPolygonForPoint(Point point, double distance);
     void mapLoaded();
+    void geocodeAddress(String addresss);
 
   }
 }

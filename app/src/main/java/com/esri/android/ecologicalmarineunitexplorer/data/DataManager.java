@@ -26,6 +26,7 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.Feature;
@@ -33,6 +34,10 @@ import com.esri.arcgisruntime.data.FeatureQueryResult;
 import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.*;
+import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
+import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -41,6 +46,7 @@ import com.google.common.collect.Multimaps;
 import com.google.common.math.DoubleMath;
 
 import java.util.*;
+import java.util.concurrent.RunnableFuture;
 
 public class DataManager {
   private ServiceFeatureTable mMeshClusterTable;
@@ -50,6 +56,8 @@ public class DataManager {
   private ServiceFeatureTable mClusterPolygonTable;
 
   private ServiceFeatureTable mSummaryStats;
+
+  private LocatorTask mLocatorTask;
 
   private Context mContext;
 
@@ -150,6 +158,45 @@ public class DataManager {
     processQueryForEMUColumnProfile(futureResult, callback, profile);
   }
 
+  /**
+   * Query for a location by name
+   * @param location - a location name or address
+   * @param sr - the desired spatial reference for the geocoded result
+   * @param callback - The GeocodingCallback to be called upon completion of the geocoding task
+   */
+  public void queryForAddress(@NonNull final String location, @NonNull SpatialReference sr,  final ServiceApi.GeocodingCallback callback){
+    // Create Locator parameters from single line address string
+    final GeocodeParameters geoParameters = new GeocodeParameters();
+    geoParameters.setOutputSpatialReference(sr);
+    geoParameters.setMaxResults(2);
+    if (mLocatorTask == null){
+      mLocatorTask = new LocatorTask(mContext.getString(R.string.geocode_url));
+    }
+    mLocatorTask.addDoneLoadingListener(new Runnable() {
+      @Override public void run() {
+        if (mLocatorTask.getLoadStatus() == LoadStatus.LOADED){
+          final ListenableFuture<List<GeocodeResult>> futureResults = mLocatorTask.geocodeAsync(location, geoParameters);
+          futureResults.addDoneListener(new Runnable() {
+            @Override public void run() {
+              try{
+                List<GeocodeResult> geocodeResults = futureResults.get();
+                Log.i("DataManager",  geocodeResults.size() + " geocoding results returned.");
+                callback.onGecodeResult(geocodeResults);
+              }catch ( Exception e){
+                callback.onGecodeResult(null  );
+              }
+            }
+          });
+        }else{
+          callback.onGecodeResult(null);
+          Log.i("DataManager", "Locator Task failed to load: " + mLocatorTask.getLoadStatus().name());
+        }
+      }
+    });
+
+    mLocatorTask.loadAsync();
+
+  }
 
   private void processQueryForEMUColumnProfile(final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.ColumnProfileCallback callback, final WaterProfile profile) {
     futureResult.addDoneListener(new Runnable() {
@@ -297,11 +344,13 @@ public class DataManager {
               }
               pointWaterColumnMap.put(p, waterColumn);
             }
-          }
 
-          // If there is more than one water column, we only care about the
-          // one closest to the point clicked in the map.
-          mCurrentWaterColumn = findClosestWaterColumn(envelope, pointWaterColumnMap);
+            // If there is more than one water column, we only care about the
+            // one closest to the point clicked in the map.
+            mCurrentWaterColumn = findClosestWaterColumn(envelope, pointWaterColumnMap);
+          }else{
+            mCurrentWaterColumn = null;
+          }
 
 
           // Processing is complete, notify the callback

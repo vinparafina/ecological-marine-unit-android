@@ -25,15 +25,21 @@
 
 package com.esri.android.ecologicalmarineunitexplorer;
 
+import android.app.SearchManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.ButtonBarLayout;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -43,6 +49,7 @@ import android.widget.TextView;
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartFragment;
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
+import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapFragment;
@@ -56,8 +63,10 @@ import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileCo
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileFragment;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfilePresenter;
 import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements WaterColumnFragment.OnWaterColumnSegmentClickedListener,
     SummaryFragment.OnViewIndexChange, SummaryFragment.OnDetailClickedListener {
@@ -67,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
   private DataManager mDataManager;
   private WaterColumnPresenter mWaterColumnPresenter;
   private SummaryChartPresenter mSummaryChartPresenter;
+  private MapPresenter mMapPresenter;
 
   public MainActivity() {
   }
@@ -92,6 +102,47 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
         showWaterColumnProfile(point);
       }
     });
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu, menu);
+    // Retrieve the SearchView and plug it into SearchManager
+    final SearchView searchView= (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+    searchView.setQueryHint("Address or latitude/longitude");
+    SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+      @Override public boolean onQueryTextSubmit(String query) {
+        Log.i("MainActivity", "Query = "+ query);
+        mMapPresenter.geocodeAddress(query);
+        searchView.clearFocus();
+        return true;
+      }
+
+      @Override public boolean onQueryTextChange(String newText) {
+        return false;
+      }
+    });
+    return true;
+  }
+  private void hideSearchView(Toolbar toolbar){
+    int childCount = toolbar.getChildCount();
+    for (int x=0 ; x < childCount; x++){
+      View v = toolbar.getChildAt(x);
+      if (v instanceof ActionMenuView){
+        v.setVisibility(View.INVISIBLE);
+      }
+    }
+  }
+  private void showSearchView(Toolbar toolbar){
+    int childCount = toolbar.getChildCount();
+    for (int x=0 ; x < childCount; x++){
+      View v = toolbar.getChildAt(x);
+      if (v instanceof ActionMenuView){
+        v.setVisibility(View.VISIBLE);
+      }
+    }
   }
 
   private void showWaterColumnProfile(Point point) {
@@ -137,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
     if (mapFragment == null) {
       mapFragment = MapFragment.newInstance();
-      MapPresenter mapPresenter = new MapPresenter(mapFragment, mDataManager);
+      mMapPresenter = new MapPresenter(mapFragment, mDataManager);
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), mapFragment, R.id.map_container, "map fragment");
     }
@@ -147,12 +198,13 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
    * Override the application label used for the toolbar title
    */
   private void setUpMapToolbar() {
+
     final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
     actionBar.setTitle("Explore An Ocean Location");
     toolbar.setNavigationIcon(null);
-
+    showSearchView(toolbar);
   }
   /**
    * Set up toolbar for chart detail
@@ -162,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
+    hideSearchView(toolbar);
     actionBar.setTitle("Detail for EMU " + EMUid);
     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -199,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ((AppCompatActivity) this).getSupportActionBar().setTitle(R.string.ocean_summary_location_title);
     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
+    hideSearchView(toolbar);
     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
 
@@ -217,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ((AppCompatActivity) this).getSupportActionBar().setTitle("Water Column Profile");
     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
+    hideSearchView(toolbar);
     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
 
