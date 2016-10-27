@@ -55,6 +55,8 @@ public class MapPresenter implements MapContract.Presenter {
   private final String NO_EMU_FOUND = "Please select an ocean location";
   private final String NO_LOCATION_FOUND = "No location found for ";
   private final double BUFFER_SIZE = 32000;
+  private final int    ZOOM_LEVEL = 1;
+
 
   public MapPresenter(@NonNull final MapContract.View mapView, @NonNull final DataManager dataManager){
     mMapView = checkNotNull(mapView, "map view cannot be null");
@@ -71,7 +73,7 @@ public class MapPresenter implements MapContract.Presenter {
   @Override public void start() {
     // Show a dialog while the map loads
     mMapView.showProgressBar(DIALOG_MESSAGE, DIALOG_TITLE);
-    ArcGISMap map =  new ArcGISMap(Basemap.Type.OCEANS, GALAPAGOS_LAT, GALAPAGOS_LONG, 4  );
+    ArcGISMap map =  new ArcGISMap(Basemap.Type.OCEANS, 0, 0, ZOOM_LEVEL);
     mMapView.setUpMap(map);
 
     // EMU Ocean Surface
@@ -90,10 +92,11 @@ public class MapPresenter implements MapContract.Presenter {
   @Override public void setSelectedPoint(final Point point) {
 
     mMapView.showProgressBar("Fetching details about the location...", "Preparing Location Summary");
-
+    mMapView.showClickedLocation(point);
     Polygon polygon = getBufferPolygonForPoint(point, BUFFER_SIZE);
     PolygonBuilder builder = new PolygonBuilder(polygon);
     Envelope envelope = builder.getExtent();
+
     mDataManager.queryForEmuAtLocation(envelope, new ServiceApi.SummaryCallback() {
       @Override public void onWaterColumnsLoaded(WaterColumn column) {
 
@@ -103,6 +106,7 @@ public class MapPresenter implements MapContract.Presenter {
           mMapView.showMessage(NO_EMU_FOUND);
         }else{
           mMapView.setSelectedPoint(point);
+          mMapView.setViewpoint();
           mMapView.showClickedLocation(point);
           mMapView.setMapAttribution(false);
           mMapView.showSummary(waterColumn);

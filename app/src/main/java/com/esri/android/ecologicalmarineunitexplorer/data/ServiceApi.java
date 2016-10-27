@@ -23,6 +23,7 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
+import android.graphics.Bitmap;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
 import java.util.List;
@@ -42,5 +43,8 @@ public interface ServiceApi {
   interface GeocodingCallback{
     void onGecodeResult(List<GeocodeResult> results
     );
+  }
+  interface BitmapCallback{
+    void onBitmapGenerated(Bitmap bitmap);
   }
 }

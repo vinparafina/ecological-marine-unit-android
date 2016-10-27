@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:background="@color/background_floating_material_light"
+              android:elevation="@dimen/cardview_default_elevation"
+              android:orientation="vertical"
+              android:id="@+id/bottom_sheet_view"
+              android:layout_width="match_parent"
+              android:layout_height="150dp"
+              app:layout_behavior="@string/bottom_sheet_behavior" android:alpha="0.8">
+
+    <TextView android:layout_width="match_parent"
+              android:text="Location Summary"
+              android:layout_height="wrap_content"
+              android:layout_marginRight="@dimen/activity_horizontal_margin"
+              android:layout_marginTop="@dimen/activity_horizontal_margin"
+              android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:id="@+id/txtSummary"
+              android:text="The water column at this location contains 6 EMU layers"
+              android:layout_marginRight="@dimen/activity_horizontal_margin"
+              android:layout_marginTop="@dimen/activity_horizontal_margin"
+              android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                android:orientation="horizontal">
+        <Button android:layout_width="wrap_content"
+                android:text=" view layers"
+                android:layout_weight="1"
+                android:id="@+id/btnLayers"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                style="?android:attr/borderlessButtonStyle" android:gravity="left|center_vertical|center_horizontal"/>
+        <Button android:layout_width="wrap_content"
+                android:text="view column profile"
+                android:id="@+id/btnProfile"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                style="?android:attr/borderlessButtonStyle" android:gravity="right|center_vertical|center_horizontal"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

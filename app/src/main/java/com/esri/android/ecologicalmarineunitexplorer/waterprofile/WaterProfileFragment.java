@@ -127,7 +127,8 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
       final CombinedData scatterData = mChartDataList.get(position);
       String [] labels = scatterData.getDataSetLabels();
       String property = scatterData.getDataSetLabels()[labels.length -1];
-      holder.txtChartTitle.setText( property + " vs. Ocean Depth (m)");
+
+      holder.txtChartTitle.setText( property + " vs. Ocean Depth");
       holder.chart.setData(scatterData);
       holder.chart.getAxisLeft().setInverted(false);
       holder.chart.getXAxis().setEnabled(true);
@@ -141,6 +142,13 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
       holder.chart.getLegend().setEnabled(false);
       holder.chart.setData(scatterData);
       holder.chart.invalidate();
+      if (property.equalsIgnoreCase("TEMPERATURE")){
+        property = property + " C";
+      }else if (property.equalsIgnoreCase("SALINITY")){
+        property = property + " ppm";
+      }else{
+        property = property + " um/L";
+      }
       holder.txtXAxisTitle.setText(property);
 
     }

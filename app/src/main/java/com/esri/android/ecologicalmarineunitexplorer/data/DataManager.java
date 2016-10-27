@@ -43,10 +43,8 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimaps;
-import com.google.common.math.DoubleMath;
 
 import java.util.*;
-import java.util.concurrent.RunnableFuture;
 
 public class DataManager {
   private ServiceFeatureTable mMeshClusterTable;

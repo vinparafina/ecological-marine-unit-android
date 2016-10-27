@@ -1,27 +1,22 @@
 package com.esri.android.ecologicalmarineunitexplorer.map;
 
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MarginLayoutParamsCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.*;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.Layer;
@@ -31,9 +26,8 @@ import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
-import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /* Copyright 2016 Esri
  *
@@ -69,9 +63,7 @@ public class MapFragment extends Fragment implements MapContract.View {
   private Point mSelectedPoint;
   private ArcGISMap mMap;
   private Viewpoint mInitialViewpoint;
-  private final double MAP_SCALE = 5000000;
-
-
+  private final double MAP_SCALE = 25000000; // map scale of 30000000 shows EMU colors without point detail
 
   public MapFragment(){}
 
@@ -172,6 +164,25 @@ public class MapFragment extends Fragment implements MapContract.View {
     return sr;
   }
 
+  @Override public void getMapBitmap(final ServiceApi.BitmapCallback callback) {
+    if (mMapView != null){
+      final ListenableFuture<Bitmap> listenableFuture = mMapView.exportImageAsync();
+      listenableFuture.addDoneListener(new Runnable() {
+        Bitmap bitmap = null;
+        @Override public void run() {
+          try {
+            bitmap = listenableFuture.get();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          } catch (ExecutionException e) {
+            e.printStackTrace();
+          }
+          callback.onBitmapGenerated(bitmap);
+        }
+      });
+    }
+  }
+
   /**
    * Add an operational layer to the map
    * @param layer - A Layer to add
@@ -230,7 +241,7 @@ public class MapFragment extends Fragment implements MapContract.View {
    * @param column
    */
   @Override public void showSummary(WaterColumn column) {
-    ((com.esri.android.ecologicalmarineunitexplorer.MainActivity) getActivity()).showSummary();
+    ((com.esri.android.ecologicalmarineunitexplorer.MainActivity) getActivity()).showSummaryBottomSheet();
   }
 
   /**
