@@ -10,10 +10,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.*;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
@@ -85,6 +89,7 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     mRoot = layoutInflater.inflate(R.layout.map_view, container,false);
     mPresenter.start();
+
     return mRoot;
   }
 
@@ -108,6 +113,7 @@ public class MapFragment extends Fragment implements MapContract.View {
           mMapView.setOnTouchListener(mapTouchListener);
           // Notify presenter
           mPresenter.mapLoaded();
+        //  addSeekBar();
         }
       }
     });
@@ -120,6 +126,32 @@ public class MapFragment extends Fragment implements MapContract.View {
       }
     });
 
+  }
+
+  public void addSeekBar(){
+    SeekBar seekBar = new SeekBar(getContext());
+    seekBar.setRotation(-270f);
+    FrameLayout.LayoutParams  layoutParams  =  new FrameLayout.LayoutParams(500,
+        ViewGroup.LayoutParams.WRAP_CONTENT);
+    layoutParams.setMargins(-180,300,100,100);
+    seekBar.setLayoutParams(layoutParams);
+    FrameLayout frameLayout = (FrameLayout) getActivity().findViewById(R.id.map_container);
+    frameLayout.addView(seekBar);
+    frameLayout.requestLayout();
+
+    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+      @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        Log.i("MapFragment", "Progress = " + progress);
+      }
+
+      @Override public void onStartTrackingTouch(SeekBar seekBar) {
+
+      }
+
+      @Override public void onStopTrackingTouch(SeekBar seekBar) {
+
+      }
+    });
   }
 
   @Override public void setViewpoint(){
