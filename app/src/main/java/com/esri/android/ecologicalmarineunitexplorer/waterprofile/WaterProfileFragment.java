@@ -143,11 +143,11 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
       holder.chart.setData(scatterData);
       holder.chart.invalidate();
       if (property.equalsIgnoreCase("TEMPERATURE")){
-        property = property + " C";
+        property = property + " \u2103";
       }else if (property.equalsIgnoreCase("SALINITY")){
         property = property + " ppm";
       }else{
-        property = property + " um/L";
+        property = property + " \u00b5" + "m/L";
       }
       holder.txtXAxisTitle.setText(property);
 

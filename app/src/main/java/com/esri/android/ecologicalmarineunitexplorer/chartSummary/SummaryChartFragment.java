@@ -46,6 +46,7 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
   private View mRoot;
   private SummaryChartContract.Presenter mPresenter;
   private ProgressDialog mProgressDialog;
+  private String mUnits = null;
 
   public static SummaryChartFragment newInstance(){
     return new SummaryChartFragment();
@@ -75,33 +76,39 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
   }
 
   @Override public void setTemperatureText(double temperatureText) {
+    mUnits = " \u2103";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtTemp);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(temperatureText))+"");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(temperatureText))+mUnits);
   }
 
   public void setSalinityText(double salinityText) {
     TextView textView = (TextView) mRoot.findViewById(R.id.txtSalinity);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(salinityText)) + "");
+    mUnits = " ppm";
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(salinityText)) + mUnits);
   }
 
   @Override public void setOxygenText(double oxygenText) {
+    mUnits = " \u00b5" + "m/L";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtOxygen);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(oxygenText)) + "");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(oxygenText)) + mUnits);
   }
 
   @Override public void setPhosphateText(double phosphateText) {
+    mUnits = " \u00b5" + "m/L";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtPhosphate);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(phosphateText)) + "");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(phosphateText)) + mUnits);
   }
 
   @Override public void setSilicateText(double silicateText) {
+    mUnits = " \u00b5" + "m/L";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtSilicate);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(silicateText)) + "");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(silicateText)) + mUnits);
   }
 
   @Override public void setNitrateText(double nitrateText) {
+    mUnits = " \u00b5" + "m/L";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtNitrate);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(nitrateText)) + "");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(nitrateText)) + mUnits);
   }
 
   private void prepareChartView(int id, CombinedData data){
