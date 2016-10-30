@@ -15,7 +15,7 @@
 
         <com.esri.android.ecologicalmarineunitexplorer.waterprofile.VerticalTextView
                 android:id="@+id/txtMeasurementProperty"
-                android:text="Depth (meters)"
+                android:text="Depth below surface (meters)"
                 android:layout_height="wrap_content" android:layout_width="match_parent"/>
 
         <com.github.mikephil.charting.charts.CombinedChart

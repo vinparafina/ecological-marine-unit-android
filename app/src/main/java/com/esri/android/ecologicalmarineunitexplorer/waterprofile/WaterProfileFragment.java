@@ -130,7 +130,7 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
 
       holder.txtChartTitle.setText( property + " vs. Ocean Depth");
       holder.chart.setData(scatterData);
-      holder.chart.getAxisLeft().setInverted(false);
+      holder.chart.getAxisLeft().setInverted(true);
       holder.chart.getXAxis().setEnabled(true);
       holder.chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
       holder.chart.getXAxis().setAxisMinValue(scatterData.getXMin()-1);

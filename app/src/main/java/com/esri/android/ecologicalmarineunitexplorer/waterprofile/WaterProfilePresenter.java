@@ -101,7 +101,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
     ArrayList<Entry> entries = new ArrayList<>();
     Set<Double> depths = propertyMeasurementByDepth.keySet();
     for (Double depth : depths){
-      float y = (float) depth.doubleValue();
+      float y = (float) Math.abs(depth.doubleValue());
       float x = (float) propertyMeasurementByDepth.get(depth).doubleValue();
       entries.add(new Entry(x, y));
     }
@@ -121,11 +121,11 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
 
     Set<EMUObservation> observations = column.getEmuSet();
     for (final EMUObservation observation : observations){
+      Log.i("WaterProfile", observation.toString());
       ArrayList<Entry> entries = new ArrayList<Entry>();
 
-
       for (float index = xmin; index <= xmax; index++) {
-        entries.add(new Entry(index, observation.getTop()));
+        entries.add(new Entry(index, Math.abs(observation.getTop())));
       }
 
       LineDataSet set = new LineDataSet(entries, "Line DataSet");
@@ -141,8 +141,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
       set.setFillFormatter(new FillFormatter() {
         @Override
         public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
-          int fillLine = observation.getTop() - observation.getThickness();
-          return observation.getTop() - observation.getThickness();
+          return Math.abs(observation.getTop()) + observation.getThickness();
         }
       });
       data.addDataSet(set);

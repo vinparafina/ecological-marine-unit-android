@@ -29,7 +29,7 @@ task clean(type: Delete) {
 // Define versions in a single place
 ext {
     // Sdk and tools
-    minSdkVersion = 19
+    minSdkVersion = 16
     targetSdkVersion = 22
     compileSdkVersion = 23
     buildToolsVersion = '23.0.3'
