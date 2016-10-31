@@ -121,7 +121,6 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
 
     Set<EMUObservation> observations = column.getEmuSet();
     for (final EMUObservation observation : observations){
-      Log.i("WaterProfile", observation.toString());
       ArrayList<Entry> entries = new ArrayList<Entry>();
 
       for (float index = xmin; index <= xmax; index++) {

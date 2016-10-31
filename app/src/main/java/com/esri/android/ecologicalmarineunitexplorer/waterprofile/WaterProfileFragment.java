@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -55,9 +57,10 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
 
   private RecyclerView mChartRecyclerView;
   private WaterProfileContract.Presenter mPresenter;
-  private ChartAdapter mChartAdapter;
   private ProgressDialog mProgressDialog;
   private List<CombinedData> mChartDataList = new ArrayList<>();
+  private TabPagerAdapter mTabAdapter;
+  private ViewPager mViewPager;
 
   public static WaterProfileFragment newInstance() {
     WaterProfileFragment fragment = new WaterProfileFragment();
@@ -66,7 +69,6 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
   @Override
   public final void onCreate(@NonNull final Bundle savedInstance){
     super.onCreate(savedInstance);
-    mChartAdapter =  new ChartAdapter(getContext(), R.id.chartContainer, mChartDataList);
     // MP Android chart
     Utils.init(getContext());
   }
@@ -74,19 +76,23 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
   @Nullable
   public View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
-    mChartRecyclerView = (RecyclerView) layoutInflater.inflate(R.layout.water_profile_recycle_view, container, false) ;
-    mChartRecyclerView.setLayoutManager(new LinearLayoutManager(mChartRecyclerView.getContext()));
-    mChartRecyclerView.setAdapter(mChartAdapter);
+
+    mViewPager = (ViewPager) layoutInflater.inflate(R.layout.water_profile_view_pager,container,false) ;
     mPresenter.start();
-    return  mChartRecyclerView;
+
+    return  mViewPager;
   }
 
   @Override public void showWaterProfiles(List<CombinedData> dataList ) {
     mChartDataList = dataList;
-    ScatterChart chart = (ScatterChart) mChartRecyclerView.findViewById(R.id.propertyChart);
-    if (mChartAdapter != null){
-      mChartAdapter.notifyDataSetChanged();
-    }
+    //
+    // Because this FragmentPagerAdapter is being used within a nested
+    // fragment, we don't want to use the shared fragment manager.
+    // USE A NEW INSTANCE OF THE FRAGMENT MANAGER rather than
+    // using the fragment manager belonging to the activity.
+    //
+    mTabAdapter = new TabPagerAdapter(getChildFragmentManager(), mChartDataList);
+    mViewPager.setAdapter(mTabAdapter);
   }
 
   @Override public void showMessage(String message) {
@@ -110,67 +116,5 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
     mPresenter = presenter;
   }
 
-  public class ChartAdapter extends RecyclerView.Adapter<ChartViewHolder>{
 
-    public ChartAdapter(final Context context, final int resource, final List<CombinedData> combinedData){
-      mChartDataList = combinedData;
-      // Determine the color for each of the
-    }
-
-    @Override public ChartViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      final View view = inflater.inflate(R.layout.water_profile, parent,false);
-      return new ChartViewHolder(view);
-    }
-
-    @Override public void onBindViewHolder(ChartViewHolder holder, int position) {
-      final CombinedData scatterData = mChartDataList.get(position);
-      String [] labels = scatterData.getDataSetLabels();
-      String property = scatterData.getDataSetLabels()[labels.length -1];
-
-      holder.txtChartTitle.setText( property + " vs. Ocean Depth");
-      holder.chart.setData(scatterData);
-      holder.chart.getAxisLeft().setInverted(true);
-      holder.chart.getXAxis().setEnabled(true);
-      holder.chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-      holder.chart.getXAxis().setAxisMinValue(scatterData.getXMin()-1);
-      holder.chart.getXAxis().setAxisMaxValue(scatterData.getXMax() + 1);
-      holder.chart.getAxisRight().setEnabled(false);
-      holder.chart.getAxisLeft().setDrawGridLines(true);
-      holder.chart.setDrawGridBackground(true);
-      holder.chart.setDescription("");
-      holder.chart.getLegend().setEnabled(false);
-      holder.chart.setData(scatterData);
-      holder.chart.invalidate();
-      if (property.equalsIgnoreCase("TEMPERATURE")){
-        property = property + " \u2103";
-      }else if (property.equalsIgnoreCase("SALINITY")){
-        property = property + " ppm";
-      }else{
-        property = property + " \u00b5" + "m/L";
-      }
-      holder.txtXAxisTitle.setText(property);
-
-    }
-
-    @Override public int getItemCount() {
-      return mChartDataList.size();
-    }
-  }
-  public class ChartViewHolder extends RecyclerView.ViewHolder{
-    public final TextView txtChartTitle;
-    public final TextView txtXAxisTitle;
-    public final CombinedChart chart;
-
-    public ChartViewHolder(final View view){
-      super(view);
-      txtChartTitle = (TextView) view.findViewById(R.id.txtChartTitle);
-      txtXAxisTitle = (TextView) view.findViewById(R.id.txtXAxisTitle);
-      chart = (CombinedChart) view.findViewById(R.id.propertyChart);
-      chart.setDrawOrder(new CombinedChart.DrawOrder[]{ CombinedChart.DrawOrder.LINE,
-           CombinedChart.DrawOrder.SCATTER
-      });
-    }
-
-  }
 }
