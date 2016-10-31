@@ -213,10 +213,10 @@ public class DataManager {
               profile.addMeasurement(measurement);
             }
           }
-          callback.onProfileLoaded(profile);
         } catch (Exception e) {
           e.printStackTrace();
         }
+        callback.onProfileLoaded(profile);
       }
     });
   }

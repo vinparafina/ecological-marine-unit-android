@@ -26,9 +26,12 @@
 package com.esri.android.ecologicalmarineunitexplorer;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
@@ -83,38 +86,44 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    // Get data access setup
-    mDataManager = DataManager.getDataManagerInstance(getApplicationContext());
+    // Check for internet connectivity
+    if (!checkForInternetConnectivity()){
+      Toast.makeText(this, "Internet connectivity is required for this application", Toast.LENGTH_LONG).show();
+    }else{
+      // Get data access setup
+      mDataManager = DataManager.getDataManagerInstance(getApplicationContext());
 
-    // Set up fragments
-    setUpMagFragment();
+      // Set up fragments
+      setUpMagFragment();
 
-    // Attach listener to the profile
-    // button in the bottom sheet
-    Button button = (Button) findViewById(R.id.btnProfile);
-    button.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        // Hide the bototm sheet
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        // Grab the location from the water column
-        // and show the WaterColumnProfile fragment
-        Point point = mDataManager.getCurrentWaterColumn().getLocation();
-        showWaterColumnProfile(point);
-      }
-    });
+      // Attach listener to the profile
+      // button in the bottom sheet
+      Button button = (Button) findViewById(R.id.btnProfile);
+      button.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          // Hide the bototm sheet
+          mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+          // Grab the location from the water column
+          // and show the WaterColumnProfile fragment
+          Point point = mDataManager.getCurrentWaterColumn().getLocation();
+          showWaterColumnProfile(point);
+        }
+      });
 
-    // Attach a listener to the view layer
-    // button in the bottom sheet
-    Button layerBtn = (Button) findViewById(R.id.btnLayers) ;
-    layerBtn.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        // Hide the bototm sheet
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        showLayers(true);
-      }
-    });
-    //Set up behavior for the bottom sheet
-    setUpBottomSheet();
+      // Attach a listener to the view layer
+      // button in the bottom sheet
+      Button layerBtn = (Button) findViewById(R.id.btnLayers) ;
+      layerBtn.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          // Hide the bototm sheet
+          mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+          showLayers(true);
+        }
+      });
+      //Set up behavior for the bottom sheet
+      setUpBottomSheet();
+    }
+
   }
 
   /**
@@ -544,5 +553,20 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
   @Override public void onButtonClick(int emuName) {
       showSummaryDetail(emuName);
+  }
+
+  /**
+   * Get the state of the network info
+   * @return - boolean, false if network state is unavailable
+   * and true if device is connected to a network.
+   */
+  private boolean checkForInternetConnectivity(){
+    ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo wifi = connManager.getActiveNetworkInfo();
+    if (wifi == null){
+      return false;
+    }else {
+      return wifi.isConnected();
+    }
   }
 }
