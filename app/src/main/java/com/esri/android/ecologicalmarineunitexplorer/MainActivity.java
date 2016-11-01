@@ -86,6 +86,23 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
+    // Listen for layout changes
+    LinearLayout horizontalLayout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
+    horizontalLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+      @Override public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+          int oldRight, int oldBottom) {
+        Log.i("MainActivity", "Horizontal Layout changed  to top = " + top + " bottom = " + bottom + " from old top = "+ oldTop + " and old bottom = " + oldBottom);
+      }
+    });
+
+    LinearLayout mainLinearLayout = (LinearLayout) findViewById(R.id.mainLinearLayout);
+    mainLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+      @Override public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+          int oldRight, int oldBottom) {
+        Log.i("MainActivity", "Main Lineary Layout changed  to top = " + top + " bottom = " + bottom + " from old top = "+ oldTop + " and old bottom = " + oldBottom);
+      }
+    });
+
     // Check for internet connectivity
     if (!checkForInternetConnectivity()){
       Toast.makeText(this, "Internet connectivity is required for this application", Toast.LENGTH_LONG).show();
@@ -131,31 +148,19 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
    */
   private void setUpBottomSheet(){
     mBottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet_view));
-
-    mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-      @Override
-      public void onStateChanged(final View bottomSheet, final int newState) {
-
-      }
-
-      @Override
-      public void onSlide(final View bottomSheet, final float slideOffset) {
-      }
-    });
-
     mBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet_view);
   }
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.menu, menu);
     // Retrieve the SearchView and plug it into SearchManager
     final SearchView searchView= (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
-    searchView.setQueryHint("Address or latitude/longitude");
+    searchView.setQueryHint(getString(R.string.query_hint));
     SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override public boolean onQueryTextSubmit(String query) {
-        Log.i("MainActivity", "Query = "+ query);
         mMapPresenter.geocodeAddress(query);
         searchView.clearFocus();
         return true;
@@ -194,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     setUpWaterProfileToolbar();
 
     FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
-    layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+    layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
     layout.requestLayout();
 
@@ -242,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
-    actionBar.setTitle("Explore An Ocean Location");
+    actionBar.setTitle(R.string.explore_ocean);
     toolbar.setNavigationIcon(null);
     showSearchView(toolbar);
   }
@@ -255,18 +260,22 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
     hideSearchView(toolbar);
-    actionBar.setTitle("Detail for EMU " + EMUid);
+    actionBar.setTitle(getString(R.string.detail_emu) + EMUid);
     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
 
         // Remove the chart fragment
         removeChartSummaryDetail();
 
+        // Shrink parent container
+        shrinkChartContainer();
+
         // Show summary
         showLayers(false);
 
         // Add back the map
         showMapImage();
+
       }
     });
   }
@@ -316,6 +325,9 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
         //Remove profile
         removeWaterColumnProfie();
+
+        // Shrink the parent container
+        shrinkChartContainer();
 
         // Return to large map
         expandMap();
@@ -509,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     hideMapImage();
 
     FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
-    layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+    layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
     layout.requestLayout();
 
@@ -527,10 +539,11 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
     setUpChartSummaryToolbar(emuName);
   }
-
-
-
-
+  private void shrinkChartContainer(){
+    FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
+    layout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+    layout.requestLayout();
+  }
   /**
    * When a water column segment is tapped, show the
    * associated item in the SummaryFragment

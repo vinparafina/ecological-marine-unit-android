@@ -63,5 +63,8 @@
     <string name="lat_lng">" (lat/lng) contains "</string>
     <string name="extending_to">" EMU layers, extending to a depth of "</string>
     <string name="meters_period">" meters."</string>
+    <string name="query_hint">Address or latitude/longitude</string>
+    <string name="explore_ocean">Explore An Ocean Location</string>
+    <string name="detail_emu">"Detail for EMU "</string>
 
 </resources>
