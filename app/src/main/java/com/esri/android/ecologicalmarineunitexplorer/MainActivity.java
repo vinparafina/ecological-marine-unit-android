@@ -25,8 +25,10 @@
 
 package com.esri.android.ecologicalmarineunitexplorer;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -63,6 +65,7 @@ import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnFrag
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileFragment;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfilePresenter;
+import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.geometry.Point;
 
 import java.text.DecimalFormat;
@@ -86,26 +89,23 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    // Listen for layout changes
-    LinearLayout horizontalLayout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
-    horizontalLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-      @Override public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-          int oldRight, int oldBottom) {
-        Log.i("MainActivity", "Horizontal Layout changed  to top = " + top + " bottom = " + bottom + " from old top = "+ oldTop + " and old bottom = " + oldBottom);
-      }
-    });
+    // Set license key
+    ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
 
-    LinearLayout mainLinearLayout = (LinearLayout) findViewById(R.id.mainLinearLayout);
-    mainLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-      @Override public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-          int oldRight, int oldBottom) {
-        Log.i("MainActivity", "Main Lineary Layout changed  to top = " + top + " bottom = " + bottom + " from old top = "+ oldTop + " and old bottom = " + oldBottom);
-      }
-    });
 
     // Check for internet connectivity
     if (!checkForInternetConnectivity()){
-      Toast.makeText(this, "Internet connectivity is required for this application", Toast.LENGTH_LONG).show();
+      final ProgressDialog progressDialog = new ProgressDialog(this);
+      progressDialog.setMessage(getString(R.string.internet_connectivity));
+      progressDialog.setTitle(getString(R.string.wireless_problem));
+      progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
+        @Override public void onClick(DialogInterface dialog, int which) {
+          progressDialog.dismiss();
+          finish();
+        }
+      });
+      progressDialog.show();
+
     }else{
       // Get data access setup
       mDataManager = DataManager.getDataManagerInstance(getApplicationContext());

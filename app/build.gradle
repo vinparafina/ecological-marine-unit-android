@@ -11,6 +11,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // This LICENSE KEY is found in a gradle.properties
+        // file that is not checked in to the repo.
+        //
+        buildConfigField "String" , "LICENSE_KEY" , LICENSE_KEY
     }
 
 
