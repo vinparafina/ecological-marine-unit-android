@@ -54,5 +54,14 @@
     <string name="meters">" meters"</string>
     <string name="below_surface_description">"Distance below surface "</string>
     <string name="ocean_summary_location_title">EMU Layers At Location</string>
+    <string name="view_column_profile">VIEW COLUMN PROFILE</string>
+    <string name="view_layers">VIEW LAYERS</string>
+    <string name="the_water_column_at_this_location_contains_6_emu_layers">The water column at this location contains 6
+        EMU layers
+    </string>
+    <string name="water_column_at">"The water column at "</string>
+    <string name="lat_lng">" (lat/lng) contains "</string>
+    <string name="extending_to">" EMU layers, extending to a depth of "</string>
+    <string name="meters_period">" meters."</string>
 
 </resources>

@@ -440,7 +440,8 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     TextView textView = (TextView) findViewById(R.id.txtSummary) ;
     String x = new DecimalFormat("#.##").format(p.getX());
     String y = new DecimalFormat("#.##").format(p.getY());
-    textView.setText("The water column at " + y + ", "+ x +" (lat/lng) contains " + waterColumn.getEmuSet().size() + " EMU layers, extending to a depth of "+ waterColumn.getDepth()+" meters.");
+    textView.setText(getString(R.string.water_column_at) + y + ", "+ x +getString(R.string.lat_lng) + waterColumn.getEmuSet().size() + getString(
+            R.string.extending_to)+ waterColumn.getDepth()+getString(R.string.meters_period));
 
   }
 
