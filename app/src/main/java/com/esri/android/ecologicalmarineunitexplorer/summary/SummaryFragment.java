@@ -2,6 +2,9 @@ package com.esri.android.ecologicalmarineunitexplorer.summary;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -167,7 +170,8 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
       holder.txtSummary.setText(observation.getEmu().getPhysicalSummary());
       int top = observation.getTop();
       holder.txtTop.setText(getString(R.string.below_surface_description) + top + getString(R.string.meters));
-      holder.rectangle.setBackgroundColor(Color.parseColor(EmuHelper.getColorForEMUCluster(observation.getEmu().getName())));
+      GradientDrawable drawable = (GradientDrawable) holder.rectangle.getDrawable();
+      drawable.setColor(Color.parseColor(EmuHelper.getColorForEMUCluster(observation.getEmu().getName())));
       holder.details.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
            mButtonListener.onButtonClick(observation.getEmu().getName());

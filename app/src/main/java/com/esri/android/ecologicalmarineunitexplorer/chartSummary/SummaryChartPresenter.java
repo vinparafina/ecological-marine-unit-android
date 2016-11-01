@@ -3,6 +3,7 @@ package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.data.*;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.data.*;
@@ -95,36 +96,42 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     List<EMUObservation> list = waterColumn.getEMUObservations(emuName);
     // The observation list should contain at least one EMUObservation!!
     // Grab the first one for now..
-    EMUObservation observation = list.get(0);
+    if (list.size() > 0){
+      EMUObservation observation = list.get(0);
 
 
 
-    List<CombinedData> dataList = new ArrayList<>();
+      List<CombinedData> dataList = new ArrayList<>();
 
-    dataList.add(0, buildTempData(observation, stat));
-    dataList.add(1, buildSalinityData(observation,stat));
-    dataList.add(2, buildOxygenData(observation,stat));
-    dataList.add(3, buildNitrateData(observation,stat));
-    dataList.add(4, buildPhosphateData(observation,stat));
-    dataList.add(5, buildSilicateData(observation,stat));
+      dataList.add(0, buildTempData(observation, stat));
+      dataList.add(1, buildSalinityData(observation,stat));
+      dataList.add(2, buildOxygenData(observation,stat));
+      dataList.add(3, buildNitrateData(observation,stat));
+      dataList.add(4, buildPhosphateData(observation,stat));
+      dataList.add(5, buildSilicateData(observation,stat));
 
-    mDataList = dataList;
-    double tempOfCurrentEMu = observation.getTemperature() != null ? observation.getTemperature(): 0d;
-    double salinityOfcurrentEMu = observation.getSalinity() != null ? observation.getSalinity() : 0d;
-    double oxygenOfCurrentEmu = observation.getOxygen() != null ? observation.getOxygen() : 0d;
-    double phosphateOfCurrentEmu = observation.getPhosphate() != null ? observation.getPhosphate(): 0d;
-    double silicateOfCurrentEmu = observation.getSilicate() != null ? observation.getSilicate() : 0d;
-    double nitrateOfCurrentEmu = observation.getNitrate() != null ? observation.getNitrate() : 0d;
+      mDataList = dataList;
+      double tempOfCurrentEMu = observation.getTemperature() != null ? observation.getTemperature(): 0d;
+      double salinityOfcurrentEMu = observation.getSalinity() != null ? observation.getSalinity() : 0d;
+      double oxygenOfCurrentEmu = observation.getOxygen() != null ? observation.getOxygen() : 0d;
+      double phosphateOfCurrentEmu = observation.getPhosphate() != null ? observation.getPhosphate(): 0d;
+      double silicateOfCurrentEmu = observation.getSilicate() != null ? observation.getSilicate() : 0d;
+      double nitrateOfCurrentEmu = observation.getNitrate() != null ? observation.getNitrate() : 0d;
 
-    mView.setTemperatureText(tempOfCurrentEMu);
-    mView.setSalinityText(salinityOfcurrentEMu);
-    mView.setOxygenText(oxygenOfCurrentEmu);
-    mView.setPhosphateText(phosphateOfCurrentEmu);
-    mView.setSilicateText(silicateOfCurrentEmu);
-    mView.setNitrateText(nitrateOfCurrentEmu);
+      mView.setTemperatureText(tempOfCurrentEMu);
+      mView.setSalinityText(salinityOfcurrentEMu);
+      mView.setOxygenText(oxygenOfCurrentEmu);
+      mView.setPhosphateText(phosphateOfCurrentEmu);
+      mView.setSilicateText(silicateOfCurrentEmu);
+      mView.setNitrateText(nitrateOfCurrentEmu);
 
-    mView.showChartData(mDataList);
-    mView.hideProgressBar();
+      mView.showChartData(mDataList);
+      mView.hideProgressBar();
+    }else{
+      mView.hideProgressBar();
+      mView.showMessage("No chart data found for layer");
+    }
+
   }
 
   private CombinedData buildTempData(EMUObservation observation, EMUStat stat){
