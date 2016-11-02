@@ -6,12 +6,16 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.test.ActivityInstrumentationTestCase2;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.mapping.view.MapView;
 import com.robotium.solo.Solo;
 
 import java.io.File;
@@ -116,13 +120,10 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
    * a marker if the location is over an ocean
    */
   public void testClickOnOcean(){
-    // This assumes viewpoint at start up hasn't
-    // changed since map was initialized
-    // x = 973.0 y =  891.0
-    solo.clickOnScreen(973,891,1);
-    boolean emuTextFound = solo.waitForText("EMU ");
+    clickOnOceanPoint();
+    boolean emuTextFound = solo.searchButton("VIEW LAYERS");
     assertTrue(emuTextFound);
-    boolean buttonFound = solo.searchButton("DETAILS");
+    boolean buttonFound = solo.searchButton("PROFILE");
     assertTrue(buttonFound);
   }
 
@@ -131,10 +132,9 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
    * location shows a toast message
    */
   public void testClickOnLand(){
-    // This assumes viewpoint at start up hasn't
-    // changed since map was initialized
+
     assertTrue(solo.waitForDialogToClose());
-    solo.clickOnScreen(1002,937,1);
+    solo.clickOnScreen(648, 764);
     boolean messageShows = solo.waitForText(getActivity().getString(R.string.no_emu_found));
     assertTrue(messageShows);
   }
@@ -145,7 +145,9 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
    * when a point in the ocean is clicked.
    */
   public void testSummaryShown(){
-    solo.clickOnScreen(973,891,1);
+    clickOnOceanPoint();
+    solo.clickOnButton("VIEW LAYERS");
+    assertTrue(solo.waitForDialogToClose());
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
     boolean buttonFound = solo.searchButton("DETAILS");
@@ -156,6 +158,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
     assertTrue(scrollSuccess);
     scrollSuccess = solo.scrollUpRecyclerView(0);
     assertTrue(scrollSuccess);
+    solo.takeScreenshot("loaded_map");
   }
 
   /**
@@ -163,7 +166,9 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
    * the water column are displayed
    */
   public void testWaterColumnShown(){
-    solo.clickOnScreen(973,891,1);
+    clickOnOceanPoint();
+    solo.clickOnButton("VIEW LAYERS");
+    assertTrue(solo.waitForDialogToClose());
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
     boolean buttonFound = solo.searchButton("DETAILS");
@@ -175,23 +180,41 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
   }
 
   /**
-   * Validate that water column segments
-   * are selected when the colored
-   * rectangle in each recycler view item
-   * is clicked.
+   * Validate that when a segment
+   * in the water column is tapped,
+   * the associated item is shown in
+   * the recycler view.
    */
   public void testRectangleClickSelectsSegment(){
-    solo.clickOnScreen(973,891,1);
+    clickOnOceanPoint();
+    solo.clickOnButton("VIEW LAYERS");
+    assertTrue(solo.waitForDialogToClose());
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
-    boolean scrollsuccess = solo.scrollDownRecyclerView(2);
-    assertTrue(scrollsuccess);
-    ImageView imageView = (ImageView) getActivity().findViewById(R.id.emu_rectangle);
-    imageView.performClick();
-    Button button = (Button) getActivity().findViewById(2);
+    //Click on the second emu layer in the column
+    Button button = (Button) solo.getView(2);
+    solo.clickOnButton(button.getId());
+    // Confirm that the button's outline color has changed
     int c = button.getPaint().getColor();
     String hexColor = String.format("#%06X", (0xFFFFFF & c));
     Log.i("color", hexColor);
+
+    // Assert that the recycler view item is on index 2
+    RecyclerView view = (RecyclerView) solo.getView(R.id.summary_recycler_view) ;
+
+    assertTrue(view.findViewHolderForAdapterPosition(2) != null);
+  }
+
+  /**
+   * Test that a bitmap snapshot of the map is shown
+   */
+  public void testMapImageGenerated(){
+    clickOnOceanPoint();
+    solo.clickOnButton("VIEW LAYERS");
+    assertTrue(solo.waitForDialogToClose());
+    boolean emuTextFound = solo.waitForText("EMU ");
+    ImageView imageView = (ImageView)  solo.getView(R.id.imgMap);
+    assertTrue(imageView.getDrawable() != null);
   }
   private void requestWritePermission() {
 
@@ -228,5 +251,10 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
         mPermissionsGranted = true;
       }
     }
+  }
+  private void clickOnOceanPoint(){
+    assertTrue(solo.waitForDialogToClose());
+    solo.clickOnScreen(339,900);
+    assertTrue(solo.waitForText("Location Summary"));
   }
 }
