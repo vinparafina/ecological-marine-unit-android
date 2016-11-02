@@ -51,7 +51,8 @@
                           android:layout_height="match_parent"
                           android:orientation="vertical"
                           android:layout_weight="3"
-                            android:id="@+id/mapAndSummaryLinearLayout">
+                          android:layout_marginTop="-7dp"
+                          android:id="@+id/mapAndSummaryLinearLayout">
                 <!-- Map container layout-->
                 <FrameLayout android:id="@+id/map_container"
                              android:animateLayoutChanges="true"

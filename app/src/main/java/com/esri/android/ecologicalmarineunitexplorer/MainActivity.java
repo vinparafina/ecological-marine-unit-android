@@ -30,12 +30,10 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -46,7 +44,6 @@ import android.os.Bundle;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
   private SummaryChartPresenter mSummaryChartPresenter;
   private MapPresenter mMapPresenter;
   private BottomSheetBehavior mBottomSheetBehavior;
-  private LinearLayout mBottomSheet;
   public MainActivity() {
   }
 
@@ -148,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
    */
   private void setUpBottomSheet(){
     mBottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet_view));
-    mBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet_view);
   }
 
   @Override
@@ -382,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     // Adjust the map image layout
     ImageView imageView = (ImageView) findViewById(R.id.imgMap) ;
     LinearLayout.LayoutParams  imageLayoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,5);
-    imageLayoutParams.setMargins(0, 36,36,16);
+    imageLayoutParams.setMargins(0, 0,36,16);
     imageView.setLayoutParams(imageLayoutParams);
     imageView.requestLayout();
   }
@@ -407,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     // Adjust the map's layout
     final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
     LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,5);
-    layoutParams.setMargins(0, 36,36,16);
+    layoutParams.setMargins(0, 0,36,16);
     mapLayout.setLayoutParams(layoutParams);
 
     // Once we've shrunk the map view and layout has completed,
@@ -421,10 +416,9 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
         final FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
         mapFragment.getMapBitmap(new ServiceApi.BitmapCallback() {
-          @Override public void onBitmapGenerated(Bitmap bitmap) {
-            Drawable d = new BitmapDrawable(getResources(), bitmap);
+          @Override public void onBitmapGenerated(Bitmap bitmap)  {
             ImageView imageView = (ImageView) findViewById(R.id.imgMap) ;
-            imageView.setBackground(d);
+            imageView.setImageBitmap(bitmap);
 
             // Hide the map view
             hideMapView();
