@@ -2,6 +2,7 @@ package com.esri.android.ecologicalmarineunitexplorer;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -10,15 +11,24 @@ import android.support.v7.widget.RecyclerView;
 import android.test.ActivityInstrumentationTestCase2;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.robotium.solo.Solo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /* Copyright 2016 Esri
  *
@@ -52,8 +62,7 @@ import java.io.File;
  *
  */
 
-public class EMUAppTest extends ActivityInstrumentationTestCase2
-    implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class EMUAppTest extends ActivityInstrumentationTestCase2 {
 
   private Solo solo;
   private static final int PERMISSION_WRITE_STORAGE = 4;
@@ -67,20 +76,10 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
   public void setUp() throws Exception {
     //setUp() is run before a test case is started.
     //This is where the solo object is created.
-
-
     Solo.Config config = new Solo.Config();
-    config.screenshotFileType = Solo.Config.ScreenshotFileType.JPEG;
-    File sdcard = Environment.getExternalStorageDirectory();
-    File data = new File(sdcard, "/Data");
-    config.screenshotSavePath = data.getAbsolutePath() + "/Robotium/";
-    Log.i(TAG, config.screenshotSavePath);
     config.shouldScroll = false;
+
     solo = new Solo(getInstrumentation(), config);
-    if (!mPermissionsGranted){
-      Log.i(TAG, "Seeking permissions");
-      requestWritePermission();
-    }
     getActivity();
   }
 
@@ -108,10 +107,14 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
     assertTrue(toolbarTitle.equalsIgnoreCase(title));
 
     // Map view present?
-    assertTrue(solo.waitForView(getActivity().findViewById(R.id.map)));
-
-    // Take a picture and store it
-
+    MapView mapView = (MapView) solo.getView(R.id.map) ;
+    assertNotNull(mapView);
+    SpatialReference sr = mapView.getSpatialReference();
+    if (sr.getWKText().equals(SpatialReferences.getWgs84())){
+      Log.i("LoadingMap", "True");
+    }else{
+      Log.i("LoadingMap", ""+sr.getWkid());
+    }
 
   }
 
@@ -148,17 +151,12 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
     clickOnOceanPoint();
     solo.clickOnButton("VIEW LAYERS");
     assertTrue(solo.waitForDialogToClose());
-    boolean emuTextFound = solo.waitForText("EMU ");
-    assertTrue(emuTextFound);
-    boolean buttonFound = solo.searchButton("DETAILS");
-    assertTrue(buttonFound);
-    boolean scrollSuccess = solo.scrollDownRecyclerView(2);
-    assertTrue(scrollSuccess);
-    scrollSuccess = solo.scrollDownRecyclerView(3);
-    assertTrue(scrollSuccess);
-    scrollSuccess = solo.scrollUpRecyclerView(0);
-    assertTrue(scrollSuccess);
-    solo.takeScreenshot("loaded_map");
+    assertTrue(solo.waitForText("EMU "));
+    assertTrue(solo.searchButton("DETAILS"));
+    ArrayList<TextView> items = solo.clickInRecyclerView(0);
+    int count = recyclerCount();
+    assertTrue(solo.scrollDownRecyclerView(count -1));
+    assertTrue(solo.scrollUpRecyclerView(0));
   }
 
   /**
@@ -173,10 +171,15 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
     assertTrue(emuTextFound);
     boolean buttonFound = solo.searchButton("DETAILS");
     assertTrue(buttonFound);
-    Button button = (Button) getActivity().findViewById(0);
-    assertTrue(button != null);
-    button = (Button) getActivity().findViewById(2);
-    assertTrue(button != null);
+
+    // There are as many buttons as there are
+    // items in the recycler view
+
+    int buttonCount = recyclerCount();
+    for (int x= 0; x < buttonCount; x++){
+      assertNotNull(getActivity().findViewById(x));
+    }
+
   }
 
   /**
@@ -185,24 +188,20 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
    * the associated item is shown in
    * the recycler view.
    */
-  public void testRectangleClickSelectsSegment(){
+  public void testClickButtonSelectsSegment(){
     clickOnOceanPoint();
     solo.clickOnButton("VIEW LAYERS");
     assertTrue(solo.waitForDialogToClose());
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
+    int count = recyclerCount();
     //Click on the second emu layer in the column
-    Button button = (Button) solo.getView(2);
+    Log.i("Test", "Adapter count = "+ count);
+    Button button = (Button) solo.getView(count - 1);
     solo.clickOnButton(button.getId());
-    // Confirm that the button's outline color has changed
-    int c = button.getPaint().getColor();
-    String hexColor = String.format("#%06X", (0xFFFFFF & c));
-    Log.i("color", hexColor);
-
-    // Assert that the recycler view item is on index 2
-    RecyclerView view = (RecyclerView) solo.getView(R.id.summary_recycler_view) ;
-
-    assertTrue(view.findViewHolderForAdapterPosition(2) != null);
+    // Since this scrolls the recycler view to the last item
+    // there should be no down arrow indicating another item
+    assertTrue(solo.getView(R.id.arrowDown).getVisibility() == View.INVISIBLE);
   }
 
   /**
@@ -216,45 +215,91 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2
     ImageView imageView = (ImageView)  solo.getView(R.id.imgMap);
     assertTrue(imageView.getDrawable() != null);
   }
-  private void requestWritePermission() {
 
-    if (ContextCompat.checkSelfPermission(getActivity(),
-        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-      // Request the permission
-      ActivityCompat.requestPermissions(getActivity(), new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE},
-          PERMISSION_WRITE_STORAGE);
-    }else{
-      mPermissionsGranted = true;
-    }
+  /**
+   * Test that charts are drawn when
+   * Detail button is clicked
+   */
+  public void testForDetailCharts(){
+    clickOnOceanPoint();
+    solo.clickOnButton("VIEW LAYERS");
+    assertTrue(solo.waitForText("EMU "));
+    assertTrue(solo.searchButton("DETAILS"));
+    solo.clickOnButton("DETAILS");
+    assertTrue(solo.waitForDialogToClose());
+    CombinedChart combinedChart = (CombinedChart) solo.getView(R.id.chart1);
+    assertTrue(combinedChart.getData().getAllData().size() > 0);
+
+    combinedChart = (CombinedChart) solo.getView(R.id.chart2);
+    assertTrue(combinedChart.getData().getAllData().size() > 0);
+
+    combinedChart = (CombinedChart) solo.getView(R.id.chart3);
+    assertTrue(combinedChart.getData().getAllData().size() > 0);
+
+    combinedChart = (CombinedChart) solo.getView(R.id.chart4);
+    assertTrue(combinedChart.getData().getAllData().size() > 0);
+
+    combinedChart = (CombinedChart) solo.getView(R.id.chart5);
+    assertTrue(combinedChart.getData().getAllData().size() > 0);
+
+    combinedChart = (CombinedChart) solo.getView(R.id.chart6);
+    assertTrue(combinedChart.getData().getAllData().size() > 0);
   }
 
   /**
-   * Once the app has prompted for permission to write to external storage, the response
-   * from the user is handled here.
-   *
-   * @param requestCode
-   *            int: The request code passed into requestPermissions
-   * @param permissions
-   *            String: The requested permission(s).
-   * @param grantResults
-   *            int: The grant results for the permission(s). This will be
-   *            either PERMISSION_GRANTED or PERMISSION_DENIED
+   * Test the water column profiles are drawn
+   * when clicking on "VIEW COLUMN PROFILE"
    */
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    if (requestCode == PERMISSION_WRITE_STORAGE) {
-      // Request for write permission.
-      if (grantResults.length != 1 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-        Toast.makeText(getActivity(), "Permission to write to external storage required for screenshots",
-            Toast.LENGTH_LONG).show();
-      } else {
-        mPermissionsGranted = true;
-      }
-    }
+  public void testForWaterProfileCharts(){
+    clickOnOceanPoint();
+    solo.clickOnButton("VIEW COLUMN PROFILE");
+    assertTrue(solo.waitForDialogToClose());
+
+    assertTrue(solo.waitForText("Temperature"));
+    CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+
+    assertTrue(solo.waitForText("Salinity"));
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+
+    assertTrue(solo.waitForText("Oxygen"));
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+    assertTrue(solo.waitForText("Phosphate"));
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+    assertTrue(solo.waitForText("Silicate"));
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+    assertTrue(solo.waitForText("Nitrate"));
+    checkForChartData();
   }
+
+  /**
+   * Helper method that clicks on
+   * an ocean location
+   */
   private void clickOnOceanPoint(){
     assertTrue(solo.waitForDialogToClose());
+
     solo.clickOnScreen(339,900);
     assertTrue(solo.waitForText("Location Summary"));
+  }
+
+  private void checkForChartData(){
+    CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
+    assertTrue(chart.getData().getAllData().size() > 0);
+    chart = null;
+  }
+  private int recyclerCount(){
+    RecyclerView view = (RecyclerView) solo.getView(R.id.summary_recycler_view) ;
+    return view.getAdapter().getItemCount();
   }
 }
