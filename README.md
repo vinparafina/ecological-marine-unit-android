@@ -1,5 +1,15 @@
-# ecological-marine-unit-android
-ArcGIS Android app for exploring ecological marine units.
+# Ecological Marine Unit Explorer
+Explore our ocean ecosystems with EMUs!
+
+## Description
+Using 50 year's worth of aggregated nutrient and physical ocean data from [NOAA](https://www.nodc.noaa.gov/OC5/woa13/), Esri has collaborated with the USGS, the Marine Conservation Institute, NatureServe, the University of Auckland, GRID-Arendal, NOAA, Duke University, the Woods Hole Oceanographic Institution, and many other partners to classify our oceans into 37 statistically distinct [ecological marine units](http://www.esri.com/ecological-marine-units) (EMUs).  This Android mobile app is one tool you can use to explore ocean conditions locally and globally.
+
+## Feature Services
+
+## Querying Feature Tables
+
+## Data Prep
+
 
 ## Licensing
 Copyright 2016 Esri
