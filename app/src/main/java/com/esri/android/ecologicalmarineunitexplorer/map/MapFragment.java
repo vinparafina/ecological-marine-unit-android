@@ -267,6 +267,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     if (mProgressDialog == null){
       mProgressDialog = new ProgressDialog(getActivity());
     }
+    mProgressDialog.dismiss();
     mProgressDialog.setTitle(title);
     mProgressDialog.setMessage(message);
     mProgressDialog.show();
