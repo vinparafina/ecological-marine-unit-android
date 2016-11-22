@@ -109,13 +109,6 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
     // Map view present?
     MapView mapView = (MapView) solo.getView(R.id.map) ;
     assertNotNull(mapView);
-    SpatialReference sr = mapView.getSpatialReference();
-    if (sr.getWKText().equals(SpatialReferences.getWgs84())){
-      Log.i("LoadingMap", "True");
-    }else{
-      Log.i("LoadingMap", ""+sr.getWkid());
-    }
-
   }
 
   /**
