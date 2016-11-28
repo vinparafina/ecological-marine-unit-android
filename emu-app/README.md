@@ -34,7 +34,7 @@ ServiceFeatureTable serviceFeatureTable = new
 ```
 
 ## Querying Feature Tables
-In the app, spatial and non-spatial feature tables are queried.  As the user interacts with the map, the screen location is converted to a geolocation and service feature tables are queried.
+In the app, spatial and non-spatial feature tables are queried.  Spatial queries are used when the user interacts with the map -  the screen location is converted to a geolocation and service feature tables are queried.
 
 ```java
 // Convert a tapped screen location to a geo location
@@ -83,7 +83,7 @@ futureResult.addDoneListener(new Runnable() {
 
 ```
 
-Querying non-spatial data
+Non-spatial data like summary statistics and datapoints for charts are retrieved by first putting the table in FeatureRequestMode.MANUAL_CACHE and then querying by calling `pouplateFromServiceAsync`.
 ```java
 ServiceFeatureTable summaryStats = new
   ServiceFeatureTable("http://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/EMU_Summary_Table/FeatureServer/0")
