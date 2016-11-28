@@ -1,22 +1,59 @@
-# Ecological Marine Unit Explorer
-Explore our ocean ecosystems with EMUs!
+# Ecological Marine Unit Explorer Android
 
-## Description
-Using 50 year's worth of aggregated nutrient and physical ocean data from [NOAA](https://www.nodc.noaa.gov/OC5/woa13/), Esri has collaborated with the USGS, the Marine Conservation Institute, NatureServe, the University of Auckland, GRID-Arendal, NOAA, Duke University, the Woods Hole Oceanographic Institution, and many other partners to classify our oceans into 37 statistically distinct [ecological marine units](http://www.esri.com/ecological-marine-units) (EMUs).  Leveraging the Runtime SDK and ArcGIS, we'll show you how this Android mobile app can be used to explore ocean conditions locally and globally. (TODO: Mention how you can add your own data to enhance this rich data set for your own organization!)
+This repo is home to an Esri example application that uses the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/) to showcase ocean ecosystems.  Explore 50 years worth of NOAA data using Esri maps and services!
 
-## Feature Services
-The heart of this application lies in the rich data stores collected by NOAA and analyzed by the scientific collaboration mentioned above.  Over 50 million spatial and non-spatial datapoints are hosted through AGOL [feature services](http://server.arcgis.com/en/server/10.5/publish-services/windows/what-is-a-feature-service-.htm).  
+## Features
 
-Why these types of layers?  Show how they're set up.
+## Development Instructions
+This Ecological Marine Unit Explorer repo is an Android Studio Project and App Module that can be directly cloned and imported into Android Studio. 
 
-## Querying Feature Tables
-Querying by geometry
-Querying non-spatial data
+### Fork the repo
+**Fork** the [Ecological Marine Unit Explorer Android](https://github.com/Esri/ecological-marine-unit-android/fork) repo.
 
-## Data Prep
-For traversing depth levels, what considerations were made?  What iterations were done?
-What are the steps we went through to prepare data/services?
-Clustering points --> Dissolving --> Buffering --> Symbology
+### Clone the repo
+Once you have forked the repo, you can make a clone
+
+#### Command line Git
+1. [Clone the Ecological Marine Unit Explorer repo](https://help.github.com/articles/fork-a-repo#step-2-clone-your-fork)
+2. ```cd``` into the ```ecological-marine-unit-android``` folder
+3. Make your changes and create a [pull request](https://help.github.com/articles/creating-a-pull-request)
+
+### Configuring a Remote for a Fork
+If you make changes in the fork and would like to [sync](https://help.github.com/articles/syncing-a-fork/) those changes with the upstream repository, you must first [configure the remote](https://help.github.com/articles/configuring-a-remote-for-a-fork/). This will be required when you have created local branches and would like to make a [pull request](https://help.github.com/articles/creating-a-pull-request) to your upstream branch.
+
+1. In the Terminal (for Mac users) or command prompt (fow Windows and Linux users) type ```git remote -v``` to list the current configured remote repo for your fork.
+2. ```git remote add upstream https://github.com/Esri/ecological-marine-unit-android`git``` to specify new remote upstream repository that will be synced with the fork. You can type ```git remote -v``` to verify the new upstream.
+
+If there are changes made in the Original repository, you can sync the fork to keep it updated with upstream repository.
+
+1. In the terminal, change the current working directory to your local project
+2. Type ```git fetch upstream``` to fetch the commits from the upstream repository
+3. ```git checkout master``` to checkout your fork's local master branch.
+4. ```git merge upstream/master``` to sync your local `master' branch with `upstream/master`. **Note**: Your local changes will be retained and your fork's master branch will be in sync with the upstream repository.
+
+## Requirements
+* [JDK 6 or higher](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+* [Android Studio](http://developer.android.com/sdk/index.html)
+
+## Resources
+* [Ecological Marine Unit Explorer](https://github.com/Esri/ecological-marine-unit-android/blob/emu-app/README.md)
+* [ArcGIS Runtime SDK for Android Developers Site](https://developers.arcgis.com/android/)
+* [ArcGIS Mobile Blog](http://blogs.esri.com/esri/arcgis/category/mobile/)
+* [ArcGIS Developer Blog](http://blogs.esri.com/esri/arcgis/category/developer/)
+* [Google+](https://plus.google.com/+esri/posts)
+* [twitter@ArcGISRuntime](https://twitter.com/ArcGISRuntime)
+* [twitter@esri](http://twitter.com/esri)
+
+## Issues
+Find a bug or want to request a new feature enhancement?  Let us know by submitting an issue.
+
+## Contributing
+Anyone and everyone is welcome to [contribute](https://github.com/Esri/ecological-marine-unit-android/blob/master/CONTRIBUTING.md). We do accept pull requests.
+
+1. Get involved
+2. Report issues
+3. Contribute code
+4. Improve documentation
 
 ## Licensing
 Copyright 2016 Esri
