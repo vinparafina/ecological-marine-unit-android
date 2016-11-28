@@ -60,7 +60,8 @@ QueryParameters queryParameters = new QueryParameters();
 queryParameters.setGeometry(envelope);
 
 // We want all the columns returned from the query
-ListenableFuture<FeatureQueryResult> futureResult = serviceFeatureTable.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
+ListenableFuture<FeatureQueryResult> futureResult = 
+  serviceFeatureTable.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
 futureResult.addDoneListener(new Runnable() {
       @Override public void run() {
         try{
@@ -82,8 +83,27 @@ futureResult.addDoneListener(new Runnable() {
 
 ```
 
-Querying by geometry
 Querying non-spatial data
+```java
+ServiceFeatureTable summaryStats = new
+  ServiceFeatureTable("http://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/EMU_Summary_Table/FeatureServer/0")
+summaryStats.setFeatureRequestMode(ServiceFeatureTable.FeatureRequestMode.MANUAL_CACHE);
+summaryStats.loadAsync();
+summaryStats.addDoneLoadingListener(new Runnable() {
+  @Override public void run() {
+    QueryParameters queryParameters = new QueryParameters();
+    // Get all the rows in the table
+    queryParameters.setWhereClause("1 = 1");
+    List<String> outFields = new ArrayList<String>();
+    // Get all the fields in the table
+    outFields.add("*");
+    ListenableFuture<FeatureQueryResult> futureResult =
+          summaryStats.populateFromServiceAsync(queryParameters,true,outFields);
+    processQueryForEmuStats(futureResult);
+   }
+  });
+    
+```
 
 ## Data Prep
 For traversing depth levels, what considerations were made?  What iterations were done?
