@@ -105,7 +105,7 @@ summaryStats.addDoneLoadingListener(new Runnable() {
     
 ```
 
-## Data Prep
+## Map Prep (This is still a work in progress)
 For traversing depth levels, what considerations were made?  What iterations were done?
 What are the steps we went through to prepare data/services?
 Clustering points --> Dissolving --> Buffering --> Symbology
