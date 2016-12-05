@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     setContentView(R.layout.main_activity);
 
     // Set license key
-    ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
+   // ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
 
 
     // Check for internet connectivity
