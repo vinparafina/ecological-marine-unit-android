@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.CombinedData;
 
 import java.text.DecimalFormat;
@@ -68,11 +69,12 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
   @Override public void showChartData(List<CombinedData> dataList) {
     if (dataList != null){
       int size = dataList.size();
-      for (int x=0; x < size; x++){
+      for (int x=0; x < size - 1 ; x++){
         CombinedData data = dataList.get(x);
         int viewId = getIdForChartView(x);
         prepareChartView(viewId, data);
       }
+      prepareLegend(dataList.get(size -1));
     }
 
   }
@@ -127,6 +129,33 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
     chart.setData(data);
     chart.invalidate();
 
+  }
+
+  /**
+   * Create a legend based on a dummy chart.  The legend
+   * is used by all charts and is positioned
+   * across the top of the screen.
+   * @param data - CombinedData used to generate the legend
+   */
+  private void prepareLegend(CombinedData data){
+    //The dummy chart is never shown, but it's legend is.
+    CombinedChart dummyChart = (CombinedChart) mRoot.findViewById(R.id.legend);
+    dummyChart.getPaint(Chart.PAINT_DESCRIPTION).setTextAlign(Paint.Align.CENTER);
+    dummyChart.getXAxis().setEnabled(false);
+    dummyChart.getAxisRight().setEnabled(false);
+    dummyChart.getAxisLeft().setEnabled(false);
+    dummyChart.setDescription("");
+    dummyChart.setDescriptionTextSize(10f);
+    dummyChart.setBackgroundColor(Color.WHITE);
+    dummyChart.setDrawGridBackground(false);
+    dummyChart.setData(data);
+
+    Legend l = dummyChart.getLegend();
+    l.setEnabled(true);
+    // The positioning of the legend effectively
+    // hides the dummy chart from view.
+    l.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
+    dummyChart.invalidate();
   }
 
   @Override public void setPresenter(SummaryChartContract.Presenter presenter) {
