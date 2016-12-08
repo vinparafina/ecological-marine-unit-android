@@ -58,7 +58,6 @@ public class ChartFragment extends Fragment {
   public View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
     View view = layoutInflater.inflate(R.layout.water_profile, container, false);
-    mTxtChartTitle = (TextView) view.findViewById(R.id.txtChartTitle);
     mTxtXAxisTitle = (TextView) view.findViewById(R.id.txtXAxisTitle);
     mChart = (CombinedChart) view.findViewById(R.id.propertyChart);
     mChart.setDrawOrder(new CombinedChart.DrawOrder[]{ CombinedChart.DrawOrder.LINE,
@@ -85,7 +84,7 @@ public class ChartFragment extends Fragment {
   private void showChart(){
     String [] labels = mData.getDataSetLabels();
     String property = mData.getDataSetLabels()[labels.length -1];
-    mTxtChartTitle.setText( property + " vs. Ocean Depth");
+
     mChart.setData(mData);
     mChart.getAxisLeft().setInverted(true);
     mChart.getXAxis().setEnabled(true);

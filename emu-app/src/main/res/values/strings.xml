@@ -64,7 +64,7 @@
     <string name="extending_to">" EMU layers, extending to a depth of "</string>
     <string name="meters_period">" meters."</string>
     <string name="query_hint">Address or latitude/longitude</string>
-    <string name="explore_ocean">Explore An Ocean Location</string>
+    <string name="explore_ocean">Explore</string>
     <string name="detail_emu">"Detail for EMU "</string>
     <string name="internet_connectivity">Internet connectivity is required for this application</string>
     <string name="wireless_problem">Wireless Connectivity Problem</string>
