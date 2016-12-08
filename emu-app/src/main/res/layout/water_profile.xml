@@ -3,11 +3,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent" >
-    <TextView android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:id="@+id/txtChartTitle"
-              android:gravity="center"
-              android:text="Temperature vs. Depth"/>
+
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:layout_weight="10"
@@ -16,7 +12,8 @@
         <com.esri.android.ecologicalmarineunitexplorer.waterprofile.VerticalTextView
                 android:id="@+id/txtMeasurementProperty"
                 android:text="Depth below surface (meters)"
-                android:layout_height="wrap_content" android:layout_width="match_parent"/>
+                android:layout_height="wrap_content" android:layout_width="match_parent"
+                android:layout_marginTop="-45dp"/>
 
         <com.github.mikephil.charting.charts.CombinedChart
                 android:id="@+id/propertyChart"
