@@ -34,6 +34,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -576,5 +578,12 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     }else {
       return wifi.isConnected();
     }
+  }
+  public void showSnackbar(){
+    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout) ;
+    Snackbar snackbar = Snackbar
+        .make(coordinatorLayout, "Please tap a on ocean location", Snackbar.LENGTH_LONG);
+
+    snackbar.show();
   }
 }

@@ -7,12 +7,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
+import com.esri.android.ecologicalmarineunitexplorer.MainActivity;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
@@ -81,7 +84,6 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     mRoot = layoutInflater.inflate(R.layout.map_view, container,false);
     mPresenter.start();
-
     return mRoot;
   }
 
@@ -117,7 +119,6 @@ public class MapFragment extends Fragment implements MapContract.View {
         setViewpoint();
       }
     });
-
   }
 
   public void addSeekBar(){
@@ -274,6 +275,12 @@ public class MapFragment extends Fragment implements MapContract.View {
   }
 
   /**
+   * Show a snackbar prompting user to action
+   */
+  @Override  public void showSnackbar(){
+    ((MainActivity)getActivity()).showSnackbar();
+  }
+  /**
    * Hide progress bar
    */
   @Override public void hideProgressBar() {
@@ -306,4 +313,5 @@ public class MapFragment extends Fragment implements MapContract.View {
       return true;
     }
   }
+
 }

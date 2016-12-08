@@ -50,6 +50,7 @@ public interface MapContract {
     void setSelectedPoint(Point p);
     SpatialReference getSpatialReference();
     void getMapBitmap(ServiceApi.BitmapCallback callback);
+    void showSnackbar();
   }
   interface Presenter extends BasePresenter {
 

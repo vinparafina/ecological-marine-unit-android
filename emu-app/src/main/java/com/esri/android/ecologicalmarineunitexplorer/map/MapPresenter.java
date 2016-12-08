@@ -131,7 +131,9 @@ public class MapPresenter implements MapContract.Presenter {
    * Once map has been loaded, hide the progress bar
    */
   @Override public void mapLoaded() {
+
     mMapView.hideProgressBar();
+    mMapView.showSnackbar();
   }
 
   /**
