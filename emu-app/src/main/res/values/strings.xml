@@ -4,16 +4,18 @@
         http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac
     </string>
     <string name="toolbar_title">Explore An Ocean Location</string>
+
     <string name="service_emu_polygon">
-        http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/EMU_Cluster_Polygon/FeatureServer/0
-    </string>
-    <string name="service_emu_mesh_cluster">
-        http://utility.arcgis.com/usrsvcs/servers/dbb13dad900d4014b0611358602723dd/rest/services/EMU_Point_Mesh_Cluster/MapServer/0
-    </string>
-    <string name="service_emu_point_mesh">
-        http://utility.arcgis.com/usrsvcs/servers/82cff671f6fd4c88905454899ce015c2/rest/services/EMU_Point_Mesh/MapServer/0
-    </string>
+        http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/EMU_Cluster_Polygon/FeatureServer/0</string>
+
+    <string name="service_emu_mesh_cluster">http://utility.arcgis.com/usrsvcs/servers/dbb13dad900d4014b0611358602723dd/rest/services/EMU_Point_Mesh_Cluster/MapServer/0</string>
+
+    <string name="service_emu_point_mesh">http://utility.arcgis.com/usrsvcs/servers/82cff671f6fd4c88905454899ce015c2/rest/services/EMU_Point_Mesh/MapServer/0</string>
+
     <string name="service_emu_summary">http://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/EMU_Summary_Table/FeatureServer/0</string>
+
+    <string name="service_emu_by_depth">http://services1.arcgis.com/6677msI40mnLuuLr/arcgis/rest/services/Merged2016_12_05_1__REPRO/FeatureServer/0</string>
+
     <!-- geocode service -->
     <string name="geocode_url">http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer</string>
     <string name="name_emu">NameEMU</string>

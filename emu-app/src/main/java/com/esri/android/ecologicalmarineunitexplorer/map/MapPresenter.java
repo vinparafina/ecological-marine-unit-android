@@ -32,8 +32,10 @@ import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
 import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
+import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
+import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.GeoView;
@@ -47,8 +49,6 @@ public class MapPresenter implements MapContract.Presenter {
 
   private  MapContract.View mMapView;
   private DataManager mDataManager;
-  private final double GALAPAGOS_LAT = -0.3838312;
-  private final double GALAPAGOS_LONG = -91.5727346;
   private final String DIALOG_MESSAGE = "Rounding up the EMUs...";
   private final String DIALOG_TITLE = "EMU Map Loading";
   private final String TILED_LAYER_URL = "http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac";
@@ -79,12 +79,14 @@ public class MapPresenter implements MapContract.Presenter {
     // EMU Ocean Surface
     ArcGISTiledLayer tiledLayerBaseMap = new ArcGISTiledLayer(TILED_LAYER_URL);
     mMapView.addLayer(tiledLayerBaseMap);
+
+    cacheInitialDepthLayer();
   }
 
   /**
    * When a user clicks a location in the map,
    * show the progress bar and
-   * create a buffered polygon around the point and
+   * create a buffered polygon around the point andr
    * query for EMU data.
    * @param point - A geolocation representing the
    *              place a user clicked on the map
@@ -149,6 +151,58 @@ public class MapPresenter implements MapContract.Presenter {
           GeocodeResult result = results.get(0);
           setSelectedPoint(result.getDisplayLocation());
         }
+      }
+    });
+  }
+
+  @Override public void retrieveEMUPolygonByDepth(Integer value) {
+    Integer depth = 1;
+    if(value <=10) {
+      depth = 1;
+    }else if (value > 10 && value < 20){
+      depth = 10;
+    } else if (value >= 20 && value < 30){
+      depth = 20;
+    } else if (value >= 30 && value < 40){
+      depth = 30;
+    } else if (value >= 40 && value < 50) {
+      depth = 40;
+    } else if (value >= 50 && value < 60) {
+      depth = 50;
+    } else if (value >= 60 && value < 70) {
+      depth = 60;
+    } else if (value >= 70 && value < 80) {
+      depth = 70;
+    } else if (value >= 80 && value < 90) {
+      depth = 80;
+    } else if (value >= 90 && value <=100) {
+      depth = 90;
+    }
+    mDataManager.manageEmuPolygonsByDepth(depth, new ServiceApi.EMUByDepthCallback() {
+      @Override public void onPolygonsRetrieved(FeatureLayer layer) {
+        // Show progress bar
+        mMapView.showProgressBar("Retrieving EMU polygons", "Data Download");
+        if (layer != null){
+          mMapView.hideProgressBar();
+        }else{
+          mMapView.hideProgressBar();
+          mMapView.showMessage("Unable to display EMU polygons");
+        }
+      }
+    });
+  }
+
+  /**
+   * Cache the first depth level below the ocean surface.
+   * This is run only once.
+   */
+  private void cacheInitialDepthLayer(){
+    mDataManager.queryEmuByDepth(10, new ServiceApi.EMUByDepthCallback() {
+      @Override public void onPolygonsRetrieved(FeatureLayer layer) {
+        Log.i("MapPresenter", "Initial depth layer downloaded");
+        layer.setDefinitionExpression(" Depth = 0");
+        mMapView.addLayer(layer);
+        mMapView.hideProgressBar();
       }
     });
   }

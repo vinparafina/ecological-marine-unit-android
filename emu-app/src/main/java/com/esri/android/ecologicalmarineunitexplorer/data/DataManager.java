@@ -34,6 +34,7 @@ import com.esri.arcgisruntime.data.FeatureQueryResult;
 import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.*;
+import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
@@ -59,9 +60,15 @@ public class DataManager {
 
   private Context mContext;
 
+  private ServiceFeatureTable mEmuByDepthTable;
+
+  private FeatureLayer mEmuByDepthLayer;
+
   private static DataManager instance = null;
 
   private WaterColumn mCurrentWaterColumn = null;
+
+  private Set<Integer> mCachedLayers = new HashSet<>();
 
   private Map<Integer, EMUStat> summary_table = new HashMap<>();
 
@@ -92,6 +99,9 @@ public class DataManager {
 
     mSummaryStats = new ServiceFeatureTable(mContext.getString((R.string.service_emu_summary)));
 
+    mEmuByDepthTable = new ServiceFeatureTable(mContext.getString(R.string.service_emu_by_depth));
+    mEmuByDepthTable.setFeatureRequestMode(ServiceFeatureTable.FeatureRequestMode.MANUAL_CACHE);
+    mEmuByDepthLayer = new FeatureLayer(mEmuByDepthTable);
   }
   /**
    * A singleton that provides access to data services
@@ -194,6 +204,77 @@ public class DataManager {
 
     mLocatorTask.loadAsync();
 
+  }
+
+  /**
+   * Retrieve polygons from cache or download from service
+   * @param depth
+   * @param callback
+   */
+  public void manageEmuPolygonsByDepth(final Integer depth, final ServiceApi.EMUByDepthCallback callback){
+    // If depth level is 1, don't download, just default to TiledLayer
+    if (depth == 1){
+      mEmuByDepthLayer.setDefinitionExpression(" Depth = 0 ");
+      return;
+    }
+    if (mCachedLayers.contains(depth)){
+      Log.i("DataManager", "EMU polygons downloaded already for depth " + depth.toString());
+      mEmuByDepthLayer.setDefinitionExpression(" Depth = " + depth);
+    }else{
+      Log.i("DataManager", "Downloading EMU polygons for for depth " + depth.toString());
+      queryEmuByDepth(depth, callback);
+    }
+  }
+  /**
+   * Query for EMU polygons by depth level
+   * @param depth - Integer representing a depth interval
+   * @param callback - ServiceApi.EMUByDepthCallback - function called on completion of async retrieval
+   */
+  public void queryEmuByDepth (final Integer depth, final ServiceApi.EMUByDepthCallback callback){
+    QueryParameters queryParameters = generateEmuByDepthQueryParameters(depth);
+    try{
+      // Return all the output fields
+      List<String> outFields = Arrays.asList("*");
+
+      final ListenableFuture<FeatureQueryResult> results =
+          mEmuByDepthTable.populateFromServiceAsync(queryParameters,false, outFields);
+      results.addDoneListener(new Runnable() {
+        @Override public void run() {
+          try {
+            FeatureQueryResult fqr = results.get();
+            if (fqr.iterator().hasNext()){
+              // Cache the depth level so we don't download
+              // the same data again
+              mCachedLayers.add(depth);
+
+              // Set the definition expression to show only the depth of interest
+              mEmuByDepthLayer.setDefinitionExpression("Depth = " + depth);
+
+              // Notify caller
+              callback.onPolygonsRetrieved(mEmuByDepthLayer);
+            }
+          } catch (Exception e) {
+            Log.e("DataManager", "Error querying EMU by depth " + e.getMessage());
+            callback.onPolygonsRetrieved(null);
+          }
+        }
+      });
+
+    } catch (Exception e) {
+      Log.e("DataManager", "Error query emu by depth : " + e.getMessage());
+    }
+  }
+
+  /**
+   * Prepare the query parameters to query the service
+   * by depth
+   * @param depth - Integer representing depth level
+   * @return QueryParameters
+   */
+  private QueryParameters generateEmuByDepthQueryParameters( int depth ){
+    QueryParameters queryParameters = new QueryParameters();
+    queryParameters.setWhereClause(" Depth = " + depth);
+    return queryParameters;
   }
 
   private void processQueryForEMUColumnProfile(final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.ColumnProfileCallback callback, final WaterProfile profile) {
@@ -603,7 +684,7 @@ public class DataManager {
 
   /**
    * Parse returned data and create EMUStat items for each returned row
-   * @param futureResults - a ListenableFuture<FeatureQueryResult> to process
+   * @param futureResult - a ListenableFuture<FeatureQueryResult> to process
    * @param callback - a StatCallback called when query processing is complete
    *
    */

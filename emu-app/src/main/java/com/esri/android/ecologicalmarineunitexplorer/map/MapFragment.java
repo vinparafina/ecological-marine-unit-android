@@ -107,7 +107,7 @@ public class MapFragment extends Fragment implements MapContract.View {
           mMapView.setOnTouchListener(mapTouchListener);
           // Notify presenter
           mPresenter.mapLoaded();
-        //  addSeekBar();
+          addSeekBar();
         }
       }
     });
@@ -134,15 +134,15 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        Log.i("MapFragment", "Progress = " + progress);
+        //No- op
       }
 
       @Override public void onStartTrackingTouch(SeekBar seekBar) {
-
+        //No op
       }
 
       @Override public void onStopTrackingTouch(SeekBar seekBar) {
-
+        mPresenter.retrieveEMUPolygonByDepth(seekBar.getProgress());
       }
     });
   }

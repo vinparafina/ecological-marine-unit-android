@@ -24,6 +24,7 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  */
 
 import android.graphics.Bitmap;
+import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
 import java.util.List;
@@ -46,5 +47,8 @@ public interface ServiceApi {
   }
   interface BitmapCallback{
     void onBitmapGenerated(Bitmap bitmap);
+  }
+  interface EMUByDepthCallback{
+    void onPolygonsRetrieved( FeatureLayer layer);
   }
 }

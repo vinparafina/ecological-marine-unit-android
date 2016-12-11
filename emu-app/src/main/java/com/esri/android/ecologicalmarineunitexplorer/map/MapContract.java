@@ -58,6 +58,6 @@ public interface MapContract {
     Polygon getBufferPolygonForPoint(Point point, double distance);
     void mapLoaded();
     void geocodeAddress(String addresss);
-
+    void retrieveEMUPolygonByDepth(Integer depth);
   }
 }
