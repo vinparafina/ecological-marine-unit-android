@@ -214,8 +214,10 @@ public class DataManager {
   public void manageEmuPolygonsByDepth(final Integer depth, final ServiceApi.EMUByDepthCallback callback){
     // If depth level is 1, don't download, just default to TiledLayer
     if (depth == 1){
-      mEmuByDepthLayer.setDefinitionExpression(" Depth = 0 ");
+      mEmuByDepthLayer.setVisible(false);
       return;
+    }else{
+      mEmuByDepthLayer.setVisible(true);
     }
     if (mCachedLayers.contains(depth)){
       Log.i("DataManager", "EMU polygons downloaded already for depth " + depth.toString());

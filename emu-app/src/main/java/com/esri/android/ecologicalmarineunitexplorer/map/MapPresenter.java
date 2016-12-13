@@ -56,6 +56,7 @@ public class MapPresenter implements MapContract.Presenter {
   private final String NO_LOCATION_FOUND = "No location found for ";
   private final double BUFFER_SIZE = 32000;
   private final int    ZOOM_LEVEL = 1;
+  private ArcGISTiledLayer mSurfaceLayer = null;
 
 
   public MapPresenter(@NonNull final MapContract.View mapView, @NonNull final DataManager dataManager){
@@ -77,8 +78,8 @@ public class MapPresenter implements MapContract.Presenter {
     mMapView.setUpMap(map);
 
     // EMU Ocean Surface
-    ArcGISTiledLayer tiledLayerBaseMap = new ArcGISTiledLayer(TILED_LAYER_URL);
-    mMapView.addLayer(tiledLayerBaseMap);
+    mSurfaceLayer = new ArcGISTiledLayer(TILED_LAYER_URL);
+    mMapView.addLayer(mSurfaceLayer);
 
     cacheInitialDepthLayer();
   }
@@ -177,6 +178,13 @@ public class MapPresenter implements MapContract.Presenter {
       depth = 80;
     } else if (value >= 90 && value <=100) {
       depth = 90;
+    }
+    if (depth == 1){
+      // Toggle the TiledLayer in the map to show
+      mSurfaceLayer.setVisible(true);
+
+    }else{
+      mSurfaceLayer.setVisible(false);
     }
     mDataManager.manageEmuPolygonsByDepth(depth, new ServiceApi.EMUByDepthCallback() {
       @Override public void onPolygonsRetrieved(FeatureLayer layer) {
