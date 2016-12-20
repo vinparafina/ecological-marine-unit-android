@@ -2,33 +2,19 @@ package com.esri.android.ecologicalmarineunitexplorer;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.*;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.test.ActivityInstrumentationTestCase2;
 import android.support.v4.app.ActivityCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.*;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.mapping.view.MapView;
-import com.github.mikephil.charting.charts.CombinedChart;
 import com.robotium.solo.Solo;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /* Copyright 2016 Esri
  *
@@ -62,7 +48,8 @@ import java.util.concurrent.ExecutionException;
  *
  */
 
-public class EMUAppTest extends ActivityInstrumentationTestCase2 {
+public class EMUAppTest extends ActivityInstrumentationTestCase2
+    implements ActivityCompat.OnRequestPermissionsResultCallback {
 
   private Solo solo;
   private static final int PERMISSION_WRITE_STORAGE = 4;
@@ -76,10 +63,20 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
   public void setUp() throws Exception {
     //setUp() is run before a test case is started.
     //This is where the solo object is created.
-    Solo.Config config = new Solo.Config();
-    config.shouldScroll = false;
 
+
+    Solo.Config config = new Solo.Config();
+    config.screenshotFileType = Solo.Config.ScreenshotFileType.JPEG;
+    File sdcard = Environment.getExternalStorageDirectory();
+    File data = new File(sdcard, "/Data");
+    config.screenshotSavePath = data.getAbsolutePath() + "/Robotium/";
+    Log.i(TAG, config.screenshotSavePath);
+    config.shouldScroll = false;
     solo = new Solo(getInstrumentation(), config);
+    if (!mPermissionsGranted){
+      Log.i(TAG, "Seeking permissions");
+      requestWritePermission();
+    }
     getActivity();
   }
 
@@ -107,8 +104,11 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
     assertTrue(toolbarTitle.equalsIgnoreCase(title));
 
     // Map view present?
-    MapView mapView = (MapView) solo.getView(R.id.map) ;
-    assertNotNull(mapView);
+    assertTrue(solo.waitForView(getActivity().findViewById(R.id.map)));
+
+    // Take a picture and store it
+
+
   }
 
   /**
@@ -116,10 +116,13 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    * a marker if the location is over an ocean
    */
   public void testClickOnOcean(){
-    clickOnOceanPoint();
-    boolean emuTextFound = solo.searchButton("VIEW LAYERS");
+    // This assumes viewpoint at start up hasn't
+    // changed since map was initialized
+    // x = 973.0 y =  891.0
+    solo.clickOnScreen(973,891,1);
+    boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
-    boolean buttonFound = solo.searchButton("PROFILE");
+    boolean buttonFound = solo.searchButton("DETAILS");
     assertTrue(buttonFound);
   }
 
@@ -128,12 +131,10 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    * location shows a toast message
    */
   public void testClickOnLand(){
-
-    // Somewhere in the Sahara
-    Point sahara = new Point(21.9741618,13.0648185,SpatialReferences.getWgs84());
-    android.graphics.Point derivedScreenLocation = deriveScreenPointForLocation(sahara);
+    // This assumes viewpoint at start up hasn't
+    // changed since map was initialized
     assertTrue(solo.waitForDialogToClose());
-    solo.clickOnScreen(derivedScreenLocation.x, derivedScreenLocation.y);
+    solo.clickOnScreen(1002,937,1);
     boolean messageShows = solo.waitForText(getActivity().getString(R.string.no_emu_found));
     assertTrue(messageShows);
   }
@@ -144,15 +145,17 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    * when a point in the ocean is clicked.
    */
   public void testSummaryShown(){
-    clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForDialogToClose());
-    assertTrue(solo.waitForText("EMU "));
-    assertTrue(solo.searchButton("DETAILS"));
-    ArrayList<TextView> items = solo.clickInRecyclerView(0);
-    int count = recyclerCount();
-    assertTrue(solo.scrollDownRecyclerView(count -1));
-    assertTrue(solo.scrollUpRecyclerView(0));
+    solo.clickOnScreen(973,891,1);
+    boolean emuTextFound = solo.waitForText("EMU ");
+    assertTrue(emuTextFound);
+    boolean buttonFound = solo.searchButton("DETAILS");
+    assertTrue(buttonFound);
+    boolean scrollSuccess = solo.scrollDownRecyclerView(2);
+    assertTrue(scrollSuccess);
+    scrollSuccess = solo.scrollDownRecyclerView(3);
+    assertTrue(scrollSuccess);
+    scrollSuccess = solo.scrollUpRecyclerView(0);
+    assertTrue(scrollSuccess);
   }
 
   /**
@@ -160,159 +163,70 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    * the water column are displayed
    */
   public void testWaterColumnShown(){
-    clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForDialogToClose());
+    solo.clickOnScreen(973,891,1);
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
     boolean buttonFound = solo.searchButton("DETAILS");
     assertTrue(buttonFound);
-
-    // There are as many buttons as there are
-    // items in the recycler view
-
-    int buttonCount = recyclerCount();
-    for (int x= 0; x < buttonCount; x++){
-      assertNotNull(getActivity().findViewById(x));
-    }
-
+    Button button = (Button) getActivity().findViewById(0);
+    assertTrue(button != null);
+    button = (Button) getActivity().findViewById(2);
+    assertTrue(button != null);
   }
 
   /**
-   * Validate that when a segment
-   * in the water column is tapped,
-   * the associated item is shown in
-   * the recycler view.
+   * Validate that water column segments
+   * are selected when the colored
+   * rectangle in each recycler view item
+   * is clicked.
    */
-  public void testClickButtonSelectsSegment(){
-    clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForDialogToClose());
+  public void testRectangleClickSelectsSegment(){
+    solo.clickOnScreen(973,891,1);
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
-    int count = recyclerCount();
-    //Click on the second emu layer in the column
-    Log.i("Test", "Adapter count = "+ count);
-    Button button = (Button) solo.getView(count - 1);
-    solo.clickOnButton(button.getId());
-    // Since this scrolls the recycler view to the last item
-    // there should be no down arrow indicating another item
-    assertTrue(solo.getView(R.id.arrowDown).getVisibility() == View.INVISIBLE);
+    boolean scrollsuccess = solo.scrollDownRecyclerView(2);
+    assertTrue(scrollsuccess);
+    ImageView imageView = (ImageView) getActivity().findViewById(R.id.emu_rectangle);
+    imageView.performClick();
+    Button button = (Button) getActivity().findViewById(2);
+    int c = button.getPaint().getColor();
+    String hexColor = String.format("#%06X", (0xFFFFFF & c));
+    Log.i("color", hexColor);
+  }
+  private void requestWritePermission() {
+
+    if (ContextCompat.checkSelfPermission(getActivity(),
+        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+      // Request the permission
+      ActivityCompat.requestPermissions(getActivity(), new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE},
+          PERMISSION_WRITE_STORAGE);
+    }else{
+      mPermissionsGranted = true;
+    }
   }
 
   /**
-   * Test that a bitmap snapshot of the map is shown
+   * Once the app has prompted for permission to write to external storage, the response
+   * from the user is handled here.
+   *
+   * @param requestCode
+   *            int: The request code passed into requestPermissions
+   * @param permissions
+   *            String: The requested permission(s).
+   * @param grantResults
+   *            int: The grant results for the permission(s). This will be
+   *            either PERMISSION_GRANTED or PERMISSION_DENIED
    */
-  public void testMapImageGenerated(){
-    clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForDialogToClose());
-    boolean emuTextFound = solo.waitForText("EMU ");
-    ImageView imageView = (ImageView)  solo.getView(R.id.imgMap);
-    assertTrue(imageView.getDrawable() != null);
-  }
-
-  /**
-   * Test that charts are drawn when
-   * Detail button is clicked
-   */
-  public void testForDetailCharts(){
-    clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForText("EMU "));
-    assertTrue(solo.searchButton("DETAILS"));
-    solo.clickOnButton("DETAILS");
-    assertTrue(solo.waitForDialogToClose());
-    CombinedChart combinedChart = (CombinedChart) solo.getView(R.id.chart1);
-    assertTrue(combinedChart.getData().getAllData().size() > 0);
-
-    combinedChart = (CombinedChart) solo.getView(R.id.chart2);
-    assertTrue(combinedChart.getData().getAllData().size() > 0);
-
-    combinedChart = (CombinedChart) solo.getView(R.id.chart3);
-    assertTrue(combinedChart.getData().getAllData().size() > 0);
-
-    combinedChart = (CombinedChart) solo.getView(R.id.chart4);
-    assertTrue(combinedChart.getData().getAllData().size() > 0);
-
-    combinedChart = (CombinedChart) solo.getView(R.id.chart5);
-    assertTrue(combinedChart.getData().getAllData().size() > 0);
-
-    combinedChart = (CombinedChart) solo.getView(R.id.chart6);
-    assertTrue(combinedChart.getData().getAllData().size() > 0);
-  }
-
-  /**
-   * Test the water column profiles are drawn
-   * when clicking on "VIEW COLUMN PROFILE"
-   */
-  public void testForWaterProfileCharts(){
-    clickOnOceanPoint();
-    solo.clickOnButton("VIEW COLUMN PROFILE");
-    assertTrue(solo.waitForDialogToClose());
-
-    assertTrue(solo.waitForText("Temperature"));
-    CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
-    checkForChartData();
-    solo.scrollToSide(Solo.RIGHT);
-
-
-    assertTrue(solo.waitForText("Salinity"));
-    checkForChartData();
-    solo.scrollToSide(Solo.RIGHT);
-
-
-    assertTrue(solo.waitForText("Oxygen"));
-    checkForChartData();
-    solo.scrollToSide(Solo.RIGHT);
-
-    assertTrue(solo.waitForText("Phosphate"));
-    checkForChartData();
-    solo.scrollToSide(Solo.RIGHT);
-
-    assertTrue(solo.waitForText("Silicate"));
-    checkForChartData();
-    solo.scrollToSide(Solo.RIGHT);
-
-    assertTrue(solo.waitForText("Nitrate"));
-    checkForChartData();
-  }
-
-  /**
-   * Helper method that clicks on
-   * an ocean location
-   */
-  private void clickOnOceanPoint(){
-    assertTrue(solo.waitForDialogToClose());
-    // Near the Galapagos Islands
-    Point start = new Point(-95.0974397, -0.05932, SpatialReferences.getWgs84());
-    android.graphics.Point screenPoint = deriveScreenPointForLocation(start);
-
-    solo.clickOnScreen(screenPoint.x, screenPoint.y );
-    assertTrue(solo.waitForText("Location Summary"));
-  }
-
-  private void checkForChartData(){
-    CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
-    assertTrue(chart.getData().getAllData().size() > 0);
-    chart = null;
-  }
-  private int recyclerCount(){
-    RecyclerView view = (RecyclerView) solo.getView(R.id.summary_recycler_view) ;
-    return view.getAdapter().getItemCount();
-  }
-  private android.graphics.Point deriveScreenPointForLocation(Point location){
-    MapView mapView = (MapView) solo.getView(R.id.map) ;
-    DisplayMetrics metrics = new DisplayMetrics();
-    getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);;
-    float screenHeight = metrics.heightPixels;
-    float mapViewHeight = mapView.getHeight();
-    float buffer = screenHeight - mapViewHeight;
-    Point projectedPoint = (Point) GeometryEngine.project(location, SpatialReference.create(3857));
-
-    android.graphics.Point derivedPoint =  mapView.locationToScreen(projectedPoint);
-
-    return new android.graphics.Point(derivedPoint.x,derivedPoint.y+Math.round(buffer));
-
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    if (requestCode == PERMISSION_WRITE_STORAGE) {
+      // Request for write permission.
+      if (grantResults.length != 1 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+        Toast.makeText(getActivity(), "Permission to write to external storage required for screenshots",
+            Toast.LENGTH_LONG).show();
+      } else {
+        mPermissionsGranted = true;
+      }
+    }
   }
 }

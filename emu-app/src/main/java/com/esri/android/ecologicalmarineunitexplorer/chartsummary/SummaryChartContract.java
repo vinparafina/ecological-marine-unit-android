@@ -42,7 +42,6 @@ public interface SummaryChartContract {
       void setNitrateText(double nitrateText);
       void showProgressBar(String message, String title);
       void hideProgressBar();
-      void showMessage(String message);
   }
 
   interface Presenter extends BasePresenter {
