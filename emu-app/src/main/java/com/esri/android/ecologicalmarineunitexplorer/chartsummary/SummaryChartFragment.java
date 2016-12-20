@@ -1,6 +1,7 @@
 package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.CombinedData;
 
 import java.text.DecimalFormat;
@@ -46,6 +49,7 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
   private View mRoot;
   private SummaryChartContract.Presenter mPresenter;
   private ProgressDialog mProgressDialog;
+  private String mUnits = null;
 
   public static SummaryChartFragment newInstance(){
     return new SummaryChartFragment();
@@ -65,43 +69,50 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
   @Override public void showChartData(List<CombinedData> dataList) {
     if (dataList != null){
       int size = dataList.size();
-      for (int x=0; x < size; x++){
+      for (int x=0; x < size - 1 ; x++){
         CombinedData data = dataList.get(x);
         int viewId = getIdForChartView(x);
         prepareChartView(viewId, data);
       }
+      prepareLegend(dataList.get(size -1));
     }
 
   }
 
   @Override public void setTemperatureText(double temperatureText) {
+    mUnits = " \u2103";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtTemp);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(temperatureText))+"");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(temperatureText))+mUnits);
   }
 
   public void setSalinityText(double salinityText) {
     TextView textView = (TextView) mRoot.findViewById(R.id.txtSalinity);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(salinityText)) + "");
+    mUnits = " ppm";
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(salinityText)) + mUnits);
   }
 
   @Override public void setOxygenText(double oxygenText) {
+    mUnits = " \u00b5" + "m/L";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtOxygen);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(oxygenText)) + "");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(oxygenText)) + mUnits);
   }
 
   @Override public void setPhosphateText(double phosphateText) {
+    mUnits = " \u00b5" + "m/L";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtPhosphate);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(phosphateText)) + "");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(phosphateText)) + mUnits);
   }
 
   @Override public void setSilicateText(double silicateText) {
+    mUnits = " \u00b5" + "m/L";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtSilicate);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(silicateText)) + "");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(silicateText)) + mUnits);
   }
 
   @Override public void setNitrateText(double nitrateText) {
+    mUnits = " \u00b5" + "m/L";
     TextView textView = (TextView) mRoot.findViewById(R.id.txtNitrate);
-    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(nitrateText)) + "");
+    textView.setText(Double.valueOf(new DecimalFormat("#.##").format(nitrateText)) + mUnits);
   }
 
   private void prepareChartView(int id, CombinedData data){
@@ -112,11 +123,39 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
     chart.getAxisLeft().setDrawGridLines(false);
     chart.setDescription("");
     chart.setDescriptionTextSize(10f);
+    chart.setBackgroundColor(Color.WHITE);
     chart.setDrawGridBackground(false);
 
     chart.setData(data);
     chart.invalidate();
 
+  }
+
+  /**
+   * Create a legend based on a dummy chart.  The legend
+   * is used by all charts and is positioned
+   * across the top of the screen.
+   * @param data - CombinedData used to generate the legend
+   */
+  private void prepareLegend(CombinedData data){
+    //The dummy chart is never shown, but it's legend is.
+    CombinedChart dummyChart = (CombinedChart) mRoot.findViewById(R.id.legend);
+    dummyChart.getPaint(Chart.PAINT_DESCRIPTION).setTextAlign(Paint.Align.CENTER);
+    dummyChart.getXAxis().setEnabled(false);
+    dummyChart.getAxisRight().setEnabled(false);
+    dummyChart.getAxisLeft().setEnabled(false);
+    dummyChart.setDescription("");
+    dummyChart.setDescriptionTextSize(10f);
+    dummyChart.setBackgroundColor(Color.WHITE);
+    dummyChart.setDrawGridBackground(false);
+    dummyChart.setData(data);
+
+    Legend l = dummyChart.getLegend();
+    l.setEnabled(true);
+    // The positioning of the legend effectively
+    // hides the dummy chart from view.
+    l.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
+    dummyChart.invalidate();
   }
 
   @Override public void setPresenter(SummaryChartContract.Presenter presenter) {
@@ -166,5 +205,9 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
    */
   @Override public void hideProgressBar() {
     mProgressDialog.hide();
+  }
+
+  @Override public void showMessage(String message) {
+    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
   }
 }

@@ -6,7 +6,8 @@
               android:orientation="vertical"
               android:id="@+id/bottom_sheet_view"
               android:layout_width="match_parent"
-              android:layout_height="150dp"
+              android:layout_height="match_parent"
+              app:behavior_peekHeight="80dp"
               app:layout_behavior="@string/bottom_sheet_behavior" android:alpha="0.8">
 
     <TextView android:layout_width="match_parent"
@@ -22,23 +23,59 @@
               android:layout_marginRight="@dimen/activity_horizontal_margin"
               android:layout_marginTop="@dimen/activity_horizontal_margin"
               android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
+    <!--<LinearLayout android:layout_width="match_parent"-->
+                  <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal">-->
+        <!--<Button android:layout_width="wrap_content"-->
+                <!--android:text="@string/view_layers"-->
+                <!--android:layout_weight="1"-->
+                <!--android:id="@+id/btnLayers"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="left"-->
+                <!--style="?android:attr/borderlessButtonStyle" android:gravity="left|center_vertical|center_horizontal"/>-->
+        <!--<Button android:layout_width="wrap_content"-->
+                <!--android:text="@string/view_column_profile"-->
+                <!--android:id="@+id/btnProfile"-->
+                <!--android:layout_weight="1"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="right"-->
+                <!--style="?android:attr/borderlessButtonStyle" android:gravity="right|center_vertical|center_horizontal"/>-->
+
+    <!--</LinearLayout>-->
+
     <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                android:orientation="horizontal">
-        <Button android:layout_width="wrap_content"
-                android:text="@string/view_layers"
-                android:layout_weight="1"
-                android:id="@+id/btnLayers"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                style="?android:attr/borderlessButtonStyle" android:gravity="left|center_vertical|center_horizontal"/>
-        <Button android:layout_width="wrap_content"
-                android:text="@string/view_column_profile"
-                android:id="@+id/btnProfile"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                style="?android:attr/borderlessButtonStyle" android:gravity="right|center_vertical|center_horizontal"/>
+                  android:layout_height="match_parent"
+                  android:orientation="horizontal"
+                  android:id="@+id/horizontalLinearLayout">
+
+        <!-- Water column container -->
+        <FrameLayout android:layout_width="-2dp"
+                     android:layout_height="match_parent"
+                     android:id="@+id/column_container"/>
+
+        <!-- Parent layout for map and recycler view -->
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical"
+                      android:layout_weight="3"
+                      android:layout_marginTop="-7dp"
+                      android:id="@+id/mapAndSummaryLinearLayout">
+
+            <ImageView android:layout_width="0dp"
+                       android:layout_height="0dp"
+                       android:id="@+id/imgMap"/>
+
+            <!-- Summary container layout -->
+            <FrameLayout android:id="@+id/summary_container"
+                         android:layout_width="match_parent"
+                         android:layout_height="match_parent"
+                         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                         android:layout_marginBottom="0dp"
+                         android:layout_marginLeft="0dp" android:layout_marginRight="0dp"
+                         android:layout_marginTop="5dp">
+            </FrameLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

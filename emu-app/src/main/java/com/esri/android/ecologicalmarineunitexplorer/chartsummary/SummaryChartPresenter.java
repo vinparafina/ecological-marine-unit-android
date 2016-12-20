@@ -2,8 +2,11 @@ package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.util.Log;
+import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.data.*;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.data.*;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -95,36 +98,60 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     List<EMUObservation> list = waterColumn.getEMUObservations(emuName);
     // The observation list should contain at least one EMUObservation!!
     // Grab the first one for now..
-    EMUObservation observation = list.get(0);
+    if (list.size() > 0){
+      EMUObservation observation = list.get(0);
 
 
 
-    List<CombinedData> dataList = new ArrayList<>();
+      List<CombinedData> dataList = new ArrayList<>();
 
-    dataList.add(0, buildTempData(observation, stat));
-    dataList.add(1, buildSalinityData(observation,stat));
-    dataList.add(2, buildOxygenData(observation,stat));
-    dataList.add(3, buildNitrateData(observation,stat));
-    dataList.add(4, buildPhosphateData(observation,stat));
-    dataList.add(5, buildSilicateData(observation,stat));
+      dataList.add(0, buildTempData(observation, stat));
+      dataList.add(1, buildSalinityData(observation,stat));
+      dataList.add(2, buildOxygenData(observation,stat));
+      dataList.add(3, buildNitrateData(observation,stat));
+      dataList.add(4, buildPhosphateData(observation,stat));
+      dataList.add(5, buildSilicateData(observation,stat));
+      dataList.add(6, buildDummyDataForLegend());
 
-    mDataList = dataList;
-    double tempOfCurrentEMu = observation.getTemperature() != null ? observation.getTemperature(): 0d;
-    double salinityOfcurrentEMu = observation.getSalinity() != null ? observation.getSalinity() : 0d;
-    double oxygenOfCurrentEmu = observation.getOxygen() != null ? observation.getOxygen() : 0d;
-    double phosphateOfCurrentEmu = observation.getPhosphate() != null ? observation.getPhosphate(): 0d;
-    double silicateOfCurrentEmu = observation.getSilicate() != null ? observation.getSilicate() : 0d;
-    double nitrateOfCurrentEmu = observation.getNitrate() != null ? observation.getNitrate() : 0d;
+      mDataList = dataList;
+      double tempOfCurrentEMu = observation.getTemperature() != null ? observation.getTemperature(): 0d;
+      double salinityOfcurrentEMu = observation.getSalinity() != null ? observation.getSalinity() : 0d;
+      double oxygenOfCurrentEmu = observation.getOxygen() != null ? observation.getOxygen() : 0d;
+      double phosphateOfCurrentEmu = observation.getPhosphate() != null ? observation.getPhosphate(): 0d;
+      double silicateOfCurrentEmu = observation.getSilicate() != null ? observation.getSilicate() : 0d;
+      double nitrateOfCurrentEmu = observation.getNitrate() != null ? observation.getNitrate() : 0d;
 
-    mView.setTemperatureText(tempOfCurrentEMu);
-    mView.setSalinityText(salinityOfcurrentEMu);
-    mView.setOxygenText(oxygenOfCurrentEmu);
-    mView.setPhosphateText(phosphateOfCurrentEmu);
-    mView.setSilicateText(silicateOfCurrentEmu);
-    mView.setNitrateText(nitrateOfCurrentEmu);
+      mView.setTemperatureText(tempOfCurrentEMu);
+      mView.setSalinityText(salinityOfcurrentEMu);
+      mView.setOxygenText(oxygenOfCurrentEmu);
+      mView.setPhosphateText(phosphateOfCurrentEmu);
+      mView.setSilicateText(silicateOfCurrentEmu);
+      mView.setNitrateText(nitrateOfCurrentEmu);
 
-    mView.showChartData(mDataList);
-    mView.hideProgressBar();
+      mView.showChartData(mDataList);
+      mView.hideProgressBar();
+    }else{
+      mView.hideProgressBar();
+      mView.showMessage("No chart data found for layer");
+    }
+
+  }
+  private CombinedData buildDummyDataForLegend(){
+    CombinedData combinedData = new CombinedData();
+    float xIndex = 1.5f;
+    float close = 13;
+    float open = 26f;
+    float shadowH = 30.33f;
+    float shadowL = -2.05f;
+    float average = 20f;
+    CandleData candleData = generateCandleData(xIndex, shadowH, shadowL, open, close, "EMU HI/LO" );
+    ScatterData scatterData = generateScatterData(average, "EMU Mean");
+
+    LineData s1 = generateOceanHiLo(close, open, "Ocean HI/LO");
+    combinedData.setData(s1);
+    combinedData.setData(candleData);
+    combinedData.setData(scatterData);
+    return combinedData;
   }
 
   private CombinedData buildTempData(EMUObservation observation, EMUStat stat){
@@ -139,10 +166,13 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     float shadowL = (float) mDataManager.getMinTemperatureFromSummary().doubleValue();  // -2.05f; // Lowest min temp from summary table
 
     float averageTemp = (float)observation.getTemperature().doubleValue();
-    Log.i("SummaryChartPreseter", "Temperature: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    Log.i("SummaryChartPresenter", "Temperature: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
 
     combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close, TEMPERATURE ));
-    combinedData.setData(generateScatterData(averageTemp));
+    ScatterData sdata = generateScatterData(averageTemp, TEMPERATURE);
+   // ScatterData data = generateOceanHiLo(open,close,"HILO");
+   // sdata.addDataSet(data.getDataSetByIndex(0));
+    combinedData.setData(sdata);
     return  combinedData;
   }
   private CombinedData buildSalinityData(EMUObservation observation, EMUStat stat){
@@ -156,11 +186,11 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     float shadowH = (float)mDataManager.getMaxSalinityFromSummary().doubleValue();
     float shadowL = (float) mDataManager.getMinSalinityFromSummary().doubleValue();
 
-    float averageTemp = (float)observation.getSalinity().doubleValue();
-    Log.i("SummaryChartPreseter", "Salinity: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    float avgSalinity = (float)observation.getSalinity().doubleValue();
+    Log.i("SummaryChartPreseter", "Salinity: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ avgSalinity);
 
     combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close, SALINITY ));
-    combinedData.setData(generateScatterData(averageTemp));
+    combinedData.setData(generateScatterData(avgSalinity, SALINITY));
     return  combinedData;
   }
   private CombinedData buildOxygenData(EMUObservation observation, EMUStat stat){
@@ -175,11 +205,11 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     float shadowH = (float)mDataManager.getMaxOxygenFromSummary().doubleValue();
     float shadowL = (float) mDataManager.getMinOxygenFromSummary().doubleValue();
 
-    float averageTemp = (float)observation.getOxygen().doubleValue();
-    Log.i("SummaryChartPreseter", "Oxygen: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    float averageOx = (float)observation.getOxygen().doubleValue();
+    Log.i("SummaryChartPreseter", "Oxygen: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageOx);
 
     combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close, OXYGEN ));
-    combinedData.setData(generateScatterData(averageTemp));
+    combinedData.setData(generateScatterData(averageOx, OXYGEN));
     return  combinedData;
   }
   private CombinedData buildPhosphateData(EMUObservation observation, EMUStat stat){
@@ -193,11 +223,11 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     float shadowH = (float)mDataManager.getMaxPhosphateFromSummary().doubleValue();
     float shadowL = (float) mDataManager.getMinPhosphateFromSummary().doubleValue();
 
-    float averageTemp = (float)observation.getPhosphate().doubleValue();
-    Log.i("SummaryChartPreseter", "Phosphate: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    float averagePhos = (float)observation.getPhosphate().doubleValue();
+    Log.i("SummaryChartPreseter", "Phosphate: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averagePhos);
 
     combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close, PHOSPHATE ));
-    combinedData.setData(generateScatterData(averageTemp));
+    combinedData.setData(generateScatterData(averagePhos, PHOSPHATE));
     return  combinedData;
   }
   private CombinedData buildSilicateData(EMUObservation observation, EMUStat stat){
@@ -211,11 +241,11 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     float shadowH = (float)mDataManager.getMaxSilicateFromSummary().doubleValue();
     float shadowL = (float) mDataManager.getMinSilicateFromSummary().doubleValue();
 
-    float averageTemp = (float)observation.getSilicate().doubleValue();
-    Log.i("SummaryChartPreseter", "Silicate: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    float averageSil = (float)observation.getSilicate().doubleValue();
+    Log.i("SummaryChartPreseter", "Silicate: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageSil);
 
     combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close, SILICATE ));
-    combinedData.setData(generateScatterData(averageTemp));
+    combinedData.setData(generateScatterData(averageSil, SILICATE));
     return  combinedData;
   }
   private CombinedData buildNitrateData(EMUObservation observation, EMUStat stat){
@@ -229,12 +259,12 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     float shadowH = (float)mDataManager.getMaxNitrateFromSummary().doubleValue();
     float shadowL = (float) mDataManager.getMinNitrateFromSummary().doubleValue();
 
-    float averageTemp = (float)observation.getNitrate().doubleValue();
-    Log.i("SummaryChartPreseter", "Nitrate: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageTemp);
+    float averageN = (float)observation.getNitrate().doubleValue();
+    Log.i("SummaryChartPreseter", "Nitrate: Ocean high = " + shadowH + " ocean low = "+ shadowL + " emu min = " + close + " emu max = "+ open + " emu mean for location = "+ averageN);
 
     combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close, NITRATE ));
-    combinedData.setData(generateScatterData(averageTemp));
-    return  combinedData;
+    combinedData.setData(generateScatterData(averageN, NITRATE));
+    return combinedData;
   }
 
   private CandleData generateCandleData(float xIndex, float shadowH, float shadowL, float open, float close, String seriesName){
@@ -244,26 +274,37 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     CandleDataSet set = new CandleDataSet(entries, seriesName);
     set.setDecreasingColor(Color.rgb(142, 150, 175));
     set.setShadowColor(Color.DKGRAY);
+    set.setDecreasingColor(Color.parseColor("#2196F3"));
     set.setBarSpace(0.3f);
     set.setValueTextSize(10f);
+    set.setShadowWidth(2f);
     set.setDrawValues(false);
     d.addDataSet(set);
     return d;
   }
 
-  private ScatterData generateScatterData(float averageValue){
+  private ScatterData generateScatterData(float averageValue,  String seriesName){
     ScatterData d = new ScatterData();
     ArrayList<Entry> entries = new ArrayList<>();
     entries.add(new Entry(1.5f, averageValue));
-    ScatterDataSet set = new ScatterDataSet(entries, "Scatter DataSet");
-    set.setColors(ColorTemplate.MATERIAL_COLORS);
+    ScatterDataSet set = new ScatterDataSet(entries, seriesName);
+    set.setColor(Color.parseColor("#FF4081"));
     set.setScatterShape(ScatterChart.ScatterShape.SQUARE);
     set.setScatterShapeSize(9f);
     set.setDrawValues(false);
     set.setValueTextSize(10f);
     d.addDataSet(set);
     return  d;
-
   }
-
+  private LineData generateOceanHiLo(float open, float close, String seriesName){
+    LineData d = new LineData();
+    ArrayList<Entry> entries = new ArrayList<>();
+    entries.add(new Entry(1.5f, open));
+    LineDataSet set = new LineDataSet(entries, seriesName);
+    set.setDrawValues(false);
+    set.setColor(Color.BLACK);
+    set.setValueTextSize(10f);
+    d.addDataSet(set);
+    return  d;
+  }
 }
