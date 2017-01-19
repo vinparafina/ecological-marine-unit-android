@@ -105,6 +105,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
 
   @Override
   public void onAttach(Context activity) {
+    Log.i(TAG, "ENTERING onAttach");
     super.onAttach(activity);
 
     // This makes sure that the container activity has implemented
@@ -115,6 +116,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
       throw new ClassCastException(activity.toString()
           + " must implement OnRectangleTappedListener and the OnDetailClickedListener.");
     }
+    Log.i(TAG, "LEAVING onAttach");
   }
 
   /**
@@ -122,7 +124,10 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
    * @param waterColumn - A WaterColumn object containing EMUObservations to display
    */
   @Override public void showWaterColumn(WaterColumn waterColumn) {
+    Log.i(TAG, "ENTERING showWaterColumn");
     if (waterColumn != null){
+      // Scroll to top of recycler view
+      scrollToSummary(0);
       mWaterColumn = waterColumn;
       Set<EMUObservation> emuSet = waterColumn.getEmuSet();
       List<EMUObservation> list = new ArrayList<>();
@@ -132,7 +137,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
       mEmuAdapter.setObservations(list);
       showWaterColumnButtons(waterColumn);
     }
-
+    Log.i(TAG, "LEAVING showWaterColumn");
   }
   /**
    * Dynamically add a button for each EMU represented
@@ -140,6 +145,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
    * @param waterColumn
    */
   private void showWaterColumnButtons(WaterColumn waterColumn){
+    Log.i(TAG, "ENTERING showWaterColumnButtons");
     mButtonContainer.removeAllViews();
 
     // Each button will be added to layout with a layout_weight
@@ -174,7 +180,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
       mButtonContainer.addView(button);
       buttonId = buttonId + 1;
     }
-
+    Log.i(TAG, "LEAVING showWaterColumnButtons");
   }
   /**
    * Build a stateful drawable for a given EMU
@@ -182,6 +188,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
    * @return StateListDrawable responsive to selected, pressed, and enabled states
    */
   private StateListDrawable buildStateList(int emuName){
+    Log.i(TAG, "ENTERING buildStateList");
     StateListDrawable stateListDrawable = new StateListDrawable();
 
     GradientDrawable defaultShape = new GradientDrawable();
@@ -196,13 +203,18 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
     stateListDrawable.addState(new int[] {android.R.attr.state_selected}, selectedPressShape);
     stateListDrawable.addState(new int[] {android.R.attr.state_enabled}, defaultShape);
 
+    Log.i(TAG, "LEAVING buildStateList");
+
     return stateListDrawable;
   }
   @Override public void showLocationSummary(String x, String y) {
+    Log.i(TAG, "ENTERING showLocationSummary");
     TextView textView = (TextView) getActivity().findViewById(R.id.txtSummary) ;
     textView.setText(getString(R.string.water_column_at) + y + ", "+ x +getString(R.string.lat_lng) +
         mWaterColumn.getEmuSet().size() + getString(
         R.string.extending_to)+ mWaterColumn.getDepth()+getString(R.string.meters_period));
+
+    Log.i(TAG, "LEAVING showLocationSummary");
   }
 
   @Override public void scrollToSummary(int position) {
@@ -218,12 +230,14 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
    * @param position
    */
   public void highlightSegment(int position){
+    Log.i(TAG, "ENTERING highlightSegment");
     Button button =(Button) mButtonContainer.getChildAt(position);
     if (mSelectedButton != null){
       mSelectedButton.setSelected(false);
     }
     button.setSelected(true);
     mSelectedButton = button;
+    Log.i(TAG, "LEAVING highlightSegment");
   }
 
   public class EMUAdapter extends RecyclerView.Adapter<RecycleViewHolder>{
@@ -256,6 +270,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
      * @param position - position of the item in the data provider
      */
     @Override public void onBindViewHolder(RecycleViewHolder holder, final int position) {
+      Log.i(TAG, "ENTERING onBindViewHolder");
       final EMUObservation observation = emuObservations.get(position);
       holder.txtThickness.setText(getString(R.string.layer_thickness_desc) + observation.getThickness() + getString(R.string.meters));
       holder.txtName.setText(observation.getEmu().getName().toString());
@@ -280,6 +295,8 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
       holder.bind(observation);
       // View index has changed, notify.
       highlightSegment(position);
+
+      Log.i(TAG, "LEAVING onBindViewHolder");
     }
 
 
