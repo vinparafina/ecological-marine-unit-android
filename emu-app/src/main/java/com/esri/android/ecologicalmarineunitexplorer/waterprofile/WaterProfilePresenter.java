@@ -44,6 +44,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
   private final WaterProfileContract.View mView;
   private final DataManager mDataManager;
   private final Map<String, ScatterData> mChartData = new HashMap<>();
+  private final String TAG = WaterProfilePresenter.class.getSimpleName();
 
   public WaterProfilePresenter(@NonNull Point p, @NonNull WaterProfileContract.View view, @NonNull DataManager dataManager) {
     mColumnLocation = p;
@@ -96,55 +97,65 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
   }
   private ScatterData buildScatterDataForProperty(WaterProfile profile, String property){
     ScatterData data = new ScatterData();
-    // Get all the measurements for the property
-    Map<Double,Double> propertyMeasurementByDepth = profile.getMeasurementsForProperty(property);
-    ArrayList<Entry> entries = new ArrayList<>();
-    Set<Double> depths = propertyMeasurementByDepth.keySet();
-    for (Double depth : depths){
-      float y = (float) Math.abs(depth.doubleValue());
-      float x = (float) propertyMeasurementByDepth.get(depth).doubleValue();
-      entries.add(new Entry(x, y));
+
+    if (profile != null){
+      // Get all the measurements for the property
+      Map<Double,Double> propertyMeasurementByDepth = profile.getMeasurementsForProperty(property);
+      ArrayList<Entry> entries = new ArrayList<>();
+      Set<Double> depths = propertyMeasurementByDepth.keySet();
+      for (Double depth : depths){
+        float y = (float) Math.abs(depth.doubleValue());
+        float x = (float) propertyMeasurementByDepth.get(depth).doubleValue();
+        entries.add(new Entry(x, y));
+      }
+
+      ScatterDataSet set = new ScatterDataSet(entries, property);
+      set.setColor(Color.BLACK);
+      set.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+      set.setScatterShapeSize(5f);
+      set.setDrawValues(false);
+      data.addDataSet(set);
+    }else{
+      Log.e(TAG, "Profile data object is null!");
     }
 
-    ScatterDataSet set = new ScatterDataSet(entries, property);
-    set.setColor(Color.BLACK);
-    set.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
-    set.setScatterShapeSize(5f);
-    set.setDrawValues(false);
-    data.addDataSet(set);
     return  data;
   }
   private LineData buildEMULayers(float xmin, float xmax){
     LineData data = new LineData();
     WaterColumn column = mDataManager.getCurrentWaterColumn();
 
+    if (column != null){
+      Set<EMUObservation> observations = column.getEmuSet();
+      for (final EMUObservation observation : observations){
+        ArrayList<Entry> entries = new ArrayList<Entry>();
 
-    Set<EMUObservation> observations = column.getEmuSet();
-    for (final EMUObservation observation : observations){
-      ArrayList<Entry> entries = new ArrayList<Entry>();
-
-      for (float index = xmin; index <= xmax; index++) {
-        entries.add(new Entry(index, Math.abs(observation.getTop())));
-      }
-
-      LineDataSet set = new LineDataSet(entries, "Line DataSet");
-      set.setAxisDependency(YAxis.AxisDependency.LEFT);
-      set.setFillColor(Color.parseColor(EmuHelper.getColorForEMUCluster(observation.getEmu().getName())));
-
-      set.setFillAlpha(255);
-      set.setDrawCircles(false);
-      set.setDrawValues(false);
-      set.setDrawFilled(true);
-      set.setHighLightColor(Color.rgb(244, 117, 117));
-      set.setDrawCircleHole(false);
-      set.setFillFormatter(new FillFormatter() {
-        @Override
-        public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
-          return Math.abs(observation.getTop()) + observation.getThickness();
+        for (float index = xmin; index <= xmax; index++) {
+          entries.add(new Entry(index, Math.abs(observation.getTop())));
         }
-      });
-      data.addDataSet(set);
+
+        LineDataSet set = new LineDataSet(entries, "Line DataSet");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setFillColor(Color.parseColor(EmuHelper.getColorForEMUCluster(observation.getEmu().getName())));
+
+        set.setFillAlpha(255);
+        set.setDrawCircles(false);
+        set.setDrawValues(false);
+        set.setDrawFilled(true);
+        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setDrawCircleHole(false);
+        set.setFillFormatter(new FillFormatter() {
+          @Override
+          public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+            return Math.abs(observation.getTop()) + observation.getThickness();
+          }
+        });
+        data.addDataSet(set);
+      }
+    }else{
+      Log.e(TAG, "Water column data object is null!");
     }
+
 
     return data;
   }

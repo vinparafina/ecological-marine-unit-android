@@ -107,6 +107,7 @@ public class MapPresenter implements MapContract.Presenter {
         WaterColumn waterColumn =   column;
         if (waterColumn == null){
           mMapView.showMessage(NO_EMU_FOUND);
+          mMapView.onNoEmusFound();
         }else{
           mMapView.setSelectedPoint(point);
           mMapView.setViewpoint();
@@ -192,6 +193,7 @@ public class MapPresenter implements MapContract.Presenter {
         if (layer != null){
           mMapView.hideProgressBar();
         }else{
+          Log.i("MapPresenter", "*****Return layer is null!");
           mMapView.hideProgressBar();
           mMapView.showMessage("Unable to display EMU polygons");
         }
@@ -206,9 +208,11 @@ public class MapPresenter implements MapContract.Presenter {
   private void cacheInitialDepthLayer(){
     mDataManager.queryEmuByDepth(10, new ServiceApi.EMUByDepthCallback() {
       @Override public void onPolygonsRetrieved(FeatureLayer layer) {
-        Log.i("MapPresenter", "Initial depth layer downloaded");
-        layer.setDefinitionExpression(" Depth = 0");
-        mMapView.addLayer(layer);
+        if (layer != null){
+          Log.i("MapPresenter", "Initial depth layer downloaded");
+          layer.setDefinitionExpression(" Depth = 0");
+          mMapView.addLayer(layer);
+        }
         mMapView.hideProgressBar();
       }
     });

@@ -20,7 +20,6 @@ import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.EMUObservation;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.android.ecologicalmarineunitexplorer.util.EmuHelper;
-import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +58,6 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
   private LinearLayout mButtonContainer;
   private RecyclerView mEmuObsView;
   private Button mSelectedButton;
-  private View mLocationSummary;
   private WaterColumn mWaterColumn;
   private EMUAdapter mEmuAdapter;
   private BottomSheetContract.Presenter mPresenter;
@@ -124,22 +122,24 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
    * @param waterColumn - A WaterColumn object containing EMUObservations to display
    */
   @Override public void showWaterColumn(WaterColumn waterColumn) {
-    mWaterColumn = waterColumn;
-    Set<EMUObservation> emuSet = waterColumn.getEmuSet();
-    List<EMUObservation> list = new ArrayList<>();
-    for (EMUObservation observation : emuSet){
-      list.add(observation);
+    if (waterColumn != null){
+      mWaterColumn = waterColumn;
+      Set<EMUObservation> emuSet = waterColumn.getEmuSet();
+      List<EMUObservation> list = new ArrayList<>();
+      for (EMUObservation observation : emuSet){
+        list.add(observation);
+      }
+      mEmuAdapter.setObservations(list);
+      showWaterColumnButtons(waterColumn);
     }
-    mEmuAdapter.setObservations(list);
-    showWaterColumnButtons(waterColumn);
+
   }
   /**
    * Dynamically add a button for each EMU represented
    * in the water column.
    * @param waterColumn
    */
-  public void showWaterColumnButtons(WaterColumn waterColumn){
-
+  private void showWaterColumnButtons(WaterColumn waterColumn){
     mButtonContainer.removeAllViews();
 
     // Each button will be added to layout with a layout_weight

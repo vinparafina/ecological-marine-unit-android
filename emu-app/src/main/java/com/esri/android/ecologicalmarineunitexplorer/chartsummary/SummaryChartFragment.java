@@ -204,7 +204,7 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
    * Hide progress bar
    */
   @Override public void hideProgressBar() {
-    mProgressDialog.hide();
+    mProgressDialog.dismiss();
   }
 
   @Override public void showMessage(String message) {

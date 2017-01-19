@@ -62,7 +62,11 @@ public class MapFragment extends Fragment implements MapContract.View {
   private Viewpoint mInitialViewpoint;
   private final double MAP_SCALE = 25000000; // map scale of 30000000 shows EMU colors without point detail
   private final String TAG = MapFragment.class.getSimpleName();
+  private NoEmuFound mNoEmuFoundCallback;
 
+  public interface NoEmuFound{
+    public void handleNoEmu();
+  }
   public MapFragment(){}
 
   public static MapFragment newInstance(){
@@ -82,6 +86,17 @@ public class MapFragment extends Fragment implements MapContract.View {
     return mRoot;
   }
 
+  @Override
+  public void onAttach(Context activity) {
+    super.onAttach(activity);
+    try{
+      mNoEmuFoundCallback = (NoEmuFound) activity;
+    }catch (ClassCastException e) {
+      throw new ClassCastException(activity.toString()
+          + " must implement NoEmuFound.");
+    }
+
+  }
 
   @Override
   public void setUpMap(ArcGISMap map){
@@ -263,6 +278,11 @@ public class MapFragment extends Fragment implements MapContract.View {
   @Override  public void showSnackbar(){
     ((MainActivity)getActivity()).showSnackbar();
   }
+
+  @Override public void onNoEmusFound() {
+    mNoEmuFoundCallback.handleNoEmu();
+  }
+
   /**
    * Hide progress bar
    */

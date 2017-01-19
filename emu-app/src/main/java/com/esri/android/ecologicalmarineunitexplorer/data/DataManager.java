@@ -245,11 +245,13 @@ public class DataManager {
           try {
             FeatureQueryResult fqr = results.get();
             if (fqr.iterator().hasNext()){
+              Log.i("DataManager", "FeatureQueryResult found...");
               // Cache the depth level so we don't download
               // the same data again
               mCachedLayers.add(depth);
 
               // Set the definition expression to show only the depth of interest
+              Log.i("DataManager", "Setting definition expression for depth " + depth);
               mEmuByDepthLayer.setDefinitionExpression("Depth = " + depth);
 
               // Notify caller

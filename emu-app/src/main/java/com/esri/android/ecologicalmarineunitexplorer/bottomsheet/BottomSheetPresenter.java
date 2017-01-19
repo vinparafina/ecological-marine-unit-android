@@ -27,6 +27,7 @@ package com.esri.android.ecologicalmarineunitexplorer.bottomsheet;
  */
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.arcgisruntime.geometry.Point;
 
@@ -35,16 +36,20 @@ import java.text.DecimalFormat;
 public class BottomSheetPresenter implements BottomSheetContract.Presenter {
 
   private BottomSheetFragment mBottomSheetView;
-  private WaterColumn mWaterColumn;
 
   public BottomSheetPresenter(@NonNull BottomSheetFragment fragment){
     mBottomSheetView = fragment;
     mBottomSheetView.setPresenter(this);
   }
   @Override public void setWaterColumn(WaterColumn waterColumn) {
-    mBottomSheetView.showWaterColumn(waterColumn);
-    final Point p = waterColumn.getLocation();
-    setLocationSummary(p);
+    if (waterColumn != null){
+      mBottomSheetView.showWaterColumn(waterColumn);
+      final Point p = waterColumn.getLocation();
+      setLocationSummary(p);
+    }else{
+      Log.e("BottomSheetPresenter", "Water column should not be null!");
+    }
+
   }
 
   private void setLocationSummary(Point p){

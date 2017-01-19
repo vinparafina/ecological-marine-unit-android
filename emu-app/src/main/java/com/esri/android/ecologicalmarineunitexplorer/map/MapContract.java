@@ -49,6 +49,7 @@ public interface MapContract {
     void setSelectedPoint(Point p);
     SpatialReference getSpatialReference();
     void showSnackbar();
+    void onNoEmusFound();
   }
   interface Presenter extends BasePresenter {
 
