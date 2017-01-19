@@ -247,13 +247,22 @@ public class MapFragment extends Fragment implements MapContract.View {
    * the clicked location.
    * @param point - A com.esri.arcgisruntime.geometry.Point item
    */
-  @Override public void showClickedLocation(Point point) {
+  @Override public void showClickedLocation(final Point point) {
     Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.blue_pin);
     BitmapDrawable drawable = new BitmapDrawable(getResources(), icon);
-    PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
-    Graphic marker = new Graphic(point, markerSymbol);
-    mGraphicOverlay.getGraphics().clear();
-    mGraphicOverlay.getGraphics().add(marker);
+    final PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
+    markerSymbol.setHeight(40);
+    markerSymbol.setWidth(40);
+    markerSymbol.setOffsetY(11);
+    markerSymbol.loadAsync();
+    markerSymbol.addDoneLoadingListener(new Runnable() {
+      @Override public void run() {
+        Graphic marker = new Graphic(point, markerSymbol);
+        mGraphicOverlay.getGraphics().clear();
+        mGraphicOverlay.getGraphics().add(marker);
+      }
+    });
+
   }
 
   /**
