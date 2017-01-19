@@ -1,7 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.summary;
-
-
-
+package com.esri.android.ecologicalmarineunitexplorer.bottomsheet;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,23 +23,20 @@ package com.esri.android.ecologicalmarineunitexplorer.summary;
  *
  */
 
-import android.support.annotation.NonNull;
+import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
+import com.esri.android.ecologicalmarineunitexplorer.BaseView;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
+import com.esri.arcgisruntime.geometry.Point;
 
-public class SummaryPresenter implements SummaryContract.Presenter {
+public interface BottomSheetContract {
 
-  private SummaryFragment mSummaryView;
-
-  public SummaryPresenter(@NonNull SummaryFragment fragment){
-    mSummaryView = fragment;
-    mSummaryView.setPresenter(this);
+  interface View extends BaseView<Presenter> {
+    void showWaterColumn(WaterColumn waterColumn);
+    void showLocationSummary(String x, String y);
+    void scrollToSummary(int position);
   }
-  @Override public void setWaterColumn(WaterColumn waterColumn) {
-    mSummaryView.showWaterColumn(waterColumn);
-  }
-
-  @Override public void start() {
+  interface Presenter extends BasePresenter {
+    void setWaterColumn(WaterColumn waterColumn);
 
   }
-
 }

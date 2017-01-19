@@ -45,11 +45,9 @@ public interface MapContract {
     void showClickedLocation(Point point);
     void showProgressBar(String message, String title);
     void hideProgressBar();
-    void setMapAttribution(boolean toggle);
     void setViewpoint();
     void setSelectedPoint(Point p);
     SpatialReference getSpatialReference();
-    void getMapBitmap(ServiceApi.BitmapCallback callback);
     void showSnackbar();
   }
   interface Presenter extends BasePresenter {

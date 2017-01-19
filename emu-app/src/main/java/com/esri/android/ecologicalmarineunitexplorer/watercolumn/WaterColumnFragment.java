@@ -7,6 +7,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,7 +72,9 @@ public class WaterColumnFragment extends Fragment implements WaterColumnContract
     mButtonContainer = (LinearLayout) mRoot.findViewById(R.id.buttonContainer);
     if (mWaterColumn != null){
       showWaterColumn(mWaterColumn);
+      Log.i("WaterColumnFragment", "Water column not null in onCreateView");
     }
+    Log.i("WaterColumnFragment", "onCreateView");
     return  mRoot;
   }
 
@@ -94,7 +97,11 @@ public class WaterColumnFragment extends Fragment implements WaterColumnContract
     mWaterColumn = waterColumn;
     if (mButtonContainer != null){
       showWaterColumn(waterColumn);
+      Log.i("WaterColumnFragment", "Button container for water column is not null");
+    }else{
+      Log.i("WaterColumnFragment", "Button container for water column is null");
     }
+    Log.i("WaterColumnFragment", "setWaterColumn");
   }
   /**
    * Dynamically add a button for each EMU represented

@@ -1,26 +1,26 @@
-package com.esri.android.ecologicalmarineunitexplorer.summary;
+package com.esri.android.ecologicalmarineunitexplorer.bottomsheet;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.Log;
+import android.view.*;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.EMUObservation;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.android.ecologicalmarineunitexplorer.util.EmuHelper;
+import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,26 +53,25 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 
-public class SummaryFragment extends Fragment implements SummaryContract.View {
+public class BottomSheetFragment extends Fragment implements BottomSheetContract.View {
 
-
-  private List<EMUObservation> emuObservations = new ArrayList<>();
+  private LinearLayout mRoot;
+  private LinearLayout mButtonContainer;
   private RecyclerView mEmuObsView;
+  private Button mSelectedButton;
+  private View mLocationSummary;
   private WaterColumn mWaterColumn;
   private EMUAdapter mEmuAdapter;
-  private SummaryContract.Presenter mPresenter;
-  private OnViewIndexChange mCallback;
+  private BottomSheetContract.Presenter mPresenter;
   private OnDetailClickedListener mButtonListener;
+  private String TAG = BottomSheetFragment.class.getSimpleName();
 
-  public static SummaryFragment newInstance() {
-    SummaryFragment fragment = new SummaryFragment();
+  public static BottomSheetFragment newInstance() {
+    BottomSheetFragment fragment = new BottomSheetFragment();
     return fragment;
   }
 
-  // Listen for changes in index position of the recycler view
-  public interface OnViewIndexChange {
-    public void onChange(int position);
-  }
+
 
   // Define the behavior for DETAIL button
   // clicks
@@ -81,22 +80,30 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
   }
   @Override
   public final void onCreate(@NonNull final Bundle savedInstance) {
+    Log.i(TAG, "ENTERING onCreate");
     super.onCreate(savedInstance);
-    mEmuAdapter = new EMUAdapter(getContext(), R.id.summary_container, emuObservations);
+
+    List<EMUObservation> emuObservations = new ArrayList<>();
+    mEmuAdapter = new EMUAdapter(getContext(), emuObservations);
+
+    Log.i(TAG, "LEAVING onCreate");
   }
 
   @Override
   @Nullable
   public  View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
+    Log.i(TAG, "ENTERING onCreateView");
+    mRoot = (LinearLayout) container;
+    mButtonContainer = (LinearLayout) mRoot.findViewById(R.id.buttonContainer);
 
-    mEmuObsView = (RecyclerView) layoutInflater.inflate(R.layout.summary_recycler_view, container,false) ;
-
-    mEmuObsView.setLayoutManager(new LinearLayoutManager(mEmuObsView.getContext() ));
+    mEmuObsView = (RecyclerView) mRoot.findViewById(R.id.summary_recycler_view);
+    mEmuObsView.setLayoutManager(new LinearLayoutManager(getActivity()));
     mEmuObsView.setAdapter(mEmuAdapter);
-
-    return mEmuObsView;
+    Log.i(TAG, "LEAVING onCreateView");
+    return null;
   }
+
 
   @Override
   public void onAttach(Context activity) {
@@ -105,11 +112,10 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
     // This makes sure that the container activity has implemented
     // the callback interface. If not, it throws an exception
     try {
-      mCallback = (OnViewIndexChange) activity;
       mButtonListener = (OnDetailClickedListener) activity;
     } catch (ClassCastException e) {
       throw new ClassCastException(activity.toString()
-          + " must implement OnRectangleTappedListener and the OnDetailClickedListener");
+          + " must implement OnRectangleTappedListener and the OnDetailClickedListener.");
     }
   }
 
@@ -120,21 +126,104 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
   @Override public void showWaterColumn(WaterColumn waterColumn) {
     mWaterColumn = waterColumn;
     Set<EMUObservation> emuSet = waterColumn.getEmuSet();
-    emuObservations.clear();
+    List<EMUObservation> list = new ArrayList<>();
     for (EMUObservation observation : emuSet){
-      emuObservations.add(observation);
+      list.add(observation);
     }
-    if (mEmuAdapter != null){
-      mEmuAdapter.notifyDataSetChanged();
+    mEmuAdapter.setObservations(list);
+    showWaterColumnButtons(waterColumn);
+  }
+  /**
+   * Dynamically add a button for each EMU represented
+   * in the water column.
+   * @param waterColumn
+   */
+  public void showWaterColumnButtons(WaterColumn waterColumn){
+
+    mButtonContainer.removeAllViews();
+
+    // Each button will be added to layout with a layout_weight
+    // relative to the ratio of the EUMObservation to
+    // the depth of the water column
+    Set<EMUObservation> emuObservationSet = waterColumn.getEmuSet();
+    float depth = (float) waterColumn.getDepth();
+    TextView tv = (TextView) mRoot.findViewById(R.id.txtBottom);
+    tv.setText(waterColumn.getDepth()+" m");
+
+    int buttonId = 0;
+    for (EMUObservation observation: emuObservationSet){
+      float relativeSize = (observation.getThickness()/depth) * 100;
+      final Button button = new Button(getContext());
+      LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+          0, relativeSize);
+      button.setLayoutParams(layoutParams);
+      // Enable the button background to be change color based on its state (pressed, selected, or enabled)
+      button.setBackground(buildStateList(observation.getEmu().getName()));
+
+      button.setId(buttonId);
+      button.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          if (mSelectedButton != null){
+            mSelectedButton.setSelected(false);
+          }
+          button.setSelected(true);
+          mSelectedButton = button;
+          scrollToSummary(v.getId());
+        }
+      });
+      mButtonContainer.addView(button);
+      buttonId = buttonId + 1;
     }
+
+  }
+  /**
+   * Build a stateful drawable for a given EMU
+   * @param emuName
+   * @return StateListDrawable responsive to selected, pressed, and enabled states
+   */
+  private StateListDrawable buildStateList(int emuName){
+    StateListDrawable stateListDrawable = new StateListDrawable();
+
+    GradientDrawable defaultShape = new GradientDrawable();
+    int color = Color.parseColor(EmuHelper.getColorForEMUCluster( emuName));
+    defaultShape.setColor(color);
+
+    GradientDrawable selectedPressShape = new GradientDrawable();
+    selectedPressShape.setColor(color);
+    selectedPressShape.setStroke(5,Color.parseColor("#f4f442"));
+
+    stateListDrawable.addState(new int[] {android.R.attr.state_pressed}, selectedPressShape);
+    stateListDrawable.addState(new int[] {android.R.attr.state_selected}, selectedPressShape);
+    stateListDrawable.addState(new int[] {android.R.attr.state_enabled}, defaultShape);
+
+    return stateListDrawable;
+  }
+  @Override public void showLocationSummary(String x, String y) {
+    TextView textView = (TextView) getActivity().findViewById(R.id.txtSummary) ;
+    textView.setText(getString(R.string.water_column_at) + y + ", "+ x +getString(R.string.lat_lng) +
+        mWaterColumn.getEmuSet().size() + getString(
+        R.string.extending_to)+ mWaterColumn.getDepth()+getString(R.string.meters_period));
   }
 
   @Override public void scrollToSummary(int position) {
+
     mEmuObsView.scrollToPosition(position);
   }
 
-  @Override public void setPresenter(SummaryContract.Presenter presenter) {
+  @Override public void setPresenter(BottomSheetContract.Presenter presenter) {
     mPresenter = presenter;
+  }
+  /**
+   * Set selected state of a water column segment
+   * @param position
+   */
+  public void highlightSegment(int position){
+    Button button =(Button) mButtonContainer.getChildAt(position);
+    if (mSelectedButton != null){
+      mSelectedButton.setSelected(false);
+    }
+    button.setSelected(true);
+    mSelectedButton = button;
   }
 
   public class EMUAdapter extends RecyclerView.Adapter<RecycleViewHolder>{
@@ -144,10 +233,14 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
     private int size;
 
 
-    public EMUAdapter(final Context context, final int resource, final List<EMUObservation> observations){
+    public EMUAdapter(final Context context, final List<EMUObservation> observations){
       emuObservations = observations;
       mContext = context;
       size = emuObservations.size();
+    }
+    public void setObservations(List<EMUObservation> obs){
+      emuObservations = obs;
+      notifyDataSetChanged();
     }
 
     @Override public RecycleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -186,11 +279,12 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
       }
       holder.bind(observation);
       // View index has changed, notify.
-      mCallback.onChange(position);
+      highlightSegment(position);
     }
 
 
     @Override public int getItemCount() {
+
       return emuObservations.size();
     }
   }
@@ -222,4 +316,5 @@ public class SummaryFragment extends Fragment implements SummaryContract.View {
     }
 
   }
+
 }

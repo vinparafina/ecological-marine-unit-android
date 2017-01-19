@@ -7,8 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.*;
@@ -17,9 +15,7 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.MainActivity;
 import com.esri.android.ecologicalmarineunitexplorer.R;
-import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
-import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.Layer;
@@ -29,8 +25,6 @@ import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
-
-import java.util.concurrent.ExecutionException;
 
 /* Copyright 2016 Esri
  *
@@ -67,6 +61,7 @@ public class MapFragment extends Fragment implements MapContract.View {
   private ArcGISMap mMap;
   private Viewpoint mInitialViewpoint;
   private final double MAP_SCALE = 25000000; // map scale of 30000000 shows EMU colors without point detail
+  private final String TAG = MapFragment.class.getSimpleName();
 
   public MapFragment(){}
 
@@ -91,6 +86,7 @@ public class MapFragment extends Fragment implements MapContract.View {
   @Override
   public void setUpMap(ArcGISMap map){
     mMapView = (MapView) mRoot.findViewById(R.id.map);
+    mMapView.setAttributionTextVisible(false);
     mMap  = map;
     mMapView.setMap(mMap);
 
@@ -165,24 +161,6 @@ public class MapFragment extends Fragment implements MapContract.View {
     return sr;
   }
 
-  @Override public void getMapBitmap(final ServiceApi.BitmapCallback callback) {
-    if (mMapView != null){
-      final ListenableFuture<Bitmap> listenableFuture = mMapView.exportImageAsync();
-      listenableFuture.addDoneListener(new Runnable() {
-        Bitmap bitmap = null;
-        @Override public void run() {
-          try {
-            bitmap = listenableFuture.get();
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          } catch (ExecutionException e) {
-            e.printStackTrace();
-          }
-          callback.onBitmapGenerated(bitmap);
-        }
-      });
-    }
-  }
 
   /**
    * Add an operational layer to the map
@@ -197,15 +175,19 @@ public class MapFragment extends Fragment implements MapContract.View {
 
   @Override
   public final void onResume(){
+    Log.i(TAG, "ENTERING onResume");
     super.onResume();
     mMapView.resume();
+    Log.i(TAG, "LEAVING onResume");
 
   }
 
   @Override
   public final void onPause() {
+    Log.i(TAG, "ENTERING onPause");
     super.onPause();
     mMapView.pause();
+    Log.i(TAG, "LEAVING onPause");
   }
   /**
    * Obtain the geo location for a given point
@@ -242,7 +224,7 @@ public class MapFragment extends Fragment implements MapContract.View {
    * @param column
    */
   @Override public void showSummary(WaterColumn column) {
-    ((com.esri.android.ecologicalmarineunitexplorer.MainActivity) getActivity()).showSummaryBottomSheet();
+    ((com.esri.android.ecologicalmarineunitexplorer.MainActivity) getActivity()).showBottomSheet();
   }
 
   /**
@@ -274,6 +256,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     mProgressDialog.show();
   }
 
+
   /**
    * Show a snackbar prompting user to action
    */
@@ -284,12 +267,9 @@ public class MapFragment extends Fragment implements MapContract.View {
    * Hide progress bar
    */
   @Override public void hideProgressBar() {
-    mProgressDialog.hide();
+    mProgressDialog.dismiss();
   }
 
-  @Override public void setMapAttribution(boolean toggle) {
-    mMapView.setAttributionTextVisible(toggle);
-  }
 
   public class MapTouchListener extends DefaultMapViewOnTouchListener {
     /**
@@ -307,8 +287,6 @@ public class MapFragment extends Fragment implements MapContract.View {
     public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
       android.graphics.Point mapPoint = new android.graphics.Point((int) motionEvent.getX(),
           (int) motionEvent.getY());
-      //Log.i("ScreenLocation", "screen position = x= " + mapPoint.x + " y= "+ mapPoint.y);
-      //mSelectedPoint = getScreenToLocation(mapPoint);
       mPresenter.setSelectedPoint(getScreenToLocation(mapPoint));
       return true;
     }

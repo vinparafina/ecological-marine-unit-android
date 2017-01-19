@@ -29,10 +29,9 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -43,47 +42,48 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartFragment;
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
-import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapFragment;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapPresenter;
-import com.esri.android.ecologicalmarineunitexplorer.summary.SummaryFragment;
-import com.esri.android.ecologicalmarineunitexplorer.summary.SummaryPresenter;
+import com.esri.android.ecologicalmarineunitexplorer.bottomsheet.BottomSheetFragment;
+import com.esri.android.ecologicalmarineunitexplorer.bottomsheet.BottomSheetPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.util.ActivityUtils;
 import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnFragment;
-import com.esri.android.ecologicalmarineunitexplorer.watercolumn.WaterColumnPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileFragment;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfilePresenter;
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.geometry.Point;
 
-import java.text.DecimalFormat;
-
-public class MainActivity extends AppCompatActivity implements WaterColumnFragment.OnWaterColumnSegmentClickedListener,
-    SummaryFragment.OnViewIndexChange, SummaryFragment.OnDetailClickedListener {
+public class MainActivity extends AppCompatActivity
+    implements BottomSheetFragment.OnDetailClickedListener{
 
 
-  private SummaryPresenter mSummaryPresenter;
-  private DataManager mDataManager;
-  private WaterColumnPresenter mWaterColumnPresenter;
+  private BottomSheetPresenter mBottomSheetPresenter;
   private SummaryChartPresenter mSummaryChartPresenter;
+  private DataManager mDataManager;
   private MapPresenter mMapPresenter;
   private BottomSheetBehavior mBottomSheetBehavior;
+  private WaterColumn mWaterColumn;
+  private String TAG = MainActivity.class.getSimpleName();
+  private boolean mInMapState = false;
+
   public MainActivity() {
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    Log.i(TAG, "ENTERING onCreate");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
@@ -111,47 +111,45 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
       // Set up fragments
       setUpMagFragment();
 
-      // Attach listener to the profile
-      // button in the bottom sheet
-//      Button button = (Button) findViewById(R.id.btnProfile);
-//      button.setOnClickListener(new View.OnClickListener() {
-//        @Override public void onClick(View v) {
-//          // Hide the bototm sheet
-//          mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//          // Grab the location from the water column
-//          // and show the WaterColumnProfile fragment
-//          Point point = mDataManager.getCurrentWaterColumn().getLocation();
-//          showWaterColumnProfile(point);
-//        }
-//      });
-//
-//      // Attach a listener to the view layer
-//      // button in the bottom sheet
-//      Button layerBtn = (Button) findViewById(R.id.btnLayers) ;
-//      layerBtn.setOnClickListener(new View.OnClickListener() {
-//        @Override public void onClick(View v) {
-//          // Hide the bototm sheet
-//          mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//          showLayers(true);
-//        }
-//      });
-      //Set up behavior for the bottom sheet
-      setUpBottomSheet();
+      setUpBottomSheetFragment();
     }
-
+    Log.i(TAG, "LEAVING onCreate");
   }
 
   /**
    * Attach display logic to bottom sheet behavior.
    */
-  private void setUpBottomSheet(){
+  private void setUpBottomSheetFragment(){
+    final FragmentManager fm = getSupportFragmentManager();
+    BottomSheetFragment bottomSheetFragment = (BottomSheetFragment) fm.findFragmentById(R.id.bottom_sheet_view) ;
+
+    if (bottomSheetFragment == null) {
+      bottomSheetFragment = BottomSheetFragment.newInstance();
+      ActivityUtils.addFragmentToActivity(fm, bottomSheetFragment, R.id.bottom_sheet_view, "summary fragment");
+      mBottomSheetPresenter = new BottomSheetPresenter(bottomSheetFragment);
+    }
+
     mBottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet_view));
     mBottomSheetBehavior.setHideable(true);
     mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+    mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+      @Override public void onStateChanged(@NonNull View bottomSheet, int newState) {
+        if (newState == BottomSheetBehavior.STATE_COLLAPSED){
+
+          showBottomSheetContent();
+        }
+      }
+
+      @Override public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+        //no op
+      }
+    });
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
+    Log.i(TAG, "ENTERING onCreateOptionsMenu");
     getMenuInflater().inflate(R.menu.menu, menu);
     // Retrieve the SearchView and plug it into SearchManager
     final SearchView searchView= (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
@@ -169,30 +167,36 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
         return false;
       }
     });
+    Log.i(TAG, " LEAVING onCreateOptionsMenu");
     return true;
   }
-  private void hideSearchView(Toolbar toolbar){
-    int childCount = toolbar.getChildCount();
-    for (int x=0 ; x < childCount; x++){
-      View v = toolbar.getChildAt(x);
-      if (v instanceof ActionMenuView){
-        v.setVisibility(View.INVISIBLE);
-      }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    Log.i(TAG, "ENTERING onPrepareOptionsMenu");
+    final MenuItem profile = menu.findItem(R.id.action_profile);
+    final MenuItem search = menu.findItem(R.id.action_search);
+    int state = mBottomSheetBehavior.getState();
+    Log.i(TAG, "Bottom sheet state"   + " = " + state);
+    if ((mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) || (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)) {
+      profile.setVisible(true);
+      search.setVisible(false);
+    }else if(mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN || mInMapState) {
+      profile.setVisible(false);
+      search.setVisible(true);
+    }else{
+      profile.setVisible(false);
+      search.setVisible(false);
     }
+    Log.i(TAG, "LEAVING onPrepareOptionsMenu");
+
+    return super.onPrepareOptionsMenu(menu);
   }
-  private void showSearchView(Toolbar toolbar){
-    int childCount = toolbar.getChildCount();
-    for (int x=0 ; x < childCount; x++){
-      View v = toolbar.getChildAt(x);
-      if (v instanceof ActionMenuView){
-        v.setVisibility(View.VISIBLE);
-      }
-    }
-  }
+
 
   private void showWaterColumnProfile(Point point) {
     // Remove water column, summary, text and button
-    removeSummaryAndWaterColumnViews();
+    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     hideMapView();
 
     setUpWaterProfileToolbar();
@@ -236,6 +240,10 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), mapFragment, R.id.map_container, "map fragment");
     }
+
+    mInMapState = true;
+
+    Log.i("MainActivity", "setUpMapFragment");
   }
 
   /**
@@ -248,7 +256,9 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
     actionBar.setTitle(R.string.explore_ocean);
     toolbar.setNavigationIcon(null);
-    showSearchView(toolbar);
+    mInMapState = true;
+
+    Log.i("MainActivity", "setUpMapToolbar");
   }
   /**
    * Set up toolbar for chart detail
@@ -258,7 +268,8 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ActionBar actionBar = ((AppCompatActivity) this).getSupportActionBar();
-    hideSearchView(toolbar);
+    // Hide both menu items
+
     actionBar.setTitle(getString(R.string.detail_emu) + EMUid);
     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -269,17 +280,16 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
         // Shrink parent container
         shrinkChartContainer();
 
-        // Show summary
-        showLayers(false);
 
-        // Add back the map
-       // showMapImage();
+        // Restore the bottom sheet
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
-        // Hide the bottom sheet
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        // Restore the bottom sheet toolbar
+        setUpBottomSheetToolbar();
 
       }
     });
+    Log.i("MainActivity", "setUpChartSummary");
   }
 
   private void removeChartSummaryDetail(){
@@ -290,32 +300,36 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
       transaction.remove(summaryChartFragment);
       transaction.commit();
     }
+    Log.i("MainActivity", "removeChartSummaryDetail");
   }
   /**
    * Set the text for the summary toolbar and listen
    * for navigation requests
    */
-  private void setUpSummaryToolbar() {
+  private void setUpBottomSheetToolbar() {
     final Toolbar toolbar = (Toolbar) this.findViewById(R.id.toolbar);
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ((AppCompatActivity) this).getSupportActionBar().setTitle(R.string.ocean_summary_location_title);
     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
-    hideSearchView(toolbar);
+
     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
 
-        //Remove summary and water column
-        removeSummaryAndWaterColumnViews();
-
-//        // Hide the map snapshot
-//        hideMapImage();
         // Hide the bottom sheet
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        //Reconstitute the large map
-        expandMap();
+        // Set the map toolbar title and remove navigation
+        setUpMapToolbar();
       }
     });
+
+    toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+      @Override public boolean onMenuItemClick(MenuItem item) {
+          showWaterColumnProfile(mWaterColumn.getLocation());
+        return false;
+      }
+    });
+    Log.i("MainActivity", "setUpBottomSheetToolbar");
   }
 
   private void setUpWaterProfileToolbar(){
@@ -323,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     ((AppCompatActivity) this).setSupportActionBar(toolbar);
     ((AppCompatActivity) this).getSupportActionBar().setTitle("Water Column Profile");
     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
-    hideSearchView(toolbar);
+
     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
 
@@ -337,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
         expandMap();
       }
     });
+    Log.i("MainActivity", "setUpWaterProfileToolbar");
   }
 
   private void removeWaterColumnProfie(){
@@ -347,10 +362,11 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
       transaction.remove(fragment);
       transaction.commit();
     }
+    Log.i("MainActivity", "removeWaterColumnProfile");
   }
   private void removeSummaryAndWaterColumnViews(){
     final FragmentManager fm = getSupportFragmentManager();
-    SummaryFragment summaryFragment = (SummaryFragment) fm.findFragmentById(R.id.summary_container) ;
+    BottomSheetFragment summaryFragment = (BottomSheetFragment) fm.findFragmentById(R.id.summary_container) ;
     if (summaryFragment != null ) {
       FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
       transaction.remove(summaryFragment);
@@ -362,6 +378,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
       waterTransaction.remove(waterColumnFragment);
       waterTransaction.commit();
     }
+    Log.i("MainActivity", "removeSummaryAndWaterColumnViews");
   }
 
   private void expandMap(){
@@ -377,27 +394,9 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
 
     // Show the bottom sheet
     mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    Log.i("MainActivity", "expandMap");
   }
 
-  /**
-   * Set up the map image in the upper half of the screen
-   */
-  private void showMapImage(){
-    // Adjust the map image layout
-    ImageView imageView = (ImageView) findViewById(R.id.imgMap) ;
-    LinearLayout.LayoutParams  imageLayoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,5);
-    imageLayoutParams.setMargins(0, 0,36,16);
-    imageView.setLayoutParams(imageLayoutParams);
-    imageView.requestLayout();
-  }
-
-  private void hideMapImage(){
-    ImageView imageView = (ImageView) findViewById(R.id.imgMap) ;
-    LinearLayout.LayoutParams  imageLayoutParams  =  new LinearLayout.LayoutParams(0,0);
-    imageLayoutParams.setMargins(0, 0,0,0);
-    imageView.setLayoutParams(imageLayoutParams);
-    imageView.requestLayout();
-  }
 
   private void hideMapView(){
     final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
@@ -405,121 +404,39 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     layoutParams.setMargins(0, 0,0,0);
     mapLayout.setLayoutParams(layoutParams);
     mapLayout.requestLayout();
+
+    Log.i("MainActivity", "hideMapView");
   }
 
-  private void swapOutMapViewWithSnapshot(){
-    // Adjust the map's layout
-    final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
-    LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,5);
-    layoutParams.setMargins(0, 0,36,16);
-    mapLayout.setLayoutParams(layoutParams);
-
-    // Once we've shrunk the map view and layout has completed,
-    // get a map snapshot and swap out the map with the map snapshot.
-    mapLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-      @Override public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-          int oldRight, int oldBottom) {
-        // Stop listening to layout changes
-        mapLayout.removeOnLayoutChangeListener(this);
-        // Get the snapshot and replace the map vie with the snapshot
-        final FragmentManager fm = getSupportFragmentManager();
-        MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
-        mapFragment.getMapBitmap(new ServiceApi.BitmapCallback() {
-          @Override public void onBitmapGenerated(Bitmap bitmap)  {
-            ImageView imageView = (ImageView) findViewById(R.id.imgMap) ;
-            imageView.setImageBitmap(bitmap);
-
-            // Hide the map view
-            hideMapView();
-
-            // Now show the image with the map snapshot
-            showMapImage();
-          }
-        });
-      }
-    });
-    mapLayout.requestLayout();
-  }
   /**
-   * Add the WaterColumnFragment and SummaryFragment to
-   * the view while shrinking the map view.
+   * Show the bottom sheet
    */
-  public void showSummaryBottomSheet(){
+  public void showBottomSheet(){
+    // Change the state of bottom sheet
+    if (mBottomSheetBehavior.getState() != BottomSheetBehavior.STATE_COLLAPSED){
+      mBottomSheetBehavior.setState( BottomSheetBehavior.STATE_COLLAPSED);
+    }else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+      showBottomSheetContent();
+    }
 
-    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    mInMapState = false;
+    Log.i("MainActivity", "showBottomSheet");
+  }
 
+  public void showBottomSheetContent(){
     // Show summary info about location and water column
-    WaterColumn waterColumn = mDataManager.getCurrentWaterColumn();
-    // Get the current location for the column
-    final Point p = waterColumn.getLocation();
-    TextView textView = (TextView) findViewById(R.id.txtSummary) ;
-    String x = new DecimalFormat("#.##").format(p.getX());
-    String y = new DecimalFormat("#.##").format(p.getY());
-    textView.setText(getString(R.string.water_column_at) + y + ", "+ x +getString(R.string.lat_lng) + waterColumn.getEmuSet().size() + getString(
-            R.string.extending_to)+ waterColumn.getDepth()+getString(R.string.meters_period));
-    showLayers(false);
+    mWaterColumn = mDataManager.getCurrentWaterColumn();
 
-  }
+    mBottomSheetPresenter.setWaterColumn(mWaterColumn);
 
-  /**
-   * Show the water column and recycler views
-   * @param takeSnapshot - a boolean flag indicating if snapshot is needed
-   */
-  public void showLayers( boolean takeSnapshot){
-
-    WaterColumn waterColumn = mDataManager.getCurrentWaterColumn();
-    final FragmentManager fm = getSupportFragmentManager();
-    SummaryFragment summaryFragment = (SummaryFragment) fm.findFragmentById(R.id.summary_container) ;
-
-    if (summaryFragment == null){
-      summaryFragment = SummaryFragment.newInstance();
-      mSummaryPresenter = new SummaryPresenter(summaryFragment);
-    }
     // Set up the summary toolbar
-    setUpSummaryToolbar();
-
-    mSummaryPresenter.setWaterColumn(waterColumn);
-
-    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-    if (takeSnapshot){
-      // Swap out map with snapshot
-      swapOutMapViewWithSnapshot();
-    }else{
-      showMapImage();
-    }
-
-
-    // Adjust the summary containing the recycler view
-    FrameLayout summaryLayout = (FrameLayout) findViewById(R.id.summary_container);
-    summaryLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,9));
-    summaryLayout.requestLayout();
-
-
-    // Replace whatever is in the summary_container view with this fragment,
-    // and add the transaction to the back stack so the user can navigate back
-    transaction.replace(R.id.summary_container, summaryFragment);
-    transaction.addToBackStack("summary fragment");
-
-    // Commit the transaction
-    transaction.commit();
-
-    WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.column_container);
-    if (waterColumnFragment == null){
-      waterColumnFragment = WaterColumnFragment.newInstance();
-      mWaterColumnPresenter = new WaterColumnPresenter(waterColumnFragment);
-    }
-
-
-    FragmentTransaction wcTransaction = getSupportFragmentManager().beginTransaction();
-    wcTransaction.replace(R.id.column_container, waterColumnFragment);
-    wcTransaction.commit();
-    mWaterColumnPresenter.setWaterColumn(waterColumn);
+    setUpBottomSheetToolbar();
   }
+
 
   public void showSummaryDetail(int emuName){
     // Remove summary and water column
-    removeSummaryAndWaterColumnViews();
+   // removeSummaryAndWaterColumnViews();
 
     // Hide the bottom sheet containing the summary view
     mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -542,32 +459,16 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     transaction.commit();
 
     setUpChartSummaryToolbar(emuName);
+
+    Log.i("MainActivity", "showSummaryDetail");
   }
   private void shrinkChartContainer(){
     FrameLayout layout = (FrameLayout) findViewById(R.id.chartContainer);
     layout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
     layout.requestLayout();
-  }
-  /**
-   * When a water column segment is tapped, show the
-   * associated item in the SummaryFragment
-   * @param position - index of the recycler view to display
-   */
-  @Override public void onSegmentClicked(int position) {
-    final FragmentManager fm = getSupportFragmentManager();
-    SummaryFragment summaryFragment = (SummaryFragment) fm.findFragmentById(R.id.summary_container) ;
-    if (summaryFragment != null){
-      summaryFragment.scrollToSummary(position);
-    }
+    Log.i("MainActivity", "shrinkChartContainer");
   }
 
-  @Override public void onChange(int position) {
-    final FragmentManager fm = getSupportFragmentManager();
-    WaterColumnFragment waterColumnFragment = (WaterColumnFragment) fm.findFragmentById(R.id.column_container);
-    if (waterColumnFragment != null ){
-      waterColumnFragment.highlightSegment(position);
-    }
-  }
 
   @Override public void onButtonClick(int emuName) {
       showSummaryDetail(emuName);
@@ -586,6 +487,7 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
     }else {
       return wifi.isConnected();
     }
+
   }
   public void showSnackbar(){
     CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout) ;
@@ -593,5 +495,13 @@ public class MainActivity extends AppCompatActivity implements WaterColumnFragme
         .make(coordinatorLayout, "Please tap a on ocean location", Snackbar.LENGTH_LONG);
 
     snackbar.show();
+  }
+
+  @Override
+  public void onResume(){
+    Log.i(TAG, "ENTERING onResume");
+    super.onResume();
+
+    Log.i(TAG, "LEAVING onResume");
   }
 }

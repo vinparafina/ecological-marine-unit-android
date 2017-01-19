@@ -111,7 +111,6 @@ public class MapPresenter implements MapContract.Presenter {
           mMapView.setSelectedPoint(point);
           mMapView.setViewpoint();
           mMapView.showClickedLocation(point);
-          mMapView.setMapAttribution(false);
           mMapView.showSummary(waterColumn);
         }
       }
