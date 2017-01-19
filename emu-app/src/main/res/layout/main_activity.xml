@@ -50,4 +50,13 @@
      column, and details about each layer in the column. -->
     <include layout="@layout/summary_bottom_sheet"/>
 
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:src="@drawable/ic_insert_chart_white_24px"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            app:layout_anchor="@+id/bottom_sheet_view"
+            app:layout_anchorGravity="top|end" />
+
 </android.support.design.widget.CoordinatorLayout>

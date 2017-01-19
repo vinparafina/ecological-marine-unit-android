@@ -34,6 +34,7 @@ import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -69,14 +70,15 @@ public class MainActivity extends AppCompatActivity
     implements BottomSheetFragment.OnDetailClickedListener{
 
 
-  private BottomSheetPresenter mBottomSheetPresenter;
-  private SummaryChartPresenter mSummaryChartPresenter;
-  private DataManager mDataManager;
-  private MapPresenter mMapPresenter;
-  private BottomSheetBehavior mBottomSheetBehavior;
-  private WaterColumn mWaterColumn;
+  private BottomSheetPresenter mBottomSheetPresenter = null;
+  private SummaryChartPresenter mSummaryChartPresenter = null;
+  private DataManager mDataManager = null;
+  private MapPresenter mMapPresenter = null;
+  private BottomSheetBehavior mBottomSheetBehavior = null;
+  private WaterColumn mWaterColumn = null;
   private String TAG = MainActivity.class.getSimpleName();
   private boolean mInMapState = false;
+  private FloatingActionButton mFab = null;
 
   public MainActivity() {
   }
@@ -90,6 +92,9 @@ public class MainActivity extends AppCompatActivity
     // Set license key
     ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
 
+    // Initally hide the FAB
+    mFab = (FloatingActionButton) findViewById(R.id.fab);
+    mFab.setVisibility(View.INVISIBLE);
 
     // Check for internet connectivity
     if (!checkForInternetConnectivity()){
@@ -138,11 +143,19 @@ public class MainActivity extends AppCompatActivity
         if (newState == BottomSheetBehavior.STATE_COLLAPSED){
 
           showBottomSheetContent();
+          mFab.setVisibility(View.VISIBLE);
+
+        }else if (newState == BottomSheetBehavior.STATE_HIDDEN){
+          mFab.setVisibility(View.INVISIBLE);
         }
       }
 
       @Override public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-        //no op
+        float scaleFactor = 1 - slideOffset;
+        if (scaleFactor <= 1){
+          mFab.animate().scaleX(1 - slideOffset).scaleY(1 - slideOffset).setDuration(0).start();
+        }
+
       }
     });
   }
