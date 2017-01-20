@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -82,6 +84,23 @@ public class MapFragment extends Fragment implements MapContract.View {
       final Bundle savedInstance){
 
     mRoot = layoutInflater.inflate(R.layout.map_view, container,false);
+
+    // Listen for seekbar changes
+    SeekBar seekBar = (SeekBar) getActivity().findViewById(R.id.seekBar) ;
+    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+      @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        //No- op
+      }
+
+      @Override public void onStartTrackingTouch(SeekBar seekBar) {
+        //No op
+      }
+
+      @Override public void onStopTrackingTouch(SeekBar seekBar) {
+        mPresenter.retrieveEMUPolygonByDepth(seekBar.getProgress());
+      }
+    });
+
     mPresenter.start();
     return mRoot;
   }
@@ -118,7 +137,7 @@ public class MapFragment extends Fragment implements MapContract.View {
           mMapView.setOnTouchListener(mapTouchListener);
           // Notify presenter
           mPresenter.mapLoaded();
-          addSeekBar();
+         // addSeekBar();
         }
       }
     });
@@ -128,32 +147,6 @@ public class MapFragment extends Fragment implements MapContract.View {
       @Override public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
           int oldRight, int oldBottom) {
         setViewpoint();
-      }
-    });
-  }
-
-  public void addSeekBar(){
-    SeekBar seekBar = new SeekBar(getContext());
-    seekBar.setRotation(-270f);
-    FrameLayout.LayoutParams  layoutParams  =  new FrameLayout.LayoutParams(500,
-        ViewGroup.LayoutParams.WRAP_CONTENT);
-    layoutParams.setMargins(-180,300,100,100);
-    seekBar.setLayoutParams(layoutParams);
-    FrameLayout frameLayout = (FrameLayout) getActivity().findViewById(R.id.map_container);
-    frameLayout.addView(seekBar);
-    frameLayout.requestLayout();
-
-    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-      @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        //No- op
-      }
-
-      @Override public void onStartTrackingTouch(SeekBar seekBar) {
-        //No op
-      }
-
-      @Override public void onStopTrackingTouch(SeekBar seekBar) {
-        mPresenter.retrieveEMUPolygonByDepth(seekBar.getProgress());
       }
     });
   }
