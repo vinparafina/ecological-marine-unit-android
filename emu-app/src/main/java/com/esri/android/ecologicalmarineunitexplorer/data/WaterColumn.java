@@ -29,7 +29,7 @@ import com.esri.arcgisruntime.geometry.Point;
 import java.util.*;
 
 public class WaterColumn implements  Comparable<WaterColumn> {
-  @NonNull private Set<EMUObservation> emuSet;
+  @NonNull private final Set<EMUObservation> emuSet;
   private double distanceFrom = 0;
   private Point location;
 
@@ -40,7 +40,7 @@ public class WaterColumn implements  Comparable<WaterColumn> {
     return emuSet;
   }
 
-  public void addObservation(EMUObservation observation){
+  public void addObservation(final EMUObservation observation){
     emuSet.add(observation);
   }
 
@@ -50,9 +50,9 @@ public class WaterColumn implements  Comparable<WaterColumn> {
 
   public int getDepth(){
     int depth = 0;
-    Iterator<EMUObservation> iter = emuSet.iterator();
+    final Iterator<EMUObservation> iter = emuSet.iterator();
     while (iter.hasNext()){
-      EMUObservation observation = iter.next();
+      final EMUObservation observation = iter.next();
       depth = depth + observation.getThickness();
     }
     return depth;
@@ -64,11 +64,11 @@ public class WaterColumn implements  Comparable<WaterColumn> {
         '}';
   }
 
-  @Override public int compareTo(WaterColumn another) {
-    if (getDistanceFrom() < another.getDistanceFrom()){
+  @Override public int compareTo(@NonNull final WaterColumn another) {
+    if (distanceFrom < another.distanceFrom){
       return  -1;
     }
-    else if (getDistanceFrom() > another.getDistanceFrom()){
+    else if (distanceFrom > another.distanceFrom){
       return 1;
     }
     else{
@@ -80,7 +80,7 @@ public class WaterColumn implements  Comparable<WaterColumn> {
     return distanceFrom;
   }
 
-  public void setDistanceFrom(double distanceFrom) {
+  public void setDistanceFrom(final double distanceFrom) {
     this.distanceFrom = distanceFrom;
   }
 
@@ -88,7 +88,7 @@ public class WaterColumn implements  Comparable<WaterColumn> {
     return location;
   }
 
-  public void setLocation(Point location) {
+  public void setLocation(final Point location) {
     this.location = location;
   }
 
@@ -97,11 +97,11 @@ public class WaterColumn implements  Comparable<WaterColumn> {
    * @param emuName - int representing emu name
    * @return - a list containing zero or more EMU Observation items
    */
-  public List<EMUObservation> getEMUObservations(int emuName){
-    List<EMUObservation> emuObservations = new ArrayList<>();
-    Iterator<EMUObservation> iter = this.emuSet.iterator();
+  public List<EMUObservation> getEMUObservations(final int emuName){
+    final List<EMUObservation> emuObservations = new ArrayList<>();
+    final Iterator<EMUObservation> iter = emuSet.iterator();
     while (iter.hasNext()){
-      EMUObservation observation = iter.next();
+      final EMUObservation observation = iter.next();
       if (observation.getEmu().getName() == emuName){
         emuObservations.add(observation);
       }

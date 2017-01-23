@@ -30,8 +30,8 @@ public class EmuHelper {
    * @param emuName - an int representing the EMU name
    * @return colorCode - a string representing a hex color code.
    */
-  public static String getColorForEMUCluster( int emuName){
-    String colorCode = null;
+  public static String getColorForEMUCluster( final int emuName){
+    String colorCode;
     switch (emuName){
       case 3:
         colorCode = "#708cd9";

@@ -31,6 +31,15 @@ If there are changes made in the Original repository, you can sync the fork to k
 3. ```git checkout master``` to checkout your fork's local master branch.
 4. ```git merge upstream/master``` to sync your local `master' branch with `upstream/master`. **Note**: Your local changes will be retained and your fork's master branch will be in sync with the upstream repository.
 
+### Configure Basic License (optional)
+While the Ecological Marine Unit Explorer application references a Basic license file, it is not required to run the app.  To learn more about licensing your Runtime app, see the documentation [here](https://developers.arcgis.com/arcgis-runtime/licensing/).  The Ecological Marine Unit Explorer is completely functional without the Basic license. We have used a Basic license to remove the "Licensed for Developer Use Only" watermark from the map since this app has often been used in demos. If you have a Basic license, use the following steps to use it in your app.
+
+1.  In the module build.file uncomment line 17 `buildConfigField "String" , "LICENSE_KEY" , LICENSE_KEY`
+2.  Add a file entitled gradle.properties to the root of the project.  Copy your license key to this file.
+3.  Uncomment line 97 in the MainActivity.java file that sets the license:  `ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);`
+4.  Sync your gradle file and re-run the app.
+
+
 ## Requirements
 * [JDK 6 or higher](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 * [Android Studio](http://developer.android.com/sdk/index.html)
@@ -68,18 +77,3 @@ A copy of the license is available in the repository's [license.txt](https://git
 
 For information about licensing your deployed app, see [License your app](https://developers.arcgis.com/android/guide/license-your-app.htm).
 
-[](Esri Tags: ArcGIS Android Mobile)
-[](Esri Language: Java)​
-
-The Model View Presenter architecture is used in this application.  The descriptions below were taken from this [site](http://www.tinmegali.com/en/model-view-presenter-android-part-1/).
-Presenter
-
-The Presenter is responsible to act as the middle man between View and Model. It retrieves data from the Model and returns it formatted to the View. But unlike the typical MVC, it also decides what happens when you interact with the View.
-
-View
-
-The View, usually implemented by an Activity, will contain a reference to the presenter. The only thing that the view will do is to call a method from the Presenter every time there is an interface action.
-
-Model
-
-In an application with a good layered architecture, this model would only be the gateway to the domain layer or business logic. See it as the provider of the data we want to display in the view.

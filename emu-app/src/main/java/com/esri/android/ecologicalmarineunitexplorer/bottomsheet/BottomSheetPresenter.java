@@ -41,6 +41,11 @@ public class BottomSheetPresenter implements BottomSheetContract.Presenter {
     mBottomSheetView = fragment;
     mBottomSheetView.setPresenter(this);
   }
+
+  /**
+   * Display water column data in the bottom sheet
+   * @param waterColumn - WaterColumn data object
+   */
   @Override public void setWaterColumn(WaterColumn waterColumn) {
     if (waterColumn != null){
       mBottomSheetView.showWaterColumn(waterColumn);
@@ -49,16 +54,19 @@ public class BottomSheetPresenter implements BottomSheetContract.Presenter {
     }else{
       Log.e("BottomSheetPresenter", "Water column should not be null!");
     }
-
   }
 
+  /**
+   * Show location summary for clicked location
+   * @param p - Point representing tapped location
+   */
   private void setLocationSummary(Point p){
     String x = new DecimalFormat("#.##").format(p.getX());
     String y = new DecimalFormat("#.##").format(p.getY());
     mBottomSheetView.showLocationSummary(x,y);
   }
   @Override public void start() {
-
+    // no op
   }
 
 }

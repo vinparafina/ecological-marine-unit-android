@@ -10,8 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /* Copyright 2016 Esri
  *
@@ -52,115 +52,117 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 
-public class BottomSheetFragment extends Fragment implements BottomSheetContract.View {
+@SuppressWarnings("ObjectAllocationInLoop") public class BottomSheetFragment extends Fragment implements BottomSheetContract.View {
 
-  private LinearLayout mRoot;
-  private LinearLayout mButtonContainer;
-  private RecyclerView mEmuObsView;
-  private Button mSelectedButton;
-  private WaterColumn mWaterColumn;
-  private EMUAdapter mEmuAdapter;
-  private BottomSheetContract.Presenter mPresenter;
-  private OnDetailClickedListener mButtonListener;
-  private String TAG = BottomSheetFragment.class.getSimpleName();
+  private LinearLayout mRoot = null;
+  private LinearLayout mButtonContainer = null;
+  private RecyclerView mEmuObsView = null;
+  private Button mSelectedButton = null;
+  private WaterColumn mWaterColumn = null;
+  private BottomSheetFragment.EMUAdapter mEmuAdapter = null;
+
+  private BottomSheetFragment.OnDetailClickedListener mButtonListener = null;
 
   public static BottomSheetFragment newInstance() {
-    BottomSheetFragment fragment = new BottomSheetFragment();
-    return fragment;
+    return new BottomSheetFragment();
   }
-
-
 
   // Define the behavior for DETAIL button
   // clicks
   public interface OnDetailClickedListener{
-    public void onButtonClick(int emuName);
+    void onButtonClick(int emuName);
   }
+
+  /**
+   *
+   * @param savedInstance Bundle
+   */
   @Override
   public final void onCreate(@NonNull final Bundle savedInstance) {
-    Log.i(TAG, "ENTERING onCreate");
     super.onCreate(savedInstance);
 
-    List<EMUObservation> emuObservations = new ArrayList<>();
-    mEmuAdapter = new EMUAdapter(getContext(), emuObservations);
-
-    Log.i(TAG, "LEAVING onCreate");
+    final List<EMUObservation> emuObservations = new ArrayList<>();
+    mEmuAdapter = new BottomSheetFragment.EMUAdapter(getContext(), emuObservations);
   }
 
+  /**
+   *
+   * @param layoutInflater LayoutInflater
+   * @param container ViewGroup
+   * @param savedInstance Bundle
+   * @return
+   */
   @Override
   @Nullable
-  public  View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
+  public View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
-    Log.i(TAG, "ENTERING onCreateView");
+    super.onCreateView(layoutInflater, container, savedInstance);
     mRoot = (LinearLayout) container;
     mButtonContainer = (LinearLayout) mRoot.findViewById(R.id.buttonContainer);
 
     mEmuObsView = (RecyclerView) mRoot.findViewById(R.id.summary_recycler_view);
     mEmuObsView.setLayoutManager(new LinearLayoutManager(getActivity()));
     mEmuObsView.setAdapter(mEmuAdapter);
-    Log.i(TAG, "LEAVING onCreateView");
     return null;
   }
 
-
+  /**
+   *
+   * @param activity Context
+   */
   @Override
-  public void onAttach(Context activity) {
-    Log.i(TAG, "ENTERING onAttach");
+  public void onAttach(final Context activity) {
     super.onAttach(activity);
 
     // This makes sure that the container activity has implemented
     // the callback interface. If not, it throws an exception
     try {
-      mButtonListener = (OnDetailClickedListener) activity;
-    } catch (ClassCastException e) {
-      throw new ClassCastException(activity.toString()
+      mButtonListener = (BottomSheetFragment.OnDetailClickedListener) activity;
+    } catch (final ClassCastException e) {
+      throw new ClassCastException(activity
           + " must implement OnRectangleTappedListener and the OnDetailClickedListener.");
     }
-    Log.i(TAG, "LEAVING onAttach");
   }
 
   /**
    * Set the data for this view
    * @param waterColumn - A WaterColumn object containing EMUObservations to display
    */
-  @Override public void showWaterColumn(WaterColumn waterColumn) {
-    Log.i(TAG, "ENTERING showWaterColumn");
+  @Override public void showWaterColumn(final WaterColumn waterColumn) {
     if (waterColumn != null){
       // Scroll to top of recycler view
       scrollToSummary(0);
       mWaterColumn = waterColumn;
-      Set<EMUObservation> emuSet = waterColumn.getEmuSet();
-      List<EMUObservation> list = new ArrayList<>();
-      for (EMUObservation observation : emuSet){
+      final Set<EMUObservation> emuSet = waterColumn.getEmuSet();
+      final List<EMUObservation> list = new ArrayList<>();
+      for (final EMUObservation observation : emuSet){
         list.add(observation);
       }
       mEmuAdapter.setObservations(list);
       showWaterColumnButtons(waterColumn);
     }
-    Log.i(TAG, "LEAVING showWaterColumn");
   }
   /**
    * Dynamically add a button for each EMU represented
    * in the water column.
-   * @param waterColumn
+   * @param waterColumn - WaterColumn data object
    */
-  private void showWaterColumnButtons(WaterColumn waterColumn){
-    Log.i(TAG, "ENTERING showWaterColumnButtons");
+  private void showWaterColumnButtons(final WaterColumn waterColumn){
     mButtonContainer.removeAllViews();
 
     // Each button will be added to layout with a layout_weight
     // relative to the ratio of the EUMObservation to
     // the depth of the water column
-    Set<EMUObservation> emuObservationSet = waterColumn.getEmuSet();
-    float depth = (float) waterColumn.getDepth();
-    TextView tv = (TextView) mRoot.findViewById(R.id.txtBottom);
+    final Set<EMUObservation> emuObservationSet = waterColumn.getEmuSet();
+    final float depth = waterColumn.getDepth();
+    final TextView tv = (TextView) mRoot.findViewById(R.id.txtBottom);
     tv.setText(waterColumn.getDepth()+" m");
 
     int buttonId = 0;
-    for (EMUObservation observation: emuObservationSet){
-      float relativeSize = (observation.getThickness()/depth) * 100;
+    for (final EMUObservation observation: emuObservationSet){
+      final float relativeSize = observation.getThickness() / depth * 100;
       final Button button = new Button(getContext());
-      LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+      final LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
           0, relativeSize);
       button.setLayoutParams(layoutParams);
       // Enable the button background to be change color based on its state (pressed, selected, or enabled)
@@ -168,7 +170,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
 
       button.setId(buttonId);
       button.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
+        @Override public void onClick(final View v) {
           if (mSelectedButton != null){
             mSelectedButton.setSelected(false);
           }
@@ -180,88 +182,111 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
       mButtonContainer.addView(button);
       buttonId = buttonId + 1;
     }
-    Log.i(TAG, "LEAVING showWaterColumnButtons");
   }
   /**
    * Build a stateful drawable for a given EMU
-   * @param emuName
+   * @param emuName String representing name
    * @return StateListDrawable responsive to selected, pressed, and enabled states
    */
-  private StateListDrawable buildStateList(int emuName){
-    Log.i(TAG, "ENTERING buildStateList");
-    StateListDrawable stateListDrawable = new StateListDrawable();
+  private static StateListDrawable buildStateList(final int emuName){
+    final StateListDrawable stateListDrawable = new StateListDrawable();
 
-    GradientDrawable defaultShape = new GradientDrawable();
-    int color = Color.parseColor(EmuHelper.getColorForEMUCluster( emuName));
+    final GradientDrawable defaultShape = new GradientDrawable();
+    final int color = Color.parseColor(EmuHelper.getColorForEMUCluster( emuName));
     defaultShape.setColor(color);
 
-    GradientDrawable selectedPressShape = new GradientDrawable();
+    final GradientDrawable selectedPressShape = new GradientDrawable();
     selectedPressShape.setColor(color);
     selectedPressShape.setStroke(5,Color.parseColor("#f4f442"));
 
-    stateListDrawable.addState(new int[] {android.R.attr.state_pressed}, selectedPressShape);
-    stateListDrawable.addState(new int[] {android.R.attr.state_selected}, selectedPressShape);
-    stateListDrawable.addState(new int[] {android.R.attr.state_enabled}, defaultShape);
+    stateListDrawable.addState(new int[] { android.R.attr.state_pressed}, selectedPressShape);
+    stateListDrawable.addState(new int[] { android.R.attr.state_selected}, selectedPressShape);
+    stateListDrawable.addState(new int[] { android.R.attr.state_enabled}, defaultShape);
 
-    Log.i(TAG, "LEAVING buildStateList");
 
     return stateListDrawable;
   }
-  @Override public void showLocationSummary(String x, String y) {
-    Log.i(TAG, "ENTERING showLocationSummary");
-    TextView textView = (TextView) getActivity().findViewById(R.id.txtSummary) ;
+
+  /**
+   * Display general text summary about the water column
+   * @param x String representing longitude of clicked location
+   * @param y String representing latitude of clicked location
+   */
+  @Override public void showLocationSummary(final String x, final String y) {
+    final TextView textView = (TextView) getActivity().findViewById(R.id.txtSummary) ;
     textView.setText(getString(R.string.water_column_at) + y + ", "+ x +getString(R.string.lat_lng) +
         mWaterColumn.getEmuSet().size() + getString(
         R.string.extending_to)+ mWaterColumn.getDepth()+getString(R.string.meters_period));
 
-    Log.i(TAG, "LEAVING showLocationSummary");
   }
 
-  @Override public void scrollToSummary(int position) {
+  /**
+   *
+   * @param position - int representing index of list item
+   */
+  @Override public void scrollToSummary(final int position) {
 
     mEmuObsView.scrollToPosition(position);
   }
 
-  @Override public void setPresenter(BottomSheetContract.Presenter presenter) {
-    mPresenter = presenter;
+  /**
+   *
+   * @param presenter - BottomSheetPresenter
+   */
+  @Override public void setPresenter(final BottomSheetContract.Presenter presenter) {
+    BottomSheetContract.Presenter mPresenter = presenter;
   }
+
   /**
    * Set selected state of a water column segment
    * @param position
    */
-  public void highlightSegment(int position){
-    Log.i(TAG, "ENTERING highlightSegment");
-    Button button =(Button) mButtonContainer.getChildAt(position);
+  private void highlightSegment(final int position){
+    final Button button =(Button) mButtonContainer.getChildAt(position);
     if (mSelectedButton != null){
       mSelectedButton.setSelected(false);
     }
     button.setSelected(true);
     mSelectedButton = button;
-    Log.i(TAG, "LEAVING highlightSegment");
   }
 
-  public class EMUAdapter extends RecyclerView.Adapter<RecycleViewHolder>{
+  public class EMUAdapter extends RecyclerView.Adapter<BottomSheetFragment.RecycleViewHolder>{
 
     private List<EMUObservation> emuObservations = Collections.emptyList();
-    private Context mContext;
-    private int size;
+    private final Context mContext;
+    private final int size;
 
-
+    /**
+     *
+     * @param context Context
+     * @param observations List<EMUObservation> items
+     */
     public EMUAdapter(final Context context, final List<EMUObservation> observations){
       emuObservations = observations;
       mContext = context;
       size = emuObservations.size();
     }
-    public void setObservations(List<EMUObservation> obs){
+
+    /**
+     * Set the observations to display
+     * @param obs - List<EMUObservation> items
+     */
+    public void setObservations(final List<EMUObservation> obs){
       emuObservations = obs;
       notifyDataSetChanged();
     }
 
-    @Override public RecycleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    /**
+     *
+     * @param parent ViewGroup
+     * @param viewType int
+     * @return an inflated RecycleViewHolder
+     */
+    @Override public BottomSheetFragment.RecycleViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
       final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
       final View emuView = inflater.inflate(R.layout.summary_layout, parent, false);
 
-      return new RecycleViewHolder(emuView);
+      return new BottomSheetFragment.RecycleViewHolder(emuView);
     }
 
     /**
@@ -269,37 +294,37 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
      * @param holder - the recycle view holder
      * @param position - position of the item in the data provider
      */
-    @Override public void onBindViewHolder(RecycleViewHolder holder, final int position) {
-      Log.i(TAG, "ENTERING onBindViewHolder");
+    @Override public void onBindViewHolder(final BottomSheetFragment.RecycleViewHolder holder, final int position) {
       final EMUObservation observation = emuObservations.get(position);
-      holder.txtThickness.setText(getString(R.string.layer_thickness_desc) + observation.getThickness() + getString(R.string.meters));
+      holder.txtThickness.setText(getString(R.string.layer_thickness_desc) + observation.getThickness() + getString(
+          R.string.meters));
       holder.txtName.setText(observation.getEmu().getName().toString());
       holder.txtNutrients.setText(observation.getEmu().getNutrientSummary());
       holder.txtSummary.setText(observation.getEmu().getPhysicalSummary());
-      int top = observation.getTop();
+      final int top = observation.getTop();
       holder.txtTop.setText(getString(R.string.below_surface_description) + top + getString(R.string.meters));
-      GradientDrawable drawable = (GradientDrawable) holder.rectangle.getDrawable();
+      final GradientDrawable drawable = (GradientDrawable) holder.rectangle.getDrawable();
       drawable.setColor(Color.parseColor(EmuHelper.getColorForEMUCluster(observation.getEmu().getName())));
       holder.details.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
+        @Override public void onClick(final View v) {
            mButtonListener.onButtonClick(observation.getEmu().getName());
          }
        });
 
       // Show/hide arrows
-      if (position == (size -1)){
+      if (position == size - 1){
         holder.arrowDown.setVisibility(View.INVISIBLE);
       }else{
         holder.arrowDown.setVisibility(View.VISIBLE);
       }
-      holder.bind(observation);
       // View index has changed, notify.
       highlightSegment(position);
-
-      Log.i(TAG, "LEAVING onBindViewHolder");
     }
 
-
+    /**
+     *
+     * @return an int representing size of observation list
+     */
     @Override public int getItemCount() {
 
       return emuObservations.size();
@@ -316,6 +341,11 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
     public final Button details;
     public final ImageView arrowDown;
 
+    /**
+     *
+     * @param emuView View
+     * @return RecycleViewHolder
+     */
     public RecycleViewHolder(final View emuView){
       super(emuView);
       txtSummary = (TextView) emuView.findViewById(R.id.physical_summary);
@@ -326,12 +356,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
       rectangle = (ImageView) emuView.findViewById(R.id.emu_rectangle);
       details = (Button) emuView.findViewById(R.id.btnDetail);
       arrowDown = (ImageView) emuView.findViewById(R.id.arrowDown);
-
     }
-    public final void bind(final EMUObservation observation){
-      //no op for now
-    }
-
   }
 
 }

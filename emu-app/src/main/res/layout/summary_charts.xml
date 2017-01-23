@@ -40,7 +40,7 @@
                       android:layout_height="wrap_content"
                       android:layout_weight="1"
                       android:background="@color/cardview_light_background"
-                      android:text="Temperature" android:gravity="center"/>
+                      android:text="@string/temperature" android:gravity="center"/>
             <com.github.mikephil.charting.charts.CombinedChart
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -51,7 +51,7 @@
                       android:layout_weight="1"
                       android:id="@+id/txtTemp"
                       android:background="@color/cardview_light_background"
-                      android:text="34.3" android:gravity="center"/>
+                      android:gravity="center"/>
         </LinearLayout>
 
         <LinearLayout android:layout_width="0dp"
@@ -61,22 +61,26 @@
                       android:background="@drawable/background_rect"
                       android:layout_gravity="center_vertical"
                       android:layout_margin="4dp">
+
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:layout_weight="1"
                       android:background="@color/cardview_light_background"
-                      android:text="Salinity" android:gravity="center"/>
+                      android:text="@string/salinity"
+                      android:gravity="center"/>
+
             <com.github.mikephil.charting.charts.CombinedChart
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="20"
                     android:id="@+id/chart2"/>
+
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:layout_weight="1"
                       android:id="@+id/txtSalinity"
                       android:background="@color/cardview_light_background"
-                      android:text="24.5" android:gravity="center"/>
+                      android:gravity="center"/>
         </LinearLayout>
 
         <LinearLayout android:layout_width="0dp"
@@ -90,7 +94,7 @@
                       android:layout_height="wrap_content"
                       android:layout_weight="1"
                       android:background="@color/cardview_light_background"
-                      android:text="Oxygen" android:gravity="center"/>
+                      android:text="@string/oxygen" android:gravity="center"/>
             <com.github.mikephil.charting.charts.CombinedChart
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -101,7 +105,7 @@
                       android:layout_weight="1"
                       android:id="@+id/txtOxygen"
                       android:background="@color/cardview_light_background"
-                      android:text="32.4" android:gravity="center"/>
+                      android:gravity="center"/>
         </LinearLayout>
 
 
@@ -123,7 +127,7 @@
                       android:layout_height="wrap_content"
                       android:layout_weight="1"
                       android:background="@color/cardview_light_background"
-                      android:text="Nitrate"
+                      android:text="@string/nitrate"
                       android:gravity="center"/>
             <com.github.mikephil.charting.charts.CombinedChart
                     android:layout_width="match_parent"
@@ -135,7 +139,7 @@
                       android:layout_weight="1"
                       android:id="@+id/txtNitrate"
                       android:background="@color/cardview_light_background"
-                      android:text="2.3"
+
                       android:gravity="center"/>
         </LinearLayout>
 
@@ -149,7 +153,7 @@
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:layout_weight="1"
-                      android:text="Phosphate"
+                      android:text="@string/phosphate"
                       android:background="@color/cardview_light_background"
                       android:gravity="center"/>
             <com.github.mikephil.charting.charts.CombinedChart
@@ -162,7 +166,7 @@
                       android:layout_weight="1"
                       android:id="@+id/txtPhosphate"
                       android:background="@color/cardview_light_background"
-                      android:text="14.5" android:gravity="center"/>
+                      android:gravity="center"/>
         </LinearLayout>
 
         <LinearLayout android:layout_width="0dp"
@@ -176,7 +180,7 @@
                       android:layout_height="wrap_content"
                       android:layout_weight="1"
                       android:background="@color/cardview_light_background"
-                      android:text="Silicate" android:gravity="center"/>
+                      android:text="@string/silicate" android:gravity="center"/>
             <com.github.mikephil.charting.charts.CombinedChart
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -187,7 +191,7 @@
                       android:layout_weight="1"
                       android:id="@+id/txtSilicate"
                       android:background="@color/cardview_light_background"
-                      android:text="32.4" android:gravity="center"/>
+                      android:gravity="center"/>
         </LinearLayout>
 
 

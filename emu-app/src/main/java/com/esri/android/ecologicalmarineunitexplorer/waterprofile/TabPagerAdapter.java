@@ -3,7 +3,6 @@ package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Log;
 import com.github.mikephil.charting.data.CombinedData;
 
 import java.util.ArrayList;
@@ -37,26 +36,26 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 
   private List<CombinedData> mChartDataList = new ArrayList<>();
 
-  @Override public Fragment getItem(int position) {
+  @Override public Fragment getItem(final int position) {
     switch (position){
 
       case  0:
-        return ChartFragment.newInstance(position,  mChartDataList.get(position));
+        return ChartFragment.newInstance( mChartDataList.get(position));
 
       case 1:
-        return ChartFragment.newInstance(position, mChartDataList.get(position));
+        return ChartFragment.newInstance(mChartDataList.get(position));
 
       case 2:
-        return ChartFragment.newInstance(position,mChartDataList.get(position));
+        return ChartFragment.newInstance(mChartDataList.get(position));
 
       case 3:
-        return ChartFragment.newInstance(position,  mChartDataList.get(position));
+        return ChartFragment.newInstance( mChartDataList.get(position));
 
       case 4:
-        return ChartFragment.newInstance(position,  mChartDataList.get(position));
+        return ChartFragment.newInstance(mChartDataList.get(position));
 
       case 5:
-        return ChartFragment.newInstance(position, mChartDataList.get(position));
+        return ChartFragment.newInstance(mChartDataList.get(position));
 
       default:
         return new Fragment();
@@ -64,16 +63,19 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 
   }
 
-  public TabPagerAdapter(FragmentManager fm, List<CombinedData> data) {
+  public TabPagerAdapter(final FragmentManager fm, final List<CombinedData> data) {
     super(fm);
     mChartDataList = data;
   }
-  @Override public int getCount() {
+  @Override
+  public int getCount() {
     return 6;
   }
+
   @Override
-  public CharSequence getPageTitle(int position) {
-    CharSequence title = "Temperature";
+  public CharSequence getPageTitle(final int position) {
+    super.getPageTitle(position);
+    final CharSequence title;
     switch (position){
       case  0:
         title = "Temperature";

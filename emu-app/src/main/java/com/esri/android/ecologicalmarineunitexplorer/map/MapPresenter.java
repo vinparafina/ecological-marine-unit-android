@@ -26,19 +26,15 @@ package com.esri.android.ecologicalmarineunitexplorer.map;
  */
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
-import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
 import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
-import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
-import com.esri.arcgisruntime.mapping.view.GeoView;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
 import java.util.List;
@@ -47,15 +43,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class MapPresenter implements MapContract.Presenter {
 
-  private  MapContract.View mMapView;
+  private final MapContract.View mMapView;
   private DataManager mDataManager;
-  private final String DIALOG_MESSAGE = "Rounding up the EMUs...";
-  private final String DIALOG_TITLE = "EMU Map Loading";
-  private final String TILED_LAYER_URL = "http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac";
+
   private final String NO_EMU_FOUND = "Please select an ocean location";
   private final String NO_LOCATION_FOUND = "No location found for ";
-  private final double BUFFER_SIZE = 32000;
-  private final int    ZOOM_LEVEL = 1;
+
   private ArcGISTiledLayer mSurfaceLayer = null;
 
 
@@ -73,11 +66,15 @@ public class MapPresenter implements MapContract.Presenter {
    */
   @Override public void start() {
     // Show a dialog while the map loads
+    String DIALOG_TITLE = "EMU Map Loading";
+    String DIALOG_MESSAGE = "Rounding up the EMUs...";
     mMapView.showProgressBar(DIALOG_MESSAGE, DIALOG_TITLE);
-    ArcGISMap map =  new ArcGISMap(Basemap.Type.OCEANS, 0, 0, ZOOM_LEVEL);
+    int ZOOM_LEVEL = 1;
+    final ArcGISMap map =  new ArcGISMap(Basemap.Type.OCEANS, 0, 0, ZOOM_LEVEL);
     mMapView.setUpMap(map);
 
     // EMU Ocean Surface
+    String TILED_LAYER_URL = "http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac";
     mSurfaceLayer = new ArcGISTiledLayer(TILED_LAYER_URL);
     mMapView.addLayer(mSurfaceLayer);
 
@@ -96,23 +93,23 @@ public class MapPresenter implements MapContract.Presenter {
 
     mMapView.showProgressBar("Fetching details about the location...", "Preparing Location Summary");
     mMapView.showClickedLocation(point);
-    Polygon polygon = getBufferPolygonForPoint(point, BUFFER_SIZE);
-    PolygonBuilder builder = new PolygonBuilder(polygon);
-    Envelope envelope = builder.getExtent();
+    double BUFFER_SIZE = 32000;
+    final Polygon polygon = getBufferPolygonForPoint(point, BUFFER_SIZE);
+    final PolygonBuilder builder = new PolygonBuilder(polygon);
+    final Envelope envelope = builder.getExtent();
 
     mDataManager.queryForEmuAtLocation(envelope, new ServiceApi.SummaryCallback() {
-      @Override public void onWaterColumnsLoaded(WaterColumn column) {
+      @Override public void onWaterColumnsLoaded(final WaterColumn column) {
 
         mMapView.hideProgressBar();
-        WaterColumn waterColumn =   column;
-        if (waterColumn == null){
+        if (column == null){
           mMapView.showMessage(NO_EMU_FOUND);
           mMapView.onNoEmusFound();
         }else{
           mMapView.setSelectedPoint(point);
           mMapView.setViewpoint();
           mMapView.showClickedLocation(point);
-          mMapView.showSummary(waterColumn);
+          mMapView.showSummary(column);
         }
       }
     });
@@ -126,7 +123,7 @@ public class MapPresenter implements MapContract.Presenter {
    * @param distance - size of the buffer to build around the point
    * @return - a polygon representing the buffered region with the point as its center
    */
-  @Override public Polygon getBufferPolygonForPoint(Point point, double distance) {
+  @Override public Polygon getBufferPolygonForPoint(final Point point, final double distance) {
     return GeometryEngine.buffer(point, distance);
   }
 
@@ -145,18 +142,23 @@ public class MapPresenter implements MapContract.Presenter {
    */
   @Override public void geocodeAddress(final String addresss) {
     mDataManager.queryForAddress(addresss, mMapView.getSpatialReference(),  new ServiceApi.GeocodingCallback() {
-      @Override public void onGecodeResult(List<GeocodeResult> results) {
+      @Override public void onGecodeResult(final List<GeocodeResult> results) {
         if (results == null){
           mMapView.showMessage(NO_LOCATION_FOUND + addresss);
         }else{
-          GeocodeResult result = results.get(0);
+          final GeocodeResult result = results.get(0);
           setSelectedPoint(result.getDisplayLocation());
         }
       }
     });
   }
 
-  @Override public void retrieveEMUPolygonByDepth(Integer value) {
+  /**
+   * Determine what expression to apply in the definition expression
+   * for retrieving polygons at a certain depth
+   * @param value - integer value from seekbar
+   */
+  @Override public void retrieveEMUPolygonByDepth(final Integer value) {
     Integer depth = 1;
     if(value <=10) {
       depth = 1;
@@ -187,7 +189,7 @@ public class MapPresenter implements MapContract.Presenter {
       mSurfaceLayer.setVisible(false);
     }
     mDataManager.manageEmuPolygonsByDepth(depth, new ServiceApi.EMUByDepthCallback() {
-      @Override public void onPolygonsRetrieved(FeatureLayer layer) {
+      @Override public void onPolygonsRetrieved(final FeatureLayer layer) {
         // Show progress bar
         mMapView.showProgressBar("Retrieving EMU polygons", "Data Download");
         if (layer != null){
@@ -207,7 +209,7 @@ public class MapPresenter implements MapContract.Presenter {
    */
   private void cacheInitialDepthLayer(){
     mDataManager.queryEmuByDepth(10, new ServiceApi.EMUByDepthCallback() {
-      @Override public void onPolygonsRetrieved(FeatureLayer layer) {
+      @Override public void onPolygonsRetrieved(final FeatureLayer layer) {
         if (layer != null){
           Log.i("MapPresenter", "Initial depth layer downloaded");
           layer.setDefinitionExpression(" Depth = 0");

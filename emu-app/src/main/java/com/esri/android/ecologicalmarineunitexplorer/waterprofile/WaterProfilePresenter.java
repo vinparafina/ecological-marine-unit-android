@@ -32,7 +32,7 @@ import com.esri.arcgisruntime.geometry.Point;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.*;
-import com.github.mikephil.charting.formatter.FillFormatter;
+import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
@@ -53,9 +53,6 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
     mDataManager = dataManager;
   }
 
-  @Override public void prepareDataForCharts(WaterProfile profile) {
-
-  }
 
   @Override public void getWaterProfiles(Point point) {
     mView.showProgressBar("Building scatter plots", "Preparing Water Profile");
@@ -112,7 +109,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
       ScatterDataSet set = new ScatterDataSet(entries, property);
       set.setColor(Color.BLACK);
       set.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
-      set.setScatterShapeSize(5f);
+      set.setScatterShapeSize(20f);
       set.setDrawValues(false);
       data.addDataSet(set);
     }else{
@@ -144,7 +141,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
         set.setDrawFilled(true);
         set.setHighLightColor(Color.rgb(244, 117, 117));
         set.setDrawCircleHole(false);
-        set.setFillFormatter(new FillFormatter() {
+        set.setFillFormatter(new IFillFormatter() {
           @Override
           public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
             return Math.abs(observation.getTop()) + observation.getThickness();

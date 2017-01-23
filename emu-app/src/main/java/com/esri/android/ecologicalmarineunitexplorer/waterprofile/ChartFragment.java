@@ -3,18 +3,15 @@ package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.CombinedData;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /* Copyright 2016 Esri
  *
@@ -42,22 +39,31 @@ import java.util.List;
 
 public class ChartFragment extends Fragment {
 
-  private TextView mTxtChartTitle;
-  private TextView mTxtXAxisTitle;
-  private CombinedChart mChart;
-  private CombinedData mData;
+  private TextView mTxtChartTitle = null;
+  private TextView mTxtXAxisTitle = null;
+  private CombinedChart mChart = null;
+  private CombinedData mData = null;
 
 
-  public static ChartFragment newInstance(int tabNumber, CombinedData combinedData) {
-    ChartFragment fragment = new ChartFragment();;
+  public static ChartFragment newInstance( final CombinedData combinedData) {
+    final ChartFragment fragment = new ChartFragment();
     fragment.setChartData(combinedData);
     return fragment;
   }
+
+  /**
+   *  Set up chart widgets
+   * @param layoutInflater - LayoutInflater
+   * @param container - ViewGroup
+   * @param savedInstance - Bundle
+   * @return - View
+   */
   @Override
   @Nullable
   public View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
-    View view = layoutInflater.inflate(R.layout.water_profile, container, false);
+    super.onCreateView(layoutInflater, container, savedInstance);
+    final View view = layoutInflater.inflate(R.layout.water_profile, container, false);
     mTxtXAxisTitle = (TextView) view.findViewById(R.id.txtXAxisTitle);
     mChart = (CombinedChart) view.findViewById(R.id.propertyChart);
     mChart.setDrawOrder(new CombinedChart.DrawOrder[]{ CombinedChart.DrawOrder.LINE,
@@ -74,7 +80,7 @@ public class ChartFragment extends Fragment {
    * Set the data for the chart
    * @param data - CombinedData item used by the chart
    */
-  public void setChartData(CombinedData data) {
+  private void setChartData(final CombinedData data) {
     mData = data;
   }
 
@@ -82,19 +88,23 @@ public class ChartFragment extends Fragment {
    * Display the chart view
    */
   private void showChart(){
-    String [] labels = mData.getDataSetLabels();
+    final String [] labels = mData.getDataSetLabels();
     String property = mData.getDataSetLabels()[labels.length -1];
 
     mChart.setData(mData);
     mChart.getAxisLeft().setInverted(true);
     mChart.getXAxis().setEnabled(true);
     mChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-    mChart.getXAxis().setAxisMinValue(mData.getXMin()-1);
-    mChart.getXAxis().setAxisMaxValue(mData.getXMax() + 1);
+
+    mChart.getXAxis().setAxisMinimum(mData.getXMin()-1);
+    mChart.getXAxis().setAxisMaximum(mData.getXMax() + 1);
     mChart.getAxisRight().setEnabled(false);
     mChart.getAxisLeft().setDrawGridLines(true);
     mChart.setDrawGridBackground(true);
-    mChart.setDescription("");
+    final Description description = new Description();
+    description.setText("");
+    description.setTextSize(10f);
+    mChart.setDescription(description);
     mChart.getLegend().setEnabled(false);
     mChart.setData(mData);
     mChart.invalidate();

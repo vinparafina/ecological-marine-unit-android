@@ -30,7 +30,7 @@ import com.esri.arcgisruntime.geometry.Point;
 
 public interface BottomSheetContract {
 
-  interface View extends BaseView<Presenter> {
+  interface View extends BaseView<BottomSheetContract.Presenter> {
     void showWaterColumn(WaterColumn waterColumn);
     void showLocationSummary(String x, String y);
     void scrollToSummary(int position);

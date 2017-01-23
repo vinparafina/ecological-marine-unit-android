@@ -11,7 +11,7 @@
 
         <com.esri.android.ecologicalmarineunitexplorer.waterprofile.VerticalTextView
                 android:id="@+id/txtMeasurementProperty"
-                android:text="Depth below surface (meters)"
+                android:text="@string/depth_below_surface_meters"
                 android:layout_height="wrap_content" android:layout_width="match_parent"
                 android:layout_marginTop="-45dp"/>
 
@@ -22,7 +22,9 @@
                 android:layout_height="match_parent"
                 android:paddingBottom="6dp"
                 android:paddingRight="6dp"
+                android:paddingEnd="6dp"
                 android:paddingTop="0dp"
+                android:paddingStart="0dp"
                 android:paddingLeft="0dp" />
     </LinearLayout>
 
@@ -31,6 +33,6 @@
               android:layout_height="wrap_content"
               android:layout_weight="1" android:gravity="center"
               android:id="@+id/txtXAxisTitle"
-              android:text="Temperature (C)" android:padding="6dp"/>
+              android:text="@string/temperature_c" android:padding="6dp"/>
 
 </LinearLayout>

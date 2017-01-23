@@ -23,25 +23,27 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
+import android.support.annotation.NonNull;
+
 /**
  * An object respresenting several physical
  * properties and their measured values
  */
 public class Measurement implements  Comparable<Measurement>{
-  private Double depth;
-  private Double temperature;
-  private Double salinity;
-  private Double dissolvedOxygen;
-  private Double silicate;
-  private Double phosphate;
-  private Double nitrate;
-  private int emu;
+  private Double depth = null;
+  private Double temperature = null;
+  private Double salinity = null;
+  private Double dissolvedOxygen = null;
+  private Double silicate = null;
+  private Double phosphate = null;
+  private Double nitrate = null;
+  private int emu = 0;
 
   public Double getDepth() {
     return depth;
   }
 
-  public void setDepth(Double depth) {
+  public void setDepth(final Double depth) {
     this.depth = depth;
   }
 
@@ -49,7 +51,7 @@ public class Measurement implements  Comparable<Measurement>{
     return temperature;
   }
 
-  public void setTemperature(Double temperature) {
+  public void setTemperature(final Double temperature) {
     this.temperature = temperature;
   }
 
@@ -57,7 +59,7 @@ public class Measurement implements  Comparable<Measurement>{
     return salinity;
   }
 
-  public void setSalinity(Double salinity) {
+  public void setSalinity(final Double salinity) {
     this.salinity = salinity;
   }
 
@@ -65,7 +67,7 @@ public class Measurement implements  Comparable<Measurement>{
     return dissolvedOxygen;
   }
 
-  public void setDissolvedOxygen(Double dissolvedOxygen) {
+  public void setDissolvedOxygen(final Double dissolvedOxygen) {
     this.dissolvedOxygen = dissolvedOxygen;
   }
 
@@ -73,7 +75,7 @@ public class Measurement implements  Comparable<Measurement>{
     return silicate;
   }
 
-  public void setSilicate(Double silicate) {
+  public void setSilicate(final Double silicate) {
     this.silicate = silicate;
   }
 
@@ -81,7 +83,7 @@ public class Measurement implements  Comparable<Measurement>{
     return phosphate;
   }
 
-  public void setPhosphate(Double phosphate) {
+  public void setPhosphate(final Double phosphate) {
     this.phosphate = phosphate;
   }
 
@@ -89,11 +91,11 @@ public class Measurement implements  Comparable<Measurement>{
     return nitrate;
   }
 
-  public void setNitrate(Double nitrate) {
+  public void setNitrate(final Double nitrate) {
     this.nitrate = nitrate;
   }
 
-  public void setEmu(int emu){
+  public void setEmu(final int emu){
     this.emu = emu;
   }
 
@@ -101,26 +103,26 @@ public class Measurement implements  Comparable<Measurement>{
     return emu;
   }
 
-  public Double getValueForProperty(String property){
-    Double value = null;
+  public Double getValueForProperty(final String property){
+    Double value;
     switch (property){
       case "NITRATE":
-        value = getNitrate();
+        value = nitrate;
         break;
       case "PHOSPHATE":
-        value = getPhosphate();
+        value = phosphate;
         break;
       case "DISSOLVED_OXYGEN":
-        value = getDissolvedOxygen();
+        value = dissolvedOxygen;
         break;
       case "SILICATE":
-        value = getSilicate();
+        value = silicate;
         break;
       case "SALINITY":
-        value = getSalinity();
+        value = salinity;
         break;
       case "TEMPERATURE":
-        value = getTemperature();
+        value = temperature;
         break;
       default:
         value = null;
@@ -130,14 +132,10 @@ public class Measurement implements  Comparable<Measurement>{
   }
 
   // Order by depth
-  @Override public int compareTo(Measurement another) {
-    if (this.getDepth() > another.getDepth()){
+  @Override public int compareTo(@NonNull final Measurement another) {
+    if (depth > another.depth){
       return -1;
     }
-    if (this.getDepth() < another.getDepth()){
-      return 1;
-    }else{
-      return 0;
-    }
+    return getDepth() < another.getDepth() ? 1 : 0;
   }
 }

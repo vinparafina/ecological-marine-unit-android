@@ -35,7 +35,7 @@ import android.widget.TextView;
 
 public class VerticalTextView extends TextView {
 
-  private int _width, _height;
+  private int _width = 0, _height = 0;
   private final Rect _bounds = new Rect();
 
   public VerticalTextView(Context context, AttributeSet attrs, int defStyle) {
