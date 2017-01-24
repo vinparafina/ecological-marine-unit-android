@@ -254,7 +254,6 @@ import java.util.Set;
 
     private List<EMUObservation> emuObservations = Collections.emptyList();
     private final Context mContext;
-    private final int size;
 
     /**
      *
@@ -264,7 +263,7 @@ import java.util.Set;
     public EMUAdapter(final Context context, final List<EMUObservation> observations){
       emuObservations = observations;
       mContext = context;
-      size = emuObservations.size();
+
     }
 
     /**
@@ -311,8 +310,10 @@ import java.util.Set;
          }
        });
 
+
+
       // Show/hide arrows
-      if (position == size - 1){
+      if (position == getItemCount() - 1){
         holder.arrowDown.setVisibility(View.INVISIBLE);
       }else{
         holder.arrowDown.setVisibility(View.VISIBLE);

@@ -91,15 +91,15 @@ public class MapFragment extends Fragment implements MapContract.View {
     final SeekBar seekBar = (SeekBar) getActivity().findViewById(R.id.seekBar) ;
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(final SeekBar seekBar, final int progress, final boolean fromUser) {
-        //No- op
+        mPresenter.retrieveEMUPolygonByDepth(seekBar.getProgress());
       }
 
       @Override public void onStartTrackingTouch(final SeekBar seekBar) {
-        //No op
+        // No-op
       }
 
       @Override public void onStopTrackingTouch(final SeekBar seekBar) {
-        mPresenter.retrieveEMUPolygonByDepth(seekBar.getProgress());
+        // No-op
       }
     });
 

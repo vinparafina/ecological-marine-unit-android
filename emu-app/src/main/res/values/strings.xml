@@ -3,7 +3,7 @@
     <string name="emu_ocean_surface_layer">
         http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac
     </string>
-    <string name="toolbar_title">Explore An Ocean Location</string>
+    <string name="toolbar_title">Explore</string>
 
     <string name="service_emu_polygon">
         http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/EMU_Cluster_Polygon/FeatureServer/0</string>

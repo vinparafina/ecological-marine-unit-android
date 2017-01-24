@@ -13,10 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.geometry.Point;
@@ -117,10 +114,6 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    */
   public void testClickOnOcean(){
     clickOnOceanPoint();
-    boolean emuTextFound = solo.searchButton("VIEW LAYERS");
-    assertTrue(emuTextFound);
-    boolean buttonFound = solo.searchButton("PROFILE");
-    assertTrue(buttonFound);
   }
 
   /**
@@ -145,9 +138,6 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    */
   public void testSummaryShown(){
     clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForDialogToClose());
-    assertTrue(solo.waitForText("EMU "));
     assertTrue(solo.searchButton("DETAILS"));
     ArrayList<TextView> items = solo.clickInRecyclerView(0);
     int count = recyclerCount();
@@ -161,7 +151,6 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    */
   public void testWaterColumnShown(){
     clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
     assertTrue(solo.waitForDialogToClose());
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
@@ -186,8 +175,6 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    */
   public void testClickButtonSelectsSegment(){
     clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForDialogToClose());
     boolean emuTextFound = solo.waitForText("EMU ");
     assertTrue(emuTextFound);
     int count = recyclerCount();
@@ -200,17 +187,6 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
     assertTrue(solo.getView(R.id.arrowDown).getVisibility() == View.INVISIBLE);
   }
 
-  /**
-   * Test that a bitmap snapshot of the map is shown
-   */
-  public void testMapImageGenerated(){
-    clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForDialogToClose());
-    boolean emuTextFound = solo.waitForText("EMU ");
-    ImageView imageView = (ImageView)  solo.getView(R.id.imgMap);
-    assertTrue(imageView.getDrawable() != null);
-  }
 
   /**
    * Test that charts are drawn when
@@ -218,8 +194,6 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    */
   public void testForDetailCharts(){
     clickOnOceanPoint();
-    solo.clickOnButton("VIEW LAYERS");
-    assertTrue(solo.waitForText("EMU "));
     assertTrue(solo.searchButton("DETAILS"));
     solo.clickOnButton("DETAILS");
     assertTrue(solo.waitForDialogToClose());
@@ -248,9 +222,9 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    */
   public void testForWaterProfileCharts(){
     clickOnOceanPoint();
-    solo.clickOnButton("VIEW COLUMN PROFILE");
-    assertTrue(solo.waitForDialogToClose());
 
+    solo.clickOnView(solo.getView(R.id.action_profile));
+    solo.sleep(3000);
     assertTrue(solo.waitForText("Temperature"));
     CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
     checkForChartData();
@@ -279,6 +253,22 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
   }
 
   /**
+   * Test that the seekbar results
+   * in a change in the map view.  This
+   * is a visual test that we cannot really
+   * make any programatic assertions against.
+   */
+  public void testSeekBar(){
+    assertTrue(solo.waitForDialogToClose());
+    solo.sleep(3000);
+    solo.setProgressBar((SeekBar)solo.getView(R.id.seekBar), 15);
+    solo.sleep(10000);
+    solo.setProgressBar((SeekBar)solo.getView(R.id.seekBar), 40);
+    solo.sleep(10000);
+    solo.setProgressBar((SeekBar)solo.getView(R.id.seekBar), 95);
+    solo.sleep(10000);
+  }
+  /**
    * Helper method that clicks on
    * an ocean location
    */
@@ -290,6 +280,17 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
 
     solo.clickOnScreen(screenPoint.x, screenPoint.y );
     assertTrue(solo.waitForText("Location Summary"));
+
+    android.graphics.Point p = new android.graphics.Point();
+    getActivity().getWindowManager().getDefaultDisplay().getSize(p);
+    int fromX, toX, fromY, toY = 0;
+    fromX = p.x/2;
+    toX = p.x/2;
+    fromY = (p.y/2) + (p.y/3);
+    toY = (p.y/2) - (p.y/3);
+    solo.sleep(3000);
+    // Drag UP
+    solo.drag(fromX, toX, fromY, toY, 40);
   }
 
   private void checkForChartData(){
