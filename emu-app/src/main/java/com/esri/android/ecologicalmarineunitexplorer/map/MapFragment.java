@@ -85,8 +85,8 @@ public class MapFragment extends Fragment implements MapContract.View {
   public final View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
     super.onCreateView(layoutInflater, container, savedInstance);
-    mRoot = layoutInflater.inflate(R.layout.map_view, container,false);
-
+   // mRoot = layoutInflater.inflate(R.layout.map_view, container,false);
+    mRoot = container;
     // Listen for seekbar changes
     final SeekBar seekBar = (SeekBar) getActivity().findViewById(R.id.seekBar) ;
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -104,7 +104,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     });
 
     mPresenter.start();
-    return mRoot;
+    return null;
   }
 
   /**
