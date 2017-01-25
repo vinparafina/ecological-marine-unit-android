@@ -118,7 +118,6 @@ public class DataManager {
    * Query for water column data at the given geometry
    * @param envelope - represents a buffered geometry around selected point in map
    * @param callback - SummaryCallback used when query is completed
-   * @return a WaterColumn at the location within the geometry
    */
   public void queryForEmuAtLocation(final Envelope envelope, final ServiceApi.SummaryCallback callback){
     final QueryParameters queryParameters = new QueryParameters();
@@ -208,8 +207,8 @@ public class DataManager {
 
   /**
    * Retrieve polygons from cache or download from service
-   * @param depth
-   * @param callback
+   * @param depth Integer representing a particular depth index
+   * @param callback ServiceApi.EMUByDepthCallback
    */
   public void manageEmuPolygonsByDepth(final Integer depth, final ServiceApi.EMUByDepthCallback callback){
     // If depth level is 1, don't download, just default to TiledLayer
@@ -280,7 +279,7 @@ public class DataManager {
    * @param depth - Integer representing depth level
    * @return QueryParameters
    */
-  private QueryParameters generateEmuByDepthQueryParameters( final int depth ){
+  private static QueryParameters generateEmuByDepthQueryParameters(final int depth){
     final QueryParameters queryParameters = new QueryParameters();
     queryParameters.setWhereClause(" Depth = " + depth);
     return queryParameters;
@@ -326,7 +325,7 @@ public class DataManager {
    * @param map - Map<String,Object>
    * @return Measurement
    */
-  private Measurement createMeasurement(final Map<String, Object> map) {
+  private static Measurement createMeasurement(final Map<String, Object> map) {
     final Measurement m = new Measurement();
 
 
@@ -469,7 +468,7 @@ public class DataManager {
 
   /**
    * Get an EMUStat from the summary table.  Returns null for any EMUs with no statistic.
-   * @param emuName
+   * @param emuName int representing an EMU name
    * @return EMUStat (Nullable)
    */
   public EMUStat getStatForEMU(final int emuName){
@@ -650,7 +649,7 @@ public class DataManager {
 
   /**
    * Get the maximum nitrate value from the summary statistics table
-   * @return
+   * @return Double
    */
   public Double getMaxNitrateFromSummary(){
     if (DataManager.MAX_NITRATE == null) {
@@ -865,7 +864,7 @@ public class DataManager {
    * @param map Map<String,Object></String,Object>
    * @return EMUStat
    */
-  private EMUStat createEMUStat(final Map<String,Object> map){
+  private static EMUStat createEMUStat(final Map<String, Object> map){
     final EMUStat stat = new EMUStat();
 
     stat.setEmu_name(Integer.parseInt(extractValueFromMap("Cluster37", map)));
@@ -958,7 +957,7 @@ public class DataManager {
    * @param map - a map of objects indexed by string
    * @return  - the string value, may be empty but not null.
    */
-  private String extractValueFromMap(@NonNull final String columnName, @NonNull final Map<String,Object> map){
+  private static String extractValueFromMap(@NonNull final String columnName, @NonNull final Map<String, Object> map){
     String value = "";
     if (map.containsKey(columnName) && map.get(columnName) != null){
       value = map.get(columnName).toString();
@@ -972,7 +971,8 @@ public class DataManager {
    * @param waterColumnMap - Map<Geometry,WaterColumn> map of WaterColumn values keyed by Geometry objects.
    * @return WaterColumn
    */
-  private WaterColumn findClosestWaterColumn(final Envelope envelope, final Map<Geometry,WaterColumn> waterColumnMap){
+  private static WaterColumn findClosestWaterColumn(final Envelope envelope,
+      final Map<Geometry, WaterColumn> waterColumnMap){
     WaterColumn closestWaterColumn = null;
     if (waterColumnMap.size() == 1){
       final WaterColumn[] columns = waterColumnMap.values().toArray(new WaterColumn[1]);
@@ -1008,7 +1008,7 @@ public class DataManager {
    * @param e Exception
    * @return String
    */
-  private String getAdditionalInfo(Exception e){
+  private static String getAdditionalInfo(Exception e){
     String additionalInfo =null;
     if (e.getCause()!= null && e.getCause().getMessage()!=null) {
       additionalInfo = e.getCause().getMessage();
