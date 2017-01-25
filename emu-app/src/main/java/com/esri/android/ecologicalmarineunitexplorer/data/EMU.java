@@ -24,14 +24,13 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  */
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 public class EMU {
-  @NonNull private Integer name = null;
-  @NonNull private String physicalSummary = null;
-  @NonNull private String nutrientSummary = null;
-  @NonNull private String geomorphologyBase = null;
-  @NonNull private String geomorphologyFeatures = null;
+  @NonNull private Integer name;
+  @NonNull private String physicalSummary;
+  @NonNull private String nutrientSummary;
+  @NonNull private String geomorphologyBase;
+  @NonNull private String geomorphologyFeatures;
   private double count = 0.0;
   private double percentWater = 0.0;
   private double temp_mean = 0.0;

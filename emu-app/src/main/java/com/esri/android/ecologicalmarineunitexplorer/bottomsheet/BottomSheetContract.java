@@ -26,7 +26,6 @@ package com.esri.android.ecologicalmarineunitexplorer.bottomsheet;
 import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
 import com.esri.android.ecologicalmarineunitexplorer.BaseView;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
-import com.esri.arcgisruntime.geometry.Point;
 
 public interface BottomSheetContract {
 

@@ -236,7 +236,7 @@ public class DataManager {
     final QueryParameters queryParameters = generateEmuByDepthQueryParameters(depth);
     try{
       // Return all the output fields
-      final List<String> outFields = Arrays.asList("*");
+      final List<String> outFields = Collections.singletonList("*");
 
       final ListenableFuture<FeatureQueryResult> results =
           mEmuByDepthTable.populateFromServiceAsync(queryParameters,false, outFields);

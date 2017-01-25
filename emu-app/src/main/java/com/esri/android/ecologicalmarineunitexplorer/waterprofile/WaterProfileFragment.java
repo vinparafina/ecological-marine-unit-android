@@ -15,7 +15,6 @@ import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /* Copyright 2016 Esri

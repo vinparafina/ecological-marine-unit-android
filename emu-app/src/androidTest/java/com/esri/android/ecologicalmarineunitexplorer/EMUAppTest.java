@@ -1,31 +1,21 @@
 package com.esri.android.ecologicalmarineunitexplorer;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.*;
-import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.test.ActivityInstrumentationTestCase2;
-import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.*;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.robotium.solo.Solo;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /* Copyright 2016 Esri
  *
@@ -123,7 +113,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
   public void testClickOnLand(){
 
     // Somewhere in the Sahara
-    Point sahara = new Point(21.9741618,13.0648185,SpatialReferences.getWgs84());
+    Point sahara = new Point(21.9741618,13.0648185, SpatialReferences.getWgs84());
     android.graphics.Point derivedScreenLocation = deriveScreenPointForLocation(sahara);
     assertTrue(solo.waitForDialogToClose());
     solo.clickOnScreen(derivedScreenLocation.x, derivedScreenLocation.y);

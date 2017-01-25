@@ -2,14 +2,10 @@ package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.util.Log;
-import android.widget.Toast;
 import com.esri.android.ecologicalmarineunitexplorer.data.*;
-import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.data.*;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -290,7 +286,7 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     ScatterDataSet set = new ScatterDataSet(entries, seriesName);
     set.setColor(Color.parseColor("#FF4081"));
     set.setScatterShape(ScatterChart.ScatterShape.SQUARE);
-    set.setScatterShapeSize(9f);
+    set.setScatterShapeSize(15f);
     set.setDrawValues(false);
     set.setValueTextSize(10f);
     d.addDataSet(set);

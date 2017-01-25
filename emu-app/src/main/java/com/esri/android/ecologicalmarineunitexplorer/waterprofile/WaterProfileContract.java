@@ -25,7 +25,6 @@ package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 
 import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
 import com.esri.android.ecologicalmarineunitexplorer.BaseView;
-import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
 import com.esri.arcgisruntime.geometry.Point;
 import com.github.mikephil.charting.data.CombinedData;
 

@@ -62,7 +62,6 @@ import com.esri.android.ecologicalmarineunitexplorer.bottomsheet.BottomSheetPres
 import com.esri.android.ecologicalmarineunitexplorer.util.ActivityUtils;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileFragment;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfilePresenter;
-import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.geometry.Point;
 
 /**
@@ -531,7 +530,7 @@ public class MainActivity extends AppCompatActivity
   private boolean checkForInternetConnectivity(){
     final ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     final NetworkInfo wifi = connManager.getActiveNetworkInfo();
-    return wifi == null ? false : wifi.isConnected();
+    return  wifi != null && wifi.isConnected();
   }
 
   /**

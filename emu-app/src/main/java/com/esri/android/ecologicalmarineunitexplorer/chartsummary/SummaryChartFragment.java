@@ -200,7 +200,9 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
     l.setEnabled(true);
     // The positioning of the legend effectively
     // hides the dummy chart from view.
-    l.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
+    l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+    l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+   // l.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
     dummyChart.invalidate();
   }
 
