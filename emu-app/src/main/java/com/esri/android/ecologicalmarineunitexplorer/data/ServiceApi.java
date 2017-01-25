@@ -34,7 +34,7 @@ public interface ServiceApi {
     void onWaterColumnsLoaded(WaterColumn column  );
   }
   interface StatCallback{
-    void onStatsLoaded();
+    void onStatsLoaded(boolean successFlag);
   }
 
   interface ColumnProfileCallback{

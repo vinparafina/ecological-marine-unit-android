@@ -71,13 +71,17 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     final WaterColumn currentWaterColumn  = mDataManager.getCurrentWaterColumn();
     if (stat == null){
       mDataManager.queryEMUSummaryStatistics(new ServiceApi.StatCallback() {
-        @Override public void onStatsLoaded() {
-          // Get the EMU statistic for this EMU.  The EMU statistic
-          // contains the stats for all locations with this EMU
-          EMUStat emuStat =  mDataManager.getStatForEMU(emuName);
+        @Override public void onStatsLoaded(boolean successFlag) {
+          if (successFlag){
+            // Get the EMU statistic for this EMU.  The EMU statistic
+            // contains the stats for all locations with this EMU
+            EMUStat emuStat =  mDataManager.getStatForEMU(emuName);
 
-          // Prep the data for the charts
-          prepareDataForCharts(emuStat, currentWaterColumn, emuName);
+            // Prep the data for the charts
+            prepareDataForCharts(emuStat, currentWaterColumn, emuName);
+          }else{
+            mView.showMessage("There was a problem getting details for the EMU");
+          }
         }
       });
     }else{

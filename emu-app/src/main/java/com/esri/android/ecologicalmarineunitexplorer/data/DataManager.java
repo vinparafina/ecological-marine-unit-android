@@ -134,7 +134,7 @@ public class DataManager {
    */
   public void queryEMUSummaryStatistics(final ServiceApi.StatCallback callback){
     if (summary_table.size() > 0){
-      callback.onStatsLoaded();
+      callback.onStatsLoaded(true);
     }else{
       mSummaryStats.setFeatureRequestMode(ServiceFeatureTable.FeatureRequestMode.MANUAL_CACHE);
       mSummaryStats.loadAsync();
@@ -265,7 +265,12 @@ public class DataManager {
       });
 
     } catch (final Exception e) {
-      Log.e("DataManager", "Error query emu by depth : " + e.getMessage());
+      String additionalInfo = getAdditionalInfo(e);
+      if (additionalInfo!=null){
+        Log.e("DataManager", "Error query emu by depth :" +  e.getMessage() + " Additional info: " + additionalInfo);
+      }else{
+        Log.e("DataManager", "Error query emu by depth :" +  e.getMessage());
+      }
     }
   }
 
@@ -281,6 +286,12 @@ public class DataManager {
     return queryParameters;
   }
 
+  /**
+   * Retrieve measurements from queried features
+   * @param futureResult - ListenableFuture<FeatureQueryResult>
+   * @param callback - ServiceApi.ColumnProfileCallback callback
+   * @param profile - WaterProfile
+   */
   private void processQueryForEMUColumnProfile(final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.ColumnProfileCallback callback, final WaterProfile profile) {
     futureResult.addDoneListener(new Runnable() {
       @Override public void run() {
@@ -298,14 +309,23 @@ public class DataManager {
             }
           }
         } catch (final Exception e) {
-          e.printStackTrace();
-          // TODO FIx
+          String additionalInfo = getAdditionalInfo(e);
+          if (additionalInfo!=null){
+            Log.e("DataManager", "No measurements found for water column profile due to error " +  e.getMessage() + " Additional info: " + additionalInfo);
+          }else{
+            Log.e("DataManager", "No measurements found for water column profile due to error " +  e.getMessage());
+          }
         }
         callback.onProfileLoaded(profile);
       }
     });
   }
 
+  /**
+   * Build up a Measurement
+   * @param map - Map<String,Object>
+   * @return Measurement
+   */
   private Measurement createMeasurement(final Map<String, Object> map) {
     final Measurement m = new Measurement();
 
@@ -370,7 +390,6 @@ public class DataManager {
       m.setPhosphate(0d);
     }
 
-
     return m;
   }
 
@@ -386,13 +405,11 @@ public class DataManager {
     futureResult.addDoneListener(new Runnable() {
       @Override public void run() {
         try{
-        //  Log.i("ProcessQuery", "Query done...");
           final FeatureQueryResult fqr = futureResult.get();
 
           final Map<Geometry,WaterColumn> pointWaterColumnMap = new HashMap<Geometry, WaterColumn>();
 
           if (fqr != null){
-        //    Log.i("ProcessQuery", "Processing features...");
 
             final Collection<EMUObservation> emuObservations = new ArrayList<EMUObservation>();
             final Iterator<Feature> iterator = fqr.iterator();
@@ -439,12 +456,22 @@ public class DataManager {
 
 
         }catch (final Exception e){
-            e.printStackTrace();
-          //TODO :// FIXME: 1/21/17
+          String additionalInfo = getAdditionalInfo(e);
+          if (additionalInfo!=null){
+            Log.e("DataManager", "No measurements found for location due to error " +  e.getMessage() + " Additional info: " + additionalInfo);
+          }else{
+            Log.e("DataManager", "No measurements found for location due to error " +  e.getMessage());
+          }
         }
       }
     });
   }
+
+  /**
+   * Get an EMUStat from the summary table.  Returns null for any EMUs with no statistic.
+   * @param emuName
+   * @return EMUStat (Nullable)
+   */
   public EMUStat getStatForEMU(final int emuName){
     EMUStat stat = null;
     if (summary_table.size() > 0){
@@ -453,6 +480,10 @@ public class DataManager {
     return stat;
   }
 
+  /**
+   * Get the maximum temperature value from the summary statistics table
+   * @return Double
+   */
   public Double getMaxTemperatureFromSummary(){
     if (DataManager.MAX_TEMPATURE == null){
       final int x = summary_table.size();
@@ -470,6 +501,10 @@ public class DataManager {
     return DataManager.MAX_TEMPATURE;
   }
 
+  /**
+   * Get the minimum temperature value from the summary statistics table
+   * @return Double
+   */
   public Double getMinTemperatureFromSummary(){
     if (DataManager.MIN_TEMPATURE == null){
       final int x = summary_table.size();
@@ -487,6 +522,10 @@ public class DataManager {
     return DataManager.MIN_TEMPATURE;
   }
 
+  /**
+   * Get the maximum salinity value from the summary statistics table
+   * @return Double
+   */
   public Double getMaxSalinityFromSummary(){
     if (DataManager.MAX_SALINITY == null){
       final int x = summary_table.size();
@@ -504,6 +543,10 @@ public class DataManager {
     return DataManager.MAX_SALINITY;
   }
 
+  /**
+   * Get the minimum salinity value from the summary statistics table
+   * @return Double
+   */
   public Double getMinSalinityFromSummary(){
     if (DataManager.MIN_SALINITY == null){
       final int x = summary_table.size();
@@ -521,6 +564,10 @@ public class DataManager {
     return DataManager.MIN_SALINITY;
   }
 
+  /**
+   * Get the maximum oxygen value from the summary statistics table
+   * @return Double
+   */
   public Double getMaxOxygenFromSummary(){
     if (DataManager.MAX_OXYGEN == null){
       final int x = summary_table.size();
@@ -538,6 +585,10 @@ public class DataManager {
     return DataManager.MAX_OXYGEN;
   }
 
+  /**
+   * Get the minimum oxygen value from the summary statistics table
+   * @return Double
+   */
   public Double getMinOxygenFromSummary(){
     if (DataManager.MIN_OXYGEN == null){
       final int x = summary_table.size();
@@ -555,6 +606,10 @@ public class DataManager {
     return DataManager.MIN_OXYGEN;
   }
 
+  /**
+   * Get the maximum phosphate value from the summary statistics table
+   * @return Double
+   */
   public Double getMaxPhosphateFromSummary(){
     if (DataManager.MAX_PHOSPHATE == null){
       final int x = summary_table.size();
@@ -572,6 +627,10 @@ public class DataManager {
     return DataManager.MAX_PHOSPHATE;
   }
 
+  /**
+   * Get the minimum phosphate value from the summary statistics table
+   * @return Double
+   */
   public Double getMinPhosphateFromSummary(){
     if (DataManager.MIN_PHOSPHATE == null){
       final int x = summary_table.size();
@@ -589,6 +648,10 @@ public class DataManager {
     return DataManager.MIN_PHOSPHATE;
   }
 
+  /**
+   * Get the maximum nitrate value from the summary statistics table
+   * @return
+   */
   public Double getMaxNitrateFromSummary(){
     if (DataManager.MAX_NITRATE == null) {
       final int x = summary_table.size();
@@ -604,8 +667,12 @@ public class DataManager {
       }
     }
     return DataManager.MAX_NITRATE;
-
   }
+
+  /**
+   * Get the minimum nitrate value from the summary statistics table
+   * @return Double
+   */
   public Double getMinNitrateFromSummary(){
     if (DataManager.MIN_NITRATE == null ){
       final int x = summary_table.size();
@@ -621,8 +688,12 @@ public class DataManager {
       }
     }
     return DataManager.MIN_NITRATE;
-
   }
+
+  /**
+   * Get the maximum silicate value from the summary statistics table
+   * @return Double
+   */
   public Double getMaxSilicateFromSummary(){
     if (DataManager.MAX_SILICATE == null){
       final int x = summary_table.size();
@@ -638,8 +709,12 @@ public class DataManager {
       }
     }
     return DataManager.MAX_SILICATE;
-
   }
+
+  /**
+   * Get the minimum silicate value from the summary statistics table
+   * @return Double
+   */
   public Double getMinSilicateFromSummary(){
     if (DataManager.MIN_SILICATE == null){
       final int x = summary_table.size();
@@ -657,6 +732,11 @@ public class DataManager {
     return DataManager.MIN_SILICATE;
 
   }
+
+  /**
+   * Return the current WaterColumn
+   * @return WaterColumn
+   */
   public WaterColumn getCurrentWaterColumn(){
     return mCurrentWaterColumn;
   }
@@ -682,10 +762,15 @@ public class DataManager {
               summary_table.put(stat.getEmu_name(), stat);
             }
           }
-          callback.onStatsLoaded();
+          callback.onStatsLoaded(true);
         } catch (final Exception e) {
-          e.printStackTrace();
-          //TODO :// FIXME: 1/21/17
+          callback.onStatsLoaded(false);
+          String additionalInfo = getAdditionalInfo(e);
+          if (additionalInfo!=null){
+            Log.e("DataManager", "There was a problem querying for EMU statistics " +  e.getMessage() + " Additional info: " + additionalInfo);
+          }else{
+            Log.e("DataManager", "There was a problem querying for EMU statistics " +  e.getMessage());
+          }
         }
       }
     });
@@ -772,9 +857,14 @@ public class DataManager {
       observation.setNitrate(Double.parseDouble(nitrate));
     }
 
-    //Log.i("Observation", "observation: " + observation.toString());
     return observation;
   }
+
+  /**
+   * Create an EMUStat object from given a map of key value pairs
+   * @param map Map<String,Object></String,Object>
+   * @return EMUStat
+   */
   private EMUStat createEMUStat(final Map<String,Object> map){
     final EMUStat stat = new EMUStat();
 
@@ -876,6 +966,12 @@ public class DataManager {
     return value;
   }
 
+  /**
+   * Find the closest WaterColumn to the center of the given Envelope
+   * @param envelope - Envelope
+   * @param waterColumnMap - Map<Geometry,WaterColumn> map of WaterColumn values keyed by Geometry objects.
+   * @return WaterColumn
+   */
   private WaterColumn findClosestWaterColumn(final Envelope envelope, final Map<Geometry,WaterColumn> waterColumnMap){
     WaterColumn closestWaterColumn = null;
     if (waterColumnMap.size() == 1){
@@ -898,7 +994,6 @@ public class DataManager {
         final double calculatedDistance = geodeticDistanceResult.getDistance();
         waterColumn.setDistanceFrom(calculatedDistance);
         waterColumnList.add(waterColumn);
-      //  Log.i("DistanceFrom", "Distance = " + calculatedDistance);
       }
       // Sort water columns
       Collections.sort(waterColumnList);
@@ -906,6 +1001,19 @@ public class DataManager {
     }
 
     return closestWaterColumn;
+  }
+
+  /**
+   * Obtain any additional information about given exception
+   * @param e Exception
+   * @return String
+   */
+  private String getAdditionalInfo(Exception e){
+    String additionalInfo =null;
+    if (e.getCause()!= null && e.getCause().getMessage()!=null) {
+      additionalInfo = e.getCause().getMessage();
+    }
+    return additionalInfo;
   }
 
 }
