@@ -1,4 +1,3 @@
-package com.esri.android.ecologicalmarineunitexplorer;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +22,7 @@ package com.esri.android.ecologicalmarineunitexplorer;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer;
 
 
 public interface BasePresenter {

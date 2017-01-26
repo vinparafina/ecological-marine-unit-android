@@ -1,26 +1,3 @@
-package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
-
-import android.app.ProgressDialog;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.esri.android.ecologicalmarineunitexplorer.R;
-import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.CombinedData;
-
-import java.text.DecimalFormat;
-import java.util.List;
-
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +21,29 @@ import java.util.List;
  * email: contracts@esri.com
  *
  */
+
+package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
+
+import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.esri.android.ecologicalmarineunitexplorer.R;
+import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.CombinedData;
+
+import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  * Fragment responsible for building and displaying

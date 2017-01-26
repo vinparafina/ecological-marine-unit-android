@@ -1,22 +1,3 @@
-package com.esri.android.ecologicalmarineunitexplorer;
-
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.test.ActivityInstrumentationTestCase2;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.widget.*;
-import com.esri.arcgisruntime.geometry.GeometryEngine;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.SpatialReference;
-import com.esri.arcgisruntime.geometry.SpatialReferences;
-import com.esri.arcgisruntime.mapping.view.MapView;
-import com.github.mikephil.charting.charts.CombinedChart;
-import com.robotium.solo.Solo;
-
-import java.util.ArrayList;
-
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,6 +29,25 @@ import java.util.ArrayList;
  * Robotium folder of your device's SD card.
  *
  */
+
+package com.esri.android.ecologicalmarineunitexplorer;
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.test.ActivityInstrumentationTestCase2;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.View;
+import android.widget.*;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
+import com.esri.arcgisruntime.mapping.view.MapView;
+import com.github.mikephil.charting.charts.CombinedChart;
+import com.robotium.solo.Solo;
+
+import java.util.ArrayList;
 
 public class EMUAppTest extends ActivityInstrumentationTestCase2 {
 

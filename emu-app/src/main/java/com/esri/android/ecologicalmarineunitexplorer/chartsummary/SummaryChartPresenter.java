@@ -1,17 +1,3 @@
-package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
-
-import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import com.esri.android.ecologicalmarineunitexplorer.data.*;
-import com.github.mikephil.charting.charts.ScatterChart;
-import com.github.mikephil.charting.data.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +21,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * email: contracts@esri.com
  *
  */
+
+package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
+
+import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import com.esri.android.ecologicalmarineunitexplorer.data.*;
+import com.github.mikephil.charting.charts.ScatterChart;
+import com.github.mikephil.charting.data.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 
 public class SummaryChartPresenter implements SummaryChartContract.Presenter {
 
