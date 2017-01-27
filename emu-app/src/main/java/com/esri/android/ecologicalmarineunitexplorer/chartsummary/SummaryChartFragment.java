@@ -215,7 +215,7 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
    * @return int representing chart id
    */
   private static int getIdForChartView(final int index){
-    int id = 0;
+    int id;
     switch (index){
       case 0:
         id = R.id.chart1;

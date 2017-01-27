@@ -92,13 +92,22 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    // Set license key
+    /*********************************************************************
+     * If you have a basic license key, uncomment line 100.
+     * See directions in the README about how to Configure a Basic License
+     *********************************************************************/
+
     //ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
 
     // Initially hide the FAB
     mFab = (FloatingActionButton) findViewById(R.id.fab);
     if (mFab != null){
       mFab.setVisibility(View.INVISIBLE);
+      mFab.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+      });
     }
 
 

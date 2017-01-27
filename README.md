@@ -36,7 +36,7 @@ While the Ecological Marine Unit Explorer application references a Basic license
 
 1.  In the module build.file uncomment line 17 `buildConfigField "String" , "LICENSE_KEY" , LICENSE_KEY`
 2.  Add a file entitled gradle.properties to the root of the project.  Copy your license key to this file.
-3.  Uncomment line 97 in the MainActivity.java file that sets the license:  `ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);`
+3.  Uncomment line 100 in the MainActivity.java file that sets the license:  `ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);`
 4.  Sync your gradle file and re-run the app.
 
 

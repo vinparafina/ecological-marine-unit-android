@@ -57,8 +57,7 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
   private ViewPager mViewPager;
 
   public static WaterProfileFragment newInstance() {
-    final WaterProfileFragment fragment = new WaterProfileFragment();
-    return fragment;
+    return new WaterProfileFragment();
   }
 
   /**
@@ -95,14 +94,13 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
    * @param dataList - List<CombinedData> containing data points
    */
   @Override public void showWaterProfiles(final List<CombinedData> dataList ) {
-    List<CombinedData> mChartDataList = dataList;
     //
     // Because this FragmentPagerAdapter is being used within a nested
     // fragment, we don't want to use the shared fragment manager.
     // USE A NEW INSTANCE OF THE FRAGMENT MANAGER rather than
     // using the fragment manager belonging to the activity.
     //
-    TabPagerAdapter mTabAdapter = new TabPagerAdapter(getChildFragmentManager(), mChartDataList);
+    TabPagerAdapter mTabAdapter = new TabPagerAdapter(getChildFragmentManager(), dataList);
     mViewPager.setAdapter(mTabAdapter);
   }
 

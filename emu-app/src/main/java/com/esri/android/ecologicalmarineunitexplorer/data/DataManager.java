@@ -130,7 +130,7 @@ public class DataManager {
     final QueryParameters queryParameters = new QueryParameters();
     queryParameters.setGeometry(envelope);
     final ListenableFuture<FeatureQueryResult> futureResult = mMeshClusterTable.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
-    processQueryForEMuAtLocation(envelope, futureResult, callback);
+    processQueryForEmuAtLocation(envelope, futureResult, callback);
   }
 
   /**
@@ -138,7 +138,7 @@ public class DataManager {
    * This is done once and the results cached locally.
    * @param callback - The StatCallback called when query is completed
    */
-  public void queryEMUSummaryStatistics(final ServiceApi.StatCallback callback){
+  public void queryEmuSummaryStatistics(final ServiceApi.StatCallback callback){
     if (summary_table.size() > 0){
       callback.onStatsLoaded(true);
     }else{
@@ -164,12 +164,12 @@ public class DataManager {
    * @param point - a point representing the location of a specific water column
    * @param callback - The ColumnProfileCallback called when query is completed.
    */
-  public void queryForEMUColumnProfile(final Point point, final ServiceApi.ColumnProfileCallback callback){
+  public void queryForEmuColumnProfile(final Point point, final ServiceApi.ColumnProfileCallback callback){
     final QueryParameters queryParameters = new QueryParameters();
     queryParameters.setGeometry(point);
     final ListenableFuture<FeatureQueryResult> futureResult = mMeshPointTable.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
     final WaterProfile profile = new WaterProfile();
-    processQueryForEMUColumnProfile(futureResult, callback, profile);
+    processQueryForEmuColumnProfile(futureResult, callback, profile);
   }
 
   /**
@@ -298,7 +298,7 @@ public class DataManager {
    * @param callback - ServiceApi.ColumnProfileCallback callback
    * @param profile - WaterProfile
    */
-  private void processQueryForEMUColumnProfile(final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.ColumnProfileCallback callback, final WaterProfile profile) {
+  private void processQueryForEmuColumnProfile(final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.ColumnProfileCallback callback, final WaterProfile profile) {
     futureResult.addDoneListener(new Runnable() {
       @Override public void run() {
         try {
@@ -406,7 +406,7 @@ public class DataManager {
    * @param futureResult - a ListenableFuture<FeatureQueryResult> to process
    * @param callback  - a SummaryCallback called when query processing is complete
    */
-  private void processQueryForEMuAtLocation(final Envelope envelope, final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.SummaryCallback callback){
+  private void processQueryForEmuAtLocation(final Envelope envelope, final ListenableFuture<FeatureQueryResult> futureResult, final ServiceApi.SummaryCallback callback){
 
     futureResult.addDoneListener(new Runnable() {
       @Override public void run() {
@@ -423,7 +423,7 @@ public class DataManager {
               final Feature feature = iterator.next();
               final Map<String,Object> map = feature.getAttributes();
               final EMUObservation observation = createEMUObservation(map);
-              emuObservations.add(createEMUObservation(map));
+              emuObservations.add(observation);
             }
             // Now we have a list with zero or more EMUObservations
             // 1.  Create a map of WaterColumn keyed on location
@@ -478,7 +478,7 @@ public class DataManager {
    * @param emuName int representing an EMU name
    * @return EMUStat (Nullable)
    */
-  public EMUStat getStatForEMU(final int emuName){
+  public EMUStat getStatForEmu(final int emuName){
     EMUStat stat = null;
     if (summary_table.size() > 0){
       stat = (EMUStat) summary_table.get(emuName);

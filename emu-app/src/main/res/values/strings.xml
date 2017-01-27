@@ -87,5 +87,6 @@
     <string name="details">DETAILS</string>
     <string name="depth_below_surface_meters">Depth below surface (meters)</string>
     <string name="temperature_c">Temperature (C)</string>
+    <string name="water_column_depth">%1$d m</string>
 
 </resources>

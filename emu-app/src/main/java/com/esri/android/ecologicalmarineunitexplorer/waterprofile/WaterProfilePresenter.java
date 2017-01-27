@@ -60,7 +60,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
 
   @Override public void getWaterProfiles(Point point) {
     mView.showProgressBar("Building scatter plots", "Preparing Water Profile");
-    mDataManager.queryForEMUColumnProfile(mColumnLocation, new ServiceApi.ColumnProfileCallback() {
+    mDataManager.queryForEmuColumnProfile(mColumnLocation, new ServiceApi.ColumnProfileCallback() {
       @Override public void onProfileLoaded(WaterProfile waterProfile) {
         if (waterProfile.measurementCount() > 0){
 
@@ -105,7 +105,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
       ArrayList<Entry> entries = new ArrayList<>();
       Set<Double> depths = propertyMeasurementByDepth.keySet();
       for (Double depth : depths){
-        float y = (float) Math.abs(depth.doubleValue());
+        float y = (float) Math.abs(depth);
         float x = (float) propertyMeasurementByDepth.get(depth).doubleValue();
         entries.add(new Entry(x, y));
       }
@@ -129,7 +129,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
     if (column != null){
       Set<EMUObservation> observations = column.getEmuSet();
       for (final EMUObservation observation : observations){
-        ArrayList<Entry> entries = new ArrayList<Entry>();
+        ArrayList<Entry> entries = new ArrayList<>();
 
         for (float index = xmin; index <= xmax; index++) {
           entries.add(new Entry(index, Math.abs(observation.getTop())));

@@ -162,7 +162,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
     final Set<EMUObservation> emuObservationSet = waterColumn.getEmuSet();
     final float depth = waterColumn.getDepth();
     final TextView tv = (TextView) mRoot.findViewById(R.id.txtBottom);
-    tv.setText(waterColumn.getDepth()+" m");
+    tv.setText(getString(R.string.water_column_depth, waterColumn.getDepth()));
 
     int buttonId = 0;
     for (final EMUObservation observation: emuObservationSet){
@@ -240,7 +240,7 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
    * @param presenter - BottomSheetPresenter
    */
   @Override public void setPresenter(final BottomSheetContract.Presenter presenter) {
-    BottomSheetContract.Presenter mPresenter = presenter;
+    // Presenter not used in this fragment
   }
 
   /**
@@ -259,7 +259,6 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
   public class EMUAdapter extends RecyclerView.Adapter<BottomSheetFragment.RecycleViewHolder>{
 
     private List<EMUObservation> emuObservations = Collections.emptyList();
-    private final Context mContext;
 
     /**
      *
@@ -268,8 +267,6 @@ public class BottomSheetFragment extends Fragment implements BottomSheetContract
      */
     public EMUAdapter(final Context context, final List<EMUObservation> observations){
       emuObservations = observations;
-      mContext = context;
-
     }
 
     /**

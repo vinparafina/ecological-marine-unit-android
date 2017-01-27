@@ -59,9 +59,9 @@ public class ExampleInstrumentedTest {
 
     final DataManager dataManager = DataManager.getDataManagerInstance(appContext);
 
-    dataManager.queryEMUSummaryStatistics(new ServiceApi.StatCallback() {
+    dataManager.queryEmuSummaryStatistics(new ServiceApi.StatCallback() {
       @Override public void onStatsLoaded(boolean flag) {
-        EMUStat stat = dataManager.getStatForEMU(24);
+        EMUStat stat = dataManager.getStatForEmu(24);
         Log.d("TEST", stat.toString());
         assertNotNull(stat);
       }
