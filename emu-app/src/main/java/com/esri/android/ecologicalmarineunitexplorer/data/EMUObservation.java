@@ -29,7 +29,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.esri.arcgisruntime.geometry.Point;
 
-
+/**
+ * A Model encapsulating a set of physical properties
+ * for a specific occurrence of an EMU at a location.
+ */
 public class EMUObservation implements Comparable<EMUObservation> {
   @NonNull private EMU emu;
   private int top;

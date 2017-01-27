@@ -41,9 +41,16 @@ import java.util.List;
  *
  */
 
+/**
+ * This fragment is responsible for building and displaying scatter plot charts for
+ * physical properties.  Each scatter plot represents how a specific physical
+ * property changes with ocean depth.
+ * It's the View in the MVP pattern and the concrete implementation of the
+ * WaterProfileContract.View interface.
+ */
+
 public class WaterProfileFragment extends Fragment implements WaterProfileContract.View {
 
-  private RecyclerView mChartRecyclerView;
   private WaterProfileContract.Presenter mPresenter;
   private ProgressDialog mProgressDialog;
 

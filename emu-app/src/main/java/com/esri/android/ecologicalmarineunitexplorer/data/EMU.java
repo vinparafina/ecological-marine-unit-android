@@ -27,6 +27,10 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
 
 import android.support.annotation.NonNull;
 
+/**
+ * A Model object encapsulating various statistics
+ * about the physical properties of an EMU
+ */
 public class EMU {
   @NonNull private Integer name;
   @NonNull private String physicalSummary;

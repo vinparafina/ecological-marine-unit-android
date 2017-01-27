@@ -176,8 +176,8 @@ public class MainActivity extends AppCompatActivity
 
   /**
    *
-   * @param menu
-   * @return
+   * @param menu Menu
+   * @return boolean
    */
   @Override
   public boolean onCreateOptionsMenu(final Menu menu) {
@@ -204,8 +204,8 @@ public class MainActivity extends AppCompatActivity
 
   /**
    *
-   * @param menu
-   * @return
+   * @param menu Menu
+   * @return boolean
    */
   @Override
   public boolean onPrepareOptionsMenu(final Menu menu) {
@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity
   }
 
   /**
-   *
-   * @param point
+   * Show the view with the water column profiles
+   * @param point - Point representing clicked geo location
    */
   private void showWaterColumnProfile(final Point point) {
     // Remove water column, summary, text and button

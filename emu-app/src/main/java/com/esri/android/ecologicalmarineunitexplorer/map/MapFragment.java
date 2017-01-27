@@ -60,7 +60,6 @@ public class MapFragment extends Fragment implements MapContract.View {
   private ProgressDialog mProgressDialog = null;
   private Point mSelectedPoint = null;
   private ArcGISMap mMap = null;
-  private Viewpoint mInitialViewpoint = null;
 
   private final String TAG = MapFragment.class.getSimpleName();
   private NoEmuFound mNoEmuFoundCallback = null;
@@ -142,7 +141,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED) {
-          mInitialViewpoint = mMap.getInitialViewpoint();
+
           // Stop listening to any more draw status changes
           mMapView.removeDrawStatusChangedListener(this);
           // Start listening to touch interactions on the map
@@ -233,16 +232,6 @@ public class MapFragment extends Fragment implements MapContract.View {
     return mMapView.screenToLocation(mapPoint);
   }
 
-  /**
-   * Zoom to initial map view and clear out the graphical layers
-   */
-  @Override public void resetMap() {
-    mSelectedPoint = null;
-    mGraphicOverlay.getGraphics().clear();
-    if (mInitialViewpoint != null){
-      mMapView.setViewpoint(mInitialViewpoint);
-    }
-  }
 
   /**
    * Show a toast displaying message

@@ -31,6 +31,11 @@ import com.esri.arcgisruntime.geometry.Point;
 
 import java.text.DecimalFormat;
 
+/**
+ * This is the concrete implementation of the Presenter defined in the BottomSheetContract.
+ * It encapsulates business logic and drives the behavior of the View.
+ */
+
 public class BottomSheetPresenter implements BottomSheetContract.Presenter {
 
   private BottomSheetFragment mBottomSheetView;

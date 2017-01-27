@@ -36,6 +36,10 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * This is the concrete implementation of the Presenter defined in the SummaryChartContract.
+ * It encapsulates business logic and drives the behavior of the View.
+ */
 
 public class SummaryChartPresenter implements SummaryChartContract.Presenter {
 
@@ -58,15 +62,19 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     currentEmuName = emuName;
   }
 
-  public void setEmuName(int nameId){
-    currentEmuName = nameId;
-  }
+  /**
+   * Start by kicking off the process of
+   * retrieving chart data for an EMU
+   */
   @Override public void start() {
     mView.showProgressBar("Building charts...", "Preparing Detail View");
     getDetailForSummary(currentEmuName);
   }
 
-
+  /**
+   * Retrieve and provision chart data for given EMU
+   * @param emuName - int representing EMU name
+   */
   @Override public void getDetailForSummary(final int emuName) {
     EMUStat stat = mDataManager.getStatForEMU(emuName);
     final WaterColumn currentWaterColumn  = mDataManager.getCurrentWaterColumn();
@@ -90,7 +98,12 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     }
   }
 
-
+  /**
+   * Prepare data for displaying in charts
+   * @param stat - EMUStat
+   * @param waterColumn - WaterColumn
+   * @param emuName - int representing EMU name
+   */
   @Override public void prepareDataForCharts(@NonNull EMUStat stat, @NonNull WaterColumn waterColumn, int emuName) {
     checkNotNull(stat);
     checkNotNull(waterColumn);
@@ -101,8 +114,6 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     // Grab the first one for now..
     if (list.size() > 0){
       EMUObservation observation = list.get(0);
-
-
 
       List<CombinedData> dataList = new ArrayList<>();
 
@@ -135,8 +146,12 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
       mView.hideProgressBar();
       mView.showMessage("No chart data found for layer");
     }
-
   }
+
+  /**
+   * Create dataset to be displayed in chart legend
+   * @return CombinedData representing dummy data for a legend
+   */
   private CombinedData buildDummyDataForLegend(){
     CombinedData combinedData = new CombinedData();
     float xIndex = 1.5f;
@@ -155,6 +170,12 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     return combinedData;
   }
 
+  /**
+   * Build a CombinedData object containing temperature data
+   * @param observation - EMUObservation
+   * @param stat - EMUStat
+   * @return - CombinedData
+   */
   private CombinedData buildTempData(EMUObservation observation, EMUStat stat){
     CombinedData combinedData = new CombinedData();
     if (stat.getTemp_max() == null || stat.getTemp_min() == null || stat.getTemp_mean() == null || observation.getTemperature() == null){
@@ -171,11 +192,16 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
 
     combinedData.setData(generateCandleData(xIndex, shadowH, shadowL, open, close, TEMPERATURE ));
     ScatterData sdata = generateScatterData(averageTemp, TEMPERATURE);
-   // ScatterData data = generateOceanHiLo(open,close,"HILO");
-   // sdata.addDataSet(data.getDataSetByIndex(0));
     combinedData.setData(sdata);
     return  combinedData;
   }
+
+  /**
+   * Build a CombinedData object containing salinity data
+   * @param observation - EMUObservation
+   * @param stat - EMUStat
+   * @return - CombinedData
+   */
   private CombinedData buildSalinityData(EMUObservation observation, EMUStat stat){
     CombinedData combinedData = new CombinedData();
     if (stat.getSalinity_max() == null || stat.getSalinity_min() == null || stat.getSalinity_mean() == null || observation.getSalinity() == null){
@@ -194,6 +220,13 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     combinedData.setData(generateScatterData(avgSalinity, SALINITY));
     return  combinedData;
   }
+
+  /**
+   * Build a CombinedData object containing oxygen data
+   * @param observation - EMUObservation
+   * @param stat - EMUStat
+   * @return - CombinedData
+   */
   private CombinedData buildOxygenData(EMUObservation observation, EMUStat stat){
 
     CombinedData combinedData = new CombinedData();
@@ -213,6 +246,13 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     combinedData.setData(generateScatterData(averageOx, OXYGEN));
     return  combinedData;
   }
+
+  /**
+   * Build a CombinedData object containing phosphate data
+   * @param observation - EMUObservation
+   * @param stat - EMUStat
+   * @return - CombinedData
+   */
   private CombinedData buildPhosphateData(EMUObservation observation, EMUStat stat){
     CombinedData combinedData = new CombinedData();
     if (stat.getPhosphate_max() == null || stat.getPhosphate_min() == null || stat.getPhosphate_mean() == null || observation.getPhosphate() == null){
@@ -231,6 +271,13 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     combinedData.setData(generateScatterData(averagePhos, PHOSPHATE));
     return  combinedData;
   }
+
+  /**
+   * Build a CombinedData object containing silicate data
+   * @param observation - EMUObservation
+   * @param stat - EMUStat
+   * @return - CombinedData
+   */
   private CombinedData buildSilicateData(EMUObservation observation, EMUStat stat){
     CombinedData combinedData = new CombinedData();
     if (stat.getSilicate_max() == null || stat.getSilicate_min() == null || stat.getSilicate_mean() == null || observation.getSilicate() == null){
@@ -249,6 +296,13 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     combinedData.setData(generateScatterData(averageSil, SILICATE));
     return  combinedData;
   }
+
+  /**
+   * Build a CombinedData object containing nitrate data
+   * @param observation - EMUObservation
+   * @param stat - EMUStat
+   * @return - CombinedData
+   */
   private CombinedData buildNitrateData(EMUObservation observation, EMUStat stat){
     CombinedData combinedData = new CombinedData();
     if (stat.getNitrate_min() == null || stat.getNitrate_max() == null || stat.getNitrate_mean() == null || observation.getNitrate() == null){
@@ -268,6 +322,16 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     return combinedData;
   }
 
+  /**
+   * Prepare CandleData for candlestick chart
+   * @param xIndex - float
+   * @param shadowH - float
+   * @param shadowL - float
+   * @param open - float
+   * @param close - float
+   * @param seriesName - String
+   * @return CandleData
+   */
   private CandleData generateCandleData(float xIndex, float shadowH, float shadowL, float open, float close, String seriesName){
     CandleData d = new CandleData();
     ArrayList<CandleEntry> entries = new ArrayList<>();
@@ -284,6 +348,12 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     return d;
   }
 
+  /**
+   * Prepare ScatterData object
+   * @param averageValue
+   * @param seriesName
+   * @return ScatterData
+   */
   private ScatterData generateScatterData(float averageValue,  String seriesName){
     ScatterData d = new ScatterData();
     ArrayList<Entry> entries = new ArrayList<>();
@@ -297,6 +367,14 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     d.addDataSet(set);
     return  d;
   }
+
+  /**
+   * Prepare LineData object
+   * @param open - float
+   * @param close - float
+   * @param seriesName - String
+   * @return LineData
+   */
   private LineData generateOceanHiLo(float open, float close, String seriesName){
     LineData d = new LineData();
     ArrayList<Entry> entries = new ArrayList<>();

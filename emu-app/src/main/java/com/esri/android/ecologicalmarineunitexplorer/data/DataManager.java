@@ -49,6 +49,12 @@ import com.google.common.collect.Multimaps;
 
 import java.util.*;
 
+/**
+ * The DataManager is a singleton responsible for managing how the application retrieves
+ * data from services.  It encapsulates logic for handling ServiceFeatureTables, FeatureLayers,
+ * geocoding.  It performs Model-related functions in the MVP pattern.
+ */
+
 public class DataManager {
   private final ServiceFeatureTable mMeshClusterTable;
 
@@ -189,14 +195,14 @@ public class DataManager {
               try{
                 final List<GeocodeResult> geocodeResults = futureResults.get();
                 Log.i("DataManager",  geocodeResults.size() + " geocoding results returned.");
-                callback.onGecodeResult(geocodeResults);
+                callback.onGeocodeResult(geocodeResults);
               }catch ( final Exception e){
-                callback.onGecodeResult(null  );
+                callback.onGeocodeResult(null  );
               }
             }
           });
         }else{
-          callback.onGecodeResult(null);
+          callback.onGeocodeResult(null);
           Log.i("DataManager", "Locator Task failed to load: " + mLocatorTask.getLoadStatus().name());
         }
       }

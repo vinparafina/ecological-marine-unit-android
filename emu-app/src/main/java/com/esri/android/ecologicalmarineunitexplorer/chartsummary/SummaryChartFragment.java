@@ -46,10 +46,11 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 /**
- * Fragment responsible for building and displaying
- * candlestick charts for a EMU at a specific geographic
- * location.
+ * This fragment is responsible for building and displaying candlestick charts for a EMU at a specific geographic
+ * location. It's the View in the MVP pattern and the concrete implementation of the
+ * SummaryChartContract.View interface.
  */
+
 public class SummaryChartFragment extends Fragment implements SummaryChartContract.View {
 
   private View mRoot = null;
@@ -92,7 +93,6 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
       }
       prepareLegend(dataList.get(size -1));
     }
-
   }
 
   /**
@@ -109,7 +109,7 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
    * Set salinity label
    * @param salinityText - Double value representing salinity level
    */
-  @Override @SuppressWarnings("override") public void setSalinityText(final double salinityText) {
+  @Override public void setSalinityText(final double salinityText) {
     final TextView textView = (TextView) mRoot.findViewById(R.id.txtSalinity);
     mUnits = getString(R.string.ppm);
     textView.setText(Double.valueOf(new DecimalFormat("#.##").format(salinityText)) + mUnits);
@@ -188,7 +188,7 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
     dummyChart.getXAxis().setEnabled(false);
     dummyChart.getAxisRight().setEnabled(false);
     dummyChart.getAxisLeft().setEnabled(false);
-    Description description = new Description();
+    final Description description = new Description();
     description.setText("");
     description.setTextSize(10f);
     dummyChart.setDescription(description);
@@ -202,7 +202,6 @@ public class SummaryChartFragment extends Fragment implements SummaryChartContra
     // hides the dummy chart from view.
     l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
     l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-   // l.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
     dummyChart.invalidate();
   }
 

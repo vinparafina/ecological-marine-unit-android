@@ -27,14 +27,35 @@ import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
 import com.esri.android.ecologicalmarineunitexplorer.BaseView;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 
+/**
+ * This is the contract between the Presenter and View
+ * components of the MVP pattern. It defines methods
+ * for displaying EMU layer summary data.
+ */
+
 public interface BottomSheetContract {
 
   interface View extends BaseView<BottomSheetContract.Presenter> {
+
+    /**
+     * Display EMU layers and data in the view
+     * @param waterColumn - WaterColumn encapsulating EMU data
+     */
     void showWaterColumn(WaterColumn waterColumn);
+
+    /**
+     * Show summary information about the selected location
+     * @param x - String representing a longitude position
+     * @param y - String representing a latitude position.
+     */
     void showLocationSummary(String x, String y);
-    void scrollToSummary(int position);
+
   }
   interface Presenter extends BasePresenter {
+    /**
+     * Set the WaterColumn model object in the presenter
+     * @param waterColumn - WaterColumn encapsulating EMU data
+     */
     void setWaterColumn(WaterColumn waterColumn);
 
   }

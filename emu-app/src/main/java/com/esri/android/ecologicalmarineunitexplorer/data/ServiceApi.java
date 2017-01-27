@@ -25,11 +25,15 @@
 package com.esri.android.ecologicalmarineunitexplorer.data;
 
 
-import android.graphics.Bitmap;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
 import java.util.List;
+
+/**
+ * This interface defines a number of callbacks used
+ * throughout the application when calling asynchronous methods.
+ */
 
 public interface ServiceApi {
   interface SummaryCallback {
@@ -44,11 +48,8 @@ public interface ServiceApi {
   }
 
   interface GeocodingCallback{
-    void onGecodeResult(List<GeocodeResult> results
+    void onGeocodeResult(List<GeocodeResult> results
     );
-  }
-  interface BitmapCallback{
-    void onBitmapGenerated(Bitmap bitmap);
   }
   interface EMUByDepthCallback{
     void onPolygonsRetrieved( FeatureLayer layer);

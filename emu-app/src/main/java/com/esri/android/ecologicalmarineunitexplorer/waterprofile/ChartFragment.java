@@ -1,18 +1,3 @@
-package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
-
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import com.esri.android.ecologicalmarineunitexplorer.R;
-import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.CombinedData;
-
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,10 +21,28 @@ import com.github.mikephil.charting.data.CombinedData;
  * email: contracts@esri.com
  *
  */
+package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.esri.android.ecologicalmarineunitexplorer.R;
+import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.CombinedData;
+
+/**
+ * Displays individual scatter chart for a particular physical property.
+ * It's used in the TabPagerAdapter, each tab representing a chart
+ * for each of the physical properties.
+ */
 public class ChartFragment extends Fragment {
 
-  private TextView mTxtChartTitle = null;
   private TextView mTxtXAxisTitle = null;
   private CombinedChart mChart = null;
   private CombinedData mData = null;

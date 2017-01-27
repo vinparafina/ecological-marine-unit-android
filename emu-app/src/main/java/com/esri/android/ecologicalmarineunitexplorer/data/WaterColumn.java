@@ -30,6 +30,10 @@ import com.esri.arcgisruntime.geometry.Point;
 
 import java.util.*;
 
+/**
+ * A Model object encapsulating a collection of EMUObservations for a specific location
+ */
+
 public class WaterColumn implements  Comparable<WaterColumn> {
   @NonNull private final Set<EMUObservation> emuSet;
   private double distanceFrom = 0;
@@ -38,6 +42,7 @@ public class WaterColumn implements  Comparable<WaterColumn> {
   public WaterColumn(){
     emuSet = new TreeSet<>();
   }
+
   @NonNull public Set<EMUObservation> getEmuSet() {
     return emuSet;
   }
@@ -46,9 +51,6 @@ public class WaterColumn implements  Comparable<WaterColumn> {
     emuSet.add(observation);
   }
 
-  public int emuCount(){
-    return emuSet.size();
-  }
 
   public int getDepth(){
     int depth = 0;
@@ -76,10 +78,6 @@ public class WaterColumn implements  Comparable<WaterColumn> {
     else{
       return  0;
     }
-  }
-
-  public double getDistanceFrom() {
-    return distanceFrom;
   }
 
   public void setDistanceFrom(final double distanceFrom) {

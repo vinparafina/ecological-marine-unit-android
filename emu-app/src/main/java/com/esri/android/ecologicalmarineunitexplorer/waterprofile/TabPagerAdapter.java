@@ -1,13 +1,3 @@
-package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import com.github.mikephil.charting.data.CombinedData;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +22,18 @@ import java.util.List;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import com.github.mikephil.charting.data.CombinedData;
+
+import java.util.ArrayList;
+import java.util.List;
+/**
+ * The view holder for managing tabs of scatter line charts
+ */
 public class TabPagerAdapter extends FragmentPagerAdapter {
 
   private List<CombinedData> mChartDataList = new ArrayList<>();

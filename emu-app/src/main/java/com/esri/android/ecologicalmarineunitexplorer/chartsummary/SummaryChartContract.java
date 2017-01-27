@@ -32,22 +32,88 @@ import com.github.mikephil.charting.data.CombinedData;
 
 import java.util.List;
 
+/**
+ * This is the contract between the Presenter and View
+ * components of the MVP pattern. It defines methods to
+ * display physical properties for specific EMU layers.
+ */
+
 public interface SummaryChartContract {
   interface View extends BaseView<Presenter> {
-      void showChartData(List<CombinedData> dataList);
-      void setTemperatureText(double temperatureText);
+    /**
+     * Display the charts
+     * @param dataList List<CombinedData></CombinedData>
+     */
+    void showChartData(List<CombinedData> dataList);
+
+    /**
+     * Set the label for the temperature chart
+     * @param temperatureText - double
+     */
+    void setTemperatureText(double temperatureText);
+
+    /**
+     * Set the label for salinity chart
+     * @param salinityText - double
+     */
       void setSalinityText(double salinityText);
-      void setOxygenText(double oxygenText);
+
+    /**
+     * Set the label for oxygen chart
+     * @param oxygenText - double
+     */
+    void setOxygenText(double oxygenText);
+
+    /**
+     * Set the label for the phosphate chart
+     * @param phosphateText - double
+     */
       void setPhosphateText(double phosphateText);
-      void setSilicateText(double silicateText);
+
+    /**
+     * Set the label for the silicate chart
+     * @param silicateText - double
+     */
+    void setSilicateText(double silicateText);
+
+    /**
+     * Set the label for the nitrate text
+     * @param nitrateText - double
+     */
       void setNitrateText(double nitrateText);
+
+    /**
+     * Display a progress bar with given message and title
+     * @param message - String
+     * @param title - String
+     */
       void showProgressBar(String message, String title);
-      void hideProgressBar();
+
+    /**
+     * Hide the progress bar
+     */
+    void hideProgressBar();
+
+    /**
+     * Show a message
+     * @param message - String
+     */
       void showMessage(String message);
   }
 
   interface Presenter extends BasePresenter {
+    /**
+     * Provision data for charts
+     * @param stat - EMUStat
+     * @param waterColumn - WaterColumn
+     * @param emuName - int representing EMU name
+     */
       void prepareDataForCharts(EMUStat stat, WaterColumn waterColumn, int emuName);
+
+    /**
+     * Retrieve chart data for given EMU
+     * @param emuName - int representing EMU name
+     */
       void getDetailForSummary(int emuName);
   }
 }

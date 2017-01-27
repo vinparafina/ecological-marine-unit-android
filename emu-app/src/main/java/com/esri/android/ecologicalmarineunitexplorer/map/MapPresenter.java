@@ -41,6 +41,11 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * This is the concrete implementation of the Presenter defined in the MapContract.
+ * It encapsulates business logic and drives the behavior of the View.
+ */
+
 public class MapPresenter implements MapContract.Presenter {
 
   private final MapContract.View mMapView;
@@ -82,10 +87,8 @@ public class MapPresenter implements MapContract.Presenter {
   }
 
   /**
-   * When a user clicks a location in the map,
-   * show the progress bar and
-   * create a buffered polygon around the point andr
-   * query for EMU data.
+   * When a user clicks a location in the map, show the progress bar and
+   * create a buffered polygon around the point and query for EMU data.
    * @param point - A geolocation representing the
    *              place a user clicked on the map
    */
@@ -142,7 +145,7 @@ public class MapPresenter implements MapContract.Presenter {
    */
   @Override public void geocodeAddress(final String addresss) {
     mDataManager.queryForAddress(addresss, mMapView.getSpatialReference(),  new ServiceApi.GeocodingCallback() {
-      @Override public void onGecodeResult(final List<GeocodeResult> results) {
+      @Override public void onGeocodeResult(final List<GeocodeResult> results) {
         if (results == null){
           mMapView.showMessage(NO_LOCATION_FOUND + addresss);
         }else{

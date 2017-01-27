@@ -14,7 +14,7 @@
 
     <string name="service_emu_summary">http://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/EMU_Summary_Table/FeatureServer/0</string>
 
-    <string name="service_emu_by_depth">https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/Global_EMUs/FeatureServer/0</string>
+    <string name="service_emu_by_depth">https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/Global_EMUs_2017_1_25/FeatureServer/0</string>
 
     <!-- geocode service -->
     <string name="geocode_url">http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer</string>

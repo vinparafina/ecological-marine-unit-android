@@ -51,7 +51,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("ObjectAllocationInLoop") public class BottomSheetFragment extends Fragment implements BottomSheetContract.View {
+/**
+ * This the view component that acts as the bottom sheet.  It shows a representation of the water column
+ * found at the clicked ocean location.  It also shows information about each of the different
+ * EMU layers found in the water column.  This is the View in the MVP pattern and
+ * is the concrete implementation of the BottomSheetContract.View interface
+ */
+
+public class BottomSheetFragment extends Fragment implements BottomSheetContract.View {
 
   private LinearLayout mRoot = null;
   private LinearLayout mButtonContainer = null;
@@ -220,10 +227,10 @@ import java.util.Set;
   }
 
   /**
-   *
+   * Scroll the recycler view to given index
    * @param position - int representing index of list item
    */
-  @Override public void scrollToSummary(final int position) {
+  private void scrollToSummary(final int position) {
 
     mEmuObsView.scrollToPosition(position);
   }
