@@ -16,7 +16,7 @@ allprojects {
     repositories {
         jcenter()
         maven {
-            url 'http://android:8080/artifactory/arcgis'
+            url 'https://esri.bintray.com/arcgis'
         }
         maven { url "https://jitpack.io" }
     }
@@ -29,7 +29,7 @@ task clean(type: Delete) {
 // Define versions in a single place
 ext {
     // Sdk and tools
-    minSdkVersion = 19
+    minSdkVersion = 16
     targetSdkVersion = 22
     compileSdkVersion = 23
     buildToolsVersion = '23.0.3'
@@ -38,9 +38,9 @@ ext {
     supportLibraryVersion = '23.4.0'
     junitVersion = '4.12'
     runnerVersion = '0.4.1'
-    runtimeVersion = '100.0.0-1493'
+    runtimeVersion = '100.0.0'
     robotiumVersion = '5.6.3'
     espressoCoreVersion = '2.2.2'
     guavaVersion = '18.0'
-    mpAndroidChartVersion = 'v3.0.0-beta1'
+    mpAndroidChartVersion = 'v3.0.1'
 }

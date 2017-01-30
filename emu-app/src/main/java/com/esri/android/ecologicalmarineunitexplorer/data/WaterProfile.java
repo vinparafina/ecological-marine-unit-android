@@ -1,5 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.data;
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +22,13 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
-import com.esri.arcgisruntime.geometry.Point;
+package com.esri.android.ecologicalmarineunitexplorer.data;
 
-import java.util.*;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * An object representing a collection of Measurements for a
@@ -33,11 +36,10 @@ import java.util.*;
  */
 public class WaterProfile {
 
-  private Point mLocation;
+
   private Set<Measurement> mMeasurementSet ;
 
-  public WaterProfile(Point location){
-    mLocation = location;
+  public WaterProfile(){
     mMeasurementSet = new TreeSet<>();
   }
 
@@ -50,11 +52,10 @@ public class WaterProfile {
    * property.  The list is ordered by increasing
    * depth.
    * @param property
-   * @return
+   * @return A map of measurements
    */
   public Map<Double,Double> getMeasurementsForProperty(String property){
     Map<Double,Double> measurementsByDepth = new TreeMap<>();
-    int x = 0;
     for (Measurement measurement : mMeasurementSet){
       measurementsByDepth.put(measurement.getDepth(), measurement.getValueForProperty(property));
     }

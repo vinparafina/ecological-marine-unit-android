@@ -11,6 +11,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // You can license the app by providing a LICENSE_KEY
+        // in the gradle.properties at the root of the project
+        //
+       // buildConfigField "String" , "LICENSE_KEY" , LICENSE_KEY
     }
 
 

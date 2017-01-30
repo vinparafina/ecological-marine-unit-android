@@ -3,17 +3,19 @@
     <string name="emu_ocean_surface_layer">
         http://esri.maps.arcgis.com/home/item.html?id=d2db1dbd6d2742a38fe69506029b83ac
     </string>
-    <string name="toolbar_title">Explore An Ocean Location</string>
+    <string name="toolbar_title">Explore</string>
+
     <string name="service_emu_polygon">
-        http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/EMU_Cluster_Polygon/FeatureServer/0
-    </string>
-    <string name="service_emu_mesh_cluster">
-        http://utility.arcgis.com/usrsvcs/servers/dbb13dad900d4014b0611358602723dd/rest/services/EMU_Point_Mesh_Cluster/MapServer/0
-    </string>
-    <string name="service_emu_point_mesh">
-        http://utility.arcgis.com/usrsvcs/servers/82cff671f6fd4c88905454899ce015c2/rest/services/EMU_Point_Mesh/MapServer/0
-    </string>
+        http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/EMU_Cluster_Polygon/FeatureServer/0</string>
+
+    <string name="service_emu_mesh_cluster">http://utility.arcgis.com/usrsvcs/servers/dbb13dad900d4014b0611358602723dd/rest/services/EMU_Point_Mesh_Cluster/MapServer/0</string>
+
+    <string name="service_emu_point_mesh">http://utility.arcgis.com/usrsvcs/servers/82cff671f6fd4c88905454899ce015c2/rest/services/EMU_Point_Mesh/MapServer/0</string>
+
     <string name="service_emu_summary">http://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/EMU_Summary_Table/FeatureServer/0</string>
+
+    <string name="service_emu_by_depth">https://services2.arcgis.com/ZQgQTuoyBrtmoGdP/arcgis/rest/services/Global_EMUs_2017_1_25/FeatureServer/0</string>
+
     <!-- geocode service -->
     <string name="geocode_url">http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer</string>
     <string name="name_emu">NameEMU</string>
@@ -53,6 +55,38 @@
     <string name="layer_thickness_desc">"Layer thickness at this location "</string>
     <string name="meters">" meters"</string>
     <string name="below_surface_description">"Distance below surface "</string>
-    <string name="ocean_summary_location_title">EMU Summary for Location</string>
+    <string name="ocean_summary_location_title">EMU Layers At Location</string>
+    <string name="view_column_profile">VIEW COLUMN PROFILE</string>
+    <string name="view_layers">VIEW LAYERS</string>
+    <string name="the_water_column_at_this_location_contains_6_emu_layers">The water column at this location contains 6
+        EMU layers
+    </string>
+    <string name="water_column_at">"The water column at "</string>
+    <string name="lat_lng">" (lat/lng) contains "</string>
+    <string name="extending_to">" EMU layers, extending to a depth of "</string>
+    <string name="meters_period">" meters."</string>
+    <string name="query_hint">Address or latitude/longitude</string>
+    <string name="explore_ocean">Explore</string>
+    <string name="detail_emu">"Detail for EMU "</string>
+    <string name="internet_connectivity">Internet connectivity is required for this application</string>
+    <string name="wireless_problem">Wireless Connectivity Problem</string>
+    <string name="tap_location">Please tap a on ocean location</string>
+    <string name="ppm">" ppm"</string>
+    <string name="ml">m/L</string>
+    <string name="ecological_marine_unit_explorer">Ecological Marine Unit Explorer</string>
+    <string name="location_summary">Location Summary</string>
+    <string name="temperature">Temperature</string>
+    <string name="salinity">Salinity</string>
+    <string name="oxygen">Oxygen</string>
+    <string name="nitrate">Nitrate</string>
+    <string name="phosphate">Phosphate</string>
+    <string name="silicate">Silicate</string>
+    <string name="emu">EMU</string>
+    <string name="physical_summary">Physical summary</string>
+    <string name="nutrient_summary">Nutrient summary</string>
+    <string name="details">DETAILS</string>
+    <string name="depth_below_surface_meters">Depth below surface (meters)</string>
+    <string name="temperature_c">Temperature (C)</string>
+    <string name="water_column_depth">%1$d m</string>
 
 </resources>

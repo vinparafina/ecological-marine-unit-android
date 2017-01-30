@@ -1,5 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.data;
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +22,25 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer.data;
+
+
+import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
 import java.util.List;
+
+/**
+ * This interface defines a number of callbacks used
+ * throughout the application when calling asynchronous methods.
+ */
 
 public interface ServiceApi {
   interface SummaryCallback {
     void onWaterColumnsLoaded(WaterColumn column  );
   }
   interface StatCallback{
-    void onStatsLoaded();
+    void onStatsLoaded(boolean successFlag);
   }
 
   interface ColumnProfileCallback{
@@ -40,7 +48,10 @@ public interface ServiceApi {
   }
 
   interface GeocodingCallback{
-    void onGecodeResult(List<GeocodeResult> results
+    void onGeocodeResult(List<GeocodeResult> results
     );
+  }
+  interface EMUByDepthCallback{
+    void onPolygonsRetrieved( FeatureLayer layer);
   }
 }

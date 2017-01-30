@@ -1,13 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
-
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.text.TextPaint;
-import android.util.AttributeSet;
-import android.widget.TextView;
-
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +22,20 @@ import android.widget.TextView;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.text.TextPaint;
+import android.util.AttributeSet;
+import android.widget.TextView;
+
 // This class was taken from http://stackoverflow.com/questions/2888780/is-it-possible-to-write-vertically-in-a-textview-in-android
 
 public class VerticalTextView extends TextView {
 
-  private int _width, _height;
+  private int _width = 0, _height = 0;
   private final Rect _bounds = new Rect();
 
   public VerticalTextView(Context context, AttributeSet attrs, int defStyle) {

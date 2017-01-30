@@ -1,5 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +21,21 @@ package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
  * email: contracts@esri.com
  *
  */
+package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 
 import com.esri.android.ecologicalmarineunitexplorer.BasePresenter;
 import com.esri.android.ecologicalmarineunitexplorer.BaseView;
-import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
 import com.esri.arcgisruntime.geometry.Point;
 import com.github.mikephil.charting.data.CombinedData;
-import com.github.mikephil.charting.data.ScatterData;
 
 import java.util.List;
 
+/**
+ * This is the contract between the Presenter and View
+ * components of the MVP pattern. It defines methods to
+ * display scatter plots of physical properties across
+ * ocean depth for a given location.
+ */
 public interface WaterProfileContract {
   interface View extends BaseView<Presenter> {
     void showWaterProfiles( List<CombinedData> dataList);
@@ -40,8 +44,6 @@ public interface WaterProfileContract {
     void hideProgressBar();
   }
   interface Presenter extends BasePresenter {
-    void prepareDataForCharts(WaterProfile profile);
     void getWaterProfiles(Point point);
-
   }
 }

@@ -1,37 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.map;
-
-import android.app.ProgressDialog;
-import android.app.SearchManager;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.*;
-import android.widget.Toast;
-import com.esri.android.ecologicalmarineunitexplorer.R;
-import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
-import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.SpatialReference;
-import com.esri.arcgisruntime.layers.Layer;
-import com.esri.arcgisruntime.loadable.LoadStatus;
-import com.esri.arcgisruntime.mapping.ArcGISMap;
-import com.esri.arcgisruntime.mapping.Viewpoint;
-import com.esri.arcgisruntime.mapping.view.*;
-import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
-import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
-
-import java.util.List;
-
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,20 +22,51 @@ import java.util.List;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer.map;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SeekBar;
+import android.widget.Toast;
+import com.esri.android.ecologicalmarineunitexplorer.MainActivity;
+import com.esri.android.ecologicalmarineunitexplorer.R;
+import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.layers.Layer;
+import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.Viewpoint;
+import com.esri.arcgisruntime.mapping.view.*;
+import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+
+
 public class MapFragment extends Fragment implements MapContract.View {
 
-  private GraphicsOverlay mGraphicOverlay;
-  private MapView mMapView;
-  private View mRoot;
-  private MapContract.Presenter mPresenter;
-  private ProgressDialog mProgressDialog;
-  private Point mSelectedPoint;
-  private ArcGISMap mMap;
-  private Viewpoint mInitialViewpoint;
-  private final double MAP_SCALE = 5000000;
+  private GraphicsOverlay mGraphicOverlay = null;
+  private MapView mMapView = null;
+  private View mRoot = null;
+  private MapContract.Presenter mPresenter = null;
+  private ProgressDialog mProgressDialog = null;
+  private Point mSelectedPoint = null;
+  private ArcGISMap mMap = null;
 
+  private final String TAG = MapFragment.class.getSimpleName();
+  private NoEmuFound mNoEmuFoundCallback = null;
 
-
+  public interface NoEmuFound{
+    void handleNoEmu();
+  }
   public MapFragment(){}
 
   public static MapFragment newInstance(){
@@ -77,61 +75,115 @@ public class MapFragment extends Fragment implements MapContract.View {
 
   /**
    * Delegate view logic to the presenter once the view has been created
+   * @param layoutInflater - LayoutInflater
+   * @param container - ViewGroup
+   * @param savedInstance - Bundle
+   * @return View
    */
   @Override
   @Nullable
   public final View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
+    super.onCreateView(layoutInflater, container, savedInstance);
+   // mRoot = layoutInflater.inflate(R.layout.map_view, container,false);
+    mRoot = container;
+    // Listen for seekbar changes
+    final SeekBar seekBar = (SeekBar) getActivity().findViewById(R.id.seekBar) ;
+    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+      @Override public void onProgressChanged(final SeekBar seekBar, final int progress, final boolean fromUser) {
+        mPresenter.retrieveEMUPolygonByDepth(seekBar.getProgress());
+      }
 
-    mRoot = layoutInflater.inflate(R.layout.map_view, container,false);
+      @Override public void onStartTrackingTouch(final SeekBar seekBar) {
+        // No-op
+      }
+
+      @Override public void onStopTrackingTouch(final SeekBar seekBar) {
+        // No-op
+      }
+    });
+
     mPresenter.start();
-    return mRoot;
+    return null;
   }
 
-
+  /**
+   * Check to make sure activity has implemented required interfaces
+   * for handling no EMU found
+   * @param activity - Context
+   */
   @Override
-  public void setUpMap(ArcGISMap map){
+  public void onAttach(final Context activity) {
+    super.onAttach(activity);
+    try{
+      mNoEmuFoundCallback = (NoEmuFound) activity;
+    }catch (final ClassCastException e) {
+      throw new ClassCastException(activity.toString()
+          + " must implement NoEmuFound.");
+    }
+
+  }
+
+  /**
+   * Set up the ArcGISMap
+   * @param map - ArcGISMap
+   */
+  @Override
+  public void setUpMap(final ArcGISMap map){
     mMapView = (MapView) mRoot.findViewById(R.id.map);
+    mMapView.setAttributionTextVisible(false);
     mMap  = map;
     mMapView.setMap(mMap);
 
-    final MapTouchListener mapTouchListener = new MapTouchListener(getActivity().getApplicationContext(), mMapView);
+    final View.OnTouchListener mapTouchListener = new MapTouchListener(getActivity().getApplicationContext(), mMapView);
 
     // Once map has loaded enable touch listener
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
-      @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
+      @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED) {
-          mInitialViewpoint = mMap.getInitialViewpoint();
+
           // Stop listening to any more draw status changes
           mMapView.removeDrawStatusChangedListener(this);
           // Start listening to touch interactions on the map
           mMapView.setOnTouchListener(mapTouchListener);
           // Notify presenter
           mPresenter.mapLoaded();
+         // addSeekBar();
         }
       }
     });
 
     // When map's layout is changed, re-center map on selected point
     mMapView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-      @Override public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-          int oldRight, int oldBottom) {
+      @Override public void onLayoutChange(final View v, final int left, final int top, final int right, final int bottom, final int oldLeft, final int oldTop,
+          final int oldRight, final int oldBottom) {
         setViewpoint();
       }
     });
-
   }
 
+  /**
+   * Set viewpoint based on selected location
+   */
   @Override public void setViewpoint(){
     if (mSelectedPoint != null){
+      final double MAP_SCALE = 25000000;
       mMapView.setViewpointCenterAsync(mSelectedPoint, MAP_SCALE);
     }
   }
 
-  @Override public void setSelectedPoint(Point p) {
+  /**
+   * Set the selected location
+   * @param p - Point
+   */
+  @Override public void setSelectedPoint(final Point p) {
     mSelectedPoint = p;
   }
 
+  /**
+   * Get the spatial reference of the map
+   * @return SpatialReference
+   */
   @Override public SpatialReference getSpatialReference() {
     SpatialReference sr = null;
     if (mMap != null && mMap.getLoadStatus() == LoadStatus.LOADED){
@@ -140,17 +192,21 @@ public class MapFragment extends Fragment implements MapContract.View {
     return sr;
   }
 
+
   /**
    * Add an operational layer to the map
    * @param layer - A Layer to add
    */
-  @Override public void addLayer(Layer layer) {
+  @Override public void addLayer(final Layer layer) {
     // Create and add layers that need to be visible in the map
     mGraphicOverlay  = new GraphicsOverlay();
     mMapView.getGraphicsOverlays().add(mGraphicOverlay);
     mMap.getOperationalLayers().add(layer);
   }
 
+  /**
+   * Resume map view
+   */
   @Override
   public final void onResume(){
     super.onResume();
@@ -158,6 +214,9 @@ public class MapFragment extends Fragment implements MapContract.View {
 
   }
 
+  /**
+   * Pause map view
+   */
   @Override
   public final void onPause() {
     super.onPause();
@@ -169,36 +228,33 @@ public class MapFragment extends Fragment implements MapContract.View {
    * @param mapPoint - An Android screen location
    * @return  - A geometry point representing the screen location
    */
-  public Point getScreenToLocation(android.graphics.Point mapPoint){
+  public Point getScreenToLocation(final android.graphics.Point mapPoint){
     return mMapView.screenToLocation(mapPoint);
   }
 
-  /**
-   * Zoom to initial map view and clear out the graphical layers
-   */
-  @Override public void resetMap() {
-    mSelectedPoint = null;
-    mGraphicOverlay.getGraphics().clear();
-    if (mInitialViewpoint != null){
-      mMapView.setViewpoint(mInitialViewpoint);
-    }
-  }
 
-  @Override public void showMessage(String message) {
+  /**
+   * Show a toast displaying message
+   * @param message - String representing the message to display
+   */
+  @Override public void showMessage(final String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
   }
 
-
-  @Override public void setPresenter(MapContract.Presenter presenter) {
+  /**
+   * Assign the presenter
+   * @param presenter MapContract.Presenter
+   */
+  @Override public void setPresenter(final MapContract.Presenter presenter) {
       mPresenter = presenter;
   }
 
   /**
    * Delegate showing of water column to activity
-   * @param column
+   * @param column - WaterColumn
    */
-  @Override public void showSummary(WaterColumn column) {
-    ((com.esri.android.ecologicalmarineunitexplorer.MainActivity) getActivity()).showSummary();
+  @Override public void showSummary(final WaterColumn column) {
+    ((MainActivity) getActivity()).showBottomSheet();
   }
 
   /**
@@ -206,13 +262,22 @@ public class MapFragment extends Fragment implements MapContract.View {
    * the clicked location.
    * @param point - A com.esri.arcgisruntime.geometry.Point item
    */
-  @Override public void showClickedLocation(Point point) {
-    Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.blue_pin);
-    BitmapDrawable drawable = new BitmapDrawable(getResources(), icon);
-    PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
-    Graphic marker = new Graphic(point, markerSymbol);
-    mGraphicOverlay.getGraphics().clear();
-    mGraphicOverlay.getGraphics().add(marker);
+  @Override public void showClickedLocation(final Point point) {
+    final Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.blue_pin);
+    final BitmapDrawable drawable = new BitmapDrawable(getResources(), icon);
+    final PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
+    markerSymbol.setHeight(40);
+    markerSymbol.setWidth(40);
+    markerSymbol.setOffsetY(11);
+    markerSymbol.loadAsync();
+    markerSymbol.addDoneLoadingListener(new Runnable() {
+      @Override public void run() {
+        final Graphic marker = new Graphic(point, markerSymbol);
+        mGraphicOverlay.getGraphics().clear();
+        mGraphicOverlay.getGraphics().add(marker);
+      }
+    });
+
   }
 
   /**
@@ -220,25 +285,38 @@ public class MapFragment extends Fragment implements MapContract.View {
    * @param message - String representing message to display
    * @param title - String progress window title
    */
-  @Override public void showProgressBar(String message, String title) {
+  @Override public void showProgressBar(final String message, final String title) {
     if (mProgressDialog == null){
       mProgressDialog = new ProgressDialog(getActivity());
     }
+    mProgressDialog.dismiss();
     mProgressDialog.setTitle(title);
     mProgressDialog.setMessage(message);
     mProgressDialog.show();
+  }
+
+
+  /**
+   * Show a snackbar prompting user to action
+   */
+  @Override  public void showSnackbar(){
+    ((MainActivity)getActivity()).showSnackbar();
+  }
+
+  /**
+   * Callback to activity
+   */
+  @Override public void onNoEmusFound() {
+    mNoEmuFoundCallback.handleNoEmu();
   }
 
   /**
    * Hide progress bar
    */
   @Override public void hideProgressBar() {
-    mProgressDialog.hide();
+    mProgressDialog.dismiss();
   }
 
-  @Override public void setMapAttribution(boolean toggle) {
-    mMapView.setAttributionTextVisible(toggle);
-  }
 
   public class MapTouchListener extends DefaultMapViewOnTouchListener {
     /**
@@ -249,17 +327,17 @@ public class MapFragment extends Fragment implements MapContract.View {
      *                metrics
      * @param mapView the MapView on which to control touch events
      */
-    public MapTouchListener(Context context, MapView mapView) {
+    public MapTouchListener(final Context context, final MapView mapView) {
       super(context, mapView);
     }
     @Override
-    public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
-      android.graphics.Point mapPoint = new android.graphics.Point((int) motionEvent.getX(),
+    public boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
+      super.onSingleTapConfirmed(motionEvent);
+      final android.graphics.Point mapPoint = new android.graphics.Point((int) motionEvent.getX(),
           (int) motionEvent.getY());
-      //Log.i("ScreenLocation", "screen position = x= " + mapPoint.x + " y= "+ mapPoint.y);
-      //mSelectedPoint = getScreenToLocation(mapPoint);
       mPresenter.setSelectedPoint(getScreenToLocation(mapPoint));
       return true;
     }
   }
+
 }

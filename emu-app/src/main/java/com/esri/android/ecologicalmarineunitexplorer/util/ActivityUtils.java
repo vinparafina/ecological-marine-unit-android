@@ -1,5 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.util;
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +22,9 @@ package com.esri.android.ecologicalmarineunitexplorer.util;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer.util;
+
+
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -42,7 +44,7 @@ public class ActivityUtils {
     checkNotNull(fragment);
     FragmentTransaction transaction = fragmentManager.beginTransaction();
     transaction.add(frameId, fragment);
-    transaction.addToBackStack(fragmentName); //don't need this if we're not adding more than one fragment
+    transaction.addToBackStack(fragmentName);
     transaction.commit();
   }
 }

@@ -1,33 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
-
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.graphics.Paint;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.esri.android.ecologicalmarineunitexplorer.R;
-import com.esri.android.ecologicalmarineunitexplorer.data.WaterProfile;
-import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.charts.ScatterChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.CombinedData;
-import com.github.mikephil.charting.data.ScatterData;
-import com.github.mikephil.charting.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,49 +22,93 @@ import java.util.List;
  *
  */
 
+/**
+ * This fragment is responsible for building and displaying scatter plot charts for
+ * physical properties.  Each scatter plot represents how a specific physical
+ * property changes with ocean depth.
+ * It's the View in the MVP pattern and the concrete implementation of the
+ * WaterProfileContract.View interface.
+ */
+
+package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
+
+import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+import com.esri.android.ecologicalmarineunitexplorer.R;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.utils.Utils;
+
+import java.util.List;
+
 public class WaterProfileFragment extends Fragment implements WaterProfileContract.View {
 
-  private RecyclerView mChartRecyclerView;
   private WaterProfileContract.Presenter mPresenter;
-  private ChartAdapter mChartAdapter;
   private ProgressDialog mProgressDialog;
-  private List<CombinedData> mChartDataList = new ArrayList<>();
+
+  private ViewPager mViewPager;
 
   public static WaterProfileFragment newInstance() {
-    WaterProfileFragment fragment = new WaterProfileFragment();
-    return fragment;
+    return new WaterProfileFragment();
   }
+
+  /**
+   * Initialize charts
+   * @param savedInstance
+   */
   @Override
   public final void onCreate(@NonNull final Bundle savedInstance){
     super.onCreate(savedInstance);
-    mChartAdapter =  new ChartAdapter(getContext(), R.id.chartContainer, mChartDataList);
     // MP Android chart
     Utils.init(getContext());
   }
+
+  /**
+   * Inflate the view pager and start the presenter
+   * @param layoutInflater LayoutInflater
+   * @param container ViewGroup
+   * @param savedInstance Bundle
+   * @return View
+   */
   @Override
   @Nullable
   public View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
-    mChartRecyclerView = (RecyclerView) layoutInflater.inflate(R.layout.water_profile_recycle_view, container, false) ;
-    mChartRecyclerView.setLayoutManager(new LinearLayoutManager(mChartRecyclerView.getContext()));
-    mChartRecyclerView.setAdapter(mChartAdapter);
+    super.onCreateView(layoutInflater, container, savedInstance);
+    mViewPager = (ViewPager) layoutInflater.inflate(R.layout.water_profile_view_pager,container,false) ;
     mPresenter.start();
-    return  mChartRecyclerView;
+
+    return  mViewPager;
   }
 
-  @Override public void showWaterProfiles(List<CombinedData> dataList ) {
-    mChartDataList = dataList;
-    ScatterChart chart = (ScatterChart) mChartRecyclerView.findViewById(R.id.propertyChart);
-    if (mChartAdapter != null){
-      mChartAdapter.notifyDataSetChanged();
-    }
+  /**
+   * Set the data for the adapter
+   * @param dataList - List<CombinedData> containing data points
+   */
+  @Override public void showWaterProfiles(final List<CombinedData> dataList ) {
+    //
+    // Because this FragmentPagerAdapter is being used within a nested
+    // fragment, we don't want to use the shared fragment manager.
+    // USE A NEW INSTANCE OF THE FRAGMENT MANAGER rather than
+    // using the fragment manager belonging to the activity.
+    //
+    TabPagerAdapter mTabAdapter = new TabPagerAdapter(getChildFragmentManager(), dataList);
+    mViewPager.setAdapter(mTabAdapter);
   }
 
-  @Override public void showMessage(String message) {
+  @Override public void showMessage(final String message) {
     Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
   }
 
-  @Override public void showProgressBar(String message, String title) {
+  @Override public void showProgressBar(final String message, final String title) {
     if (mProgressDialog == null){
       mProgressDialog = new ProgressDialog(getActivity());
     }
@@ -106,63 +121,9 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
     mProgressDialog.dismiss();
   }
 
-  @Override public void setPresenter(WaterProfileContract.Presenter presenter) {
+  @Override public void setPresenter(final WaterProfileContract.Presenter presenter) {
     mPresenter = presenter;
   }
 
-  public class ChartAdapter extends RecyclerView.Adapter<ChartViewHolder>{
 
-    public ChartAdapter(final Context context, final int resource, final List<CombinedData> combinedData){
-      mChartDataList = combinedData;
-      // Determine the color for each of the
-    }
-
-    @Override public ChartViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      final View view = inflater.inflate(R.layout.water_profile, parent,false);
-      return new ChartViewHolder(view);
-    }
-
-    @Override public void onBindViewHolder(ChartViewHolder holder, int position) {
-      final CombinedData scatterData = mChartDataList.get(position);
-      String [] labels = scatterData.getDataSetLabels();
-      String property = scatterData.getDataSetLabels()[labels.length -1];
-      holder.txtChartTitle.setText( property + " vs. Ocean Depth (m)");
-      holder.chart.setData(scatterData);
-      holder.chart.getAxisLeft().setInverted(false);
-      holder.chart.getXAxis().setEnabled(true);
-      holder.chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-      holder.chart.getXAxis().setAxisMinValue(scatterData.getXMin()-1);
-      holder.chart.getXAxis().setAxisMaxValue(scatterData.getXMax() + 1);
-      holder.chart.getAxisRight().setEnabled(false);
-      holder.chart.getAxisLeft().setDrawGridLines(true);
-      holder.chart.setDrawGridBackground(true);
-      holder.chart.setDescription("");
-      holder.chart.getLegend().setEnabled(false);
-      holder.chart.setData(scatterData);
-      holder.chart.invalidate();
-      holder.txtXAxisTitle.setText(property);
-
-    }
-
-    @Override public int getItemCount() {
-      return mChartDataList.size();
-    }
-  }
-  public class ChartViewHolder extends RecyclerView.ViewHolder{
-    public final TextView txtChartTitle;
-    public final TextView txtXAxisTitle;
-    public final CombinedChart chart;
-
-    public ChartViewHolder(final View view){
-      super(view);
-      txtChartTitle = (TextView) view.findViewById(R.id.txtChartTitle);
-      txtXAxisTitle = (TextView) view.findViewById(R.id.txtXAxisTitle);
-      chart = (CombinedChart) view.findViewById(R.id.propertyChart);
-      chart.setDrawOrder(new CombinedChart.DrawOrder[]{ CombinedChart.DrawOrder.LINE,
-           CombinedChart.DrawOrder.SCATTER
-      });
-    }
-
-  }
 }

@@ -1,5 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.util;
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +22,9 @@ package com.esri.android.ecologicalmarineunitexplorer.util;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer.util;
+
+
 public class EmuHelper {
   /**
    * Most EMU clusters have a color associated with them.
@@ -30,8 +32,8 @@ public class EmuHelper {
    * @param emuName - an int representing the EMU name
    * @return colorCode - a string representing a hex color code.
    */
-  public static String getColorForEMUCluster( int emuName){
-    String colorCode = null;
+  public static String getColorForEMUCluster( final int emuName){
+    String colorCode;
     switch (emuName){
       case 3:
         colorCode = "#708cd9";

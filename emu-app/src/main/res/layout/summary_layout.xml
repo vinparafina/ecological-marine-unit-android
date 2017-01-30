@@ -14,15 +14,16 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:elevation="@dimen/cardview_default_elevation"
-                android:paddingTop="0dp" android:paddingRight="@dimen/activity_horizontal_margin">
+                android:paddingTop="0dp"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingEnd="64dp">
 
             <LinearLayout android:layout_width="match_parent"
                           android:orientation="horizontal"
                           android:layout_height="wrap_content" android:weightSum="1">
 
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                          android:textAppearance="@style/TextAppearance.AppCompat.Headline" android:text="EMU "/>
+                          android:textAppearance="@style/TextAppearance.AppCompat.Headline" android:text="@string/emu"/>
 
                 <TextView android:layout_width="161dp"
                           android:layout_height="wrap_content"
@@ -37,14 +38,14 @@
             <Space
                     android:layout_width="match_parent"
                     android:layout_height="10dp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Physical summary"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/physical_summary"/>
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:id="@+id/physical_summary"/>
             <Space
                     android:layout_width="match_parent"
                     android:layout_height="10dp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nutrient summary"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/nutrient_summary"/>
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:id="@+id/nutrient_summary"/>
@@ -61,8 +62,8 @@
 
             <Button android:layout_width="wrap_content"
                     android:id="@+id/btnDetail"
-                    android:text="DETAILS"
-                    android:layout_height="wrap_content" android:layout_gravity="right"/>
+                    android:text="@string/details"
+                    android:layout_height="wrap_content" android:layout_gravity="end" />
 
             <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:id="@+id/arrowDown" android:src="@drawable/ic_keyboard_arrow_down_black_24px"/>

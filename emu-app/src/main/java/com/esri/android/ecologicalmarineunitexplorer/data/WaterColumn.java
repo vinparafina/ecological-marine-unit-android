@@ -1,5 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.data;
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,36 +22,41 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer.data;
+
+
 import android.support.annotation.NonNull;
 import com.esri.arcgisruntime.geometry.Point;
 
 import java.util.*;
 
+/**
+ * A Model object encapsulating a collection of EMUObservations for a specific location
+ */
+
 public class WaterColumn implements  Comparable<WaterColumn> {
-  @NonNull private Set<EMUObservation> emuSet;
+  @NonNull private final Set<EMUObservation> emuSet;
   private double distanceFrom = 0;
   private Point location;
 
   public WaterColumn(){
     emuSet = new TreeSet<>();
   }
+
   @NonNull public Set<EMUObservation> getEmuSet() {
     return emuSet;
   }
 
-  public void addObservation(EMUObservation observation){
+  public void addObservation(final EMUObservation observation){
     emuSet.add(observation);
   }
 
-  public int emuCount(){
-    return emuSet.size();
-  }
 
   public int getDepth(){
     int depth = 0;
-    Iterator<EMUObservation> iter = emuSet.iterator();
+    final Iterator<EMUObservation> iter = emuSet.iterator();
     while (iter.hasNext()){
-      EMUObservation observation = iter.next();
+      final EMUObservation observation = iter.next();
       depth = depth + observation.getThickness();
     }
     return depth;
@@ -64,11 +68,11 @@ public class WaterColumn implements  Comparable<WaterColumn> {
         '}';
   }
 
-  @Override public int compareTo(WaterColumn another) {
-    if (getDistanceFrom() < another.getDistanceFrom()){
+  @Override public int compareTo(@NonNull final WaterColumn another) {
+    if (distanceFrom < another.distanceFrom){
       return  -1;
     }
-    else if (getDistanceFrom() > another.getDistanceFrom()){
+    else if (distanceFrom > another.distanceFrom){
       return 1;
     }
     else{
@@ -76,11 +80,7 @@ public class WaterColumn implements  Comparable<WaterColumn> {
     }
   }
 
-  public double getDistanceFrom() {
-    return distanceFrom;
-  }
-
-  public void setDistanceFrom(double distanceFrom) {
+  public void setDistanceFrom(final double distanceFrom) {
     this.distanceFrom = distanceFrom;
   }
 
@@ -88,7 +88,7 @@ public class WaterColumn implements  Comparable<WaterColumn> {
     return location;
   }
 
-  public void setLocation(Point location) {
+  public void setLocation(final Point location) {
     this.location = location;
   }
 
@@ -97,11 +97,11 @@ public class WaterColumn implements  Comparable<WaterColumn> {
    * @param emuName - int representing emu name
    * @return - a list containing zero or more EMU Observation items
    */
-  public List<EMUObservation> getEMUObservations(int emuName){
-    List<EMUObservation> emuObservations = new ArrayList<>();
-    Iterator<EMUObservation> iter = this.emuSet.iterator();
+  public List<EMUObservation> getEMUObservations(final int emuName){
+    final List<EMUObservation> emuObservations = new ArrayList<>();
+    final Iterator<EMUObservation> iter = emuSet.iterator();
     while (iter.hasNext()){
-      EMUObservation observation = iter.next();
+      final EMUObservation observation = iter.next();
       if (observation.getEmu().getName() == emuName){
         emuObservations.add(observation);
       }

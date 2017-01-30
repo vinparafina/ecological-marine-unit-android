@@ -1,5 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.data;
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +22,21 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
  *
  */
 
+package com.esri.android.ecologicalmarineunitexplorer.data;
+
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.esri.arcgisruntime.geometry.Point;
 
-
+/**
+ * A Model encapsulating a set of physical properties
+ * for a specific occurrence of an EMU at a location.
+ */
 public class EMUObservation implements Comparable<EMUObservation> {
   @NonNull private EMU emu;
-  @NonNull private int top;
-  @NonNull private int thickness;
+  private int top;
+  private int thickness;
   @NonNull private Point location;
   @Nullable private Double salinity;
   @Nullable private Double temperature;
@@ -44,21 +49,17 @@ public class EMUObservation implements Comparable<EMUObservation> {
     return oxygen;
   }
 
-  public void setOxygen(@Nullable Double oxygen) {
+  public void setOxygen(@Nullable final Double oxygen) {
     this.oxygen = oxygen;
   }
 
 
 
-  @Override public int compareTo(EMUObservation another) {
-    if (this.getTop() > another.getTop()){
+  @Override public int compareTo(final EMUObservation another) {
+    if (top > another.top){
       return -1;
     }
-    if (this.getTop() < another.getTop()){
-      return 1;
-    }else{
-      return 0;
-    }
+    return this.getTop() < another.getTop() ? 1 : 0;
 
   }
 
@@ -81,23 +82,23 @@ public class EMUObservation implements Comparable<EMUObservation> {
     return emu;
   }
 
-  public void setEmu(@NonNull EMU emu) {
+  public void setEmu(@NonNull final EMU emu) {
     this.emu = emu;
   }
 
-  @NonNull public int getTop() {
+  public int getTop() {
     return top;
   }
 
-  public void setTop(@NonNull int top) {
+  public void setTop(final int top) {
     this.top = top;
   }
 
-  @NonNull public int getThickness() {
+  public int getThickness() {
     return thickness;
   }
 
-  public void setThickness(@NonNull int thickness) {
+  public void setThickness(final int thickness) {
     this.thickness = thickness;
   }
 
@@ -105,7 +106,7 @@ public class EMUObservation implements Comparable<EMUObservation> {
     return location;
   }
 
-  public void setLocation(Point point) {
+  public void setLocation(final Point point) {
     this.location = point;
   }
 
@@ -113,7 +114,7 @@ public class EMUObservation implements Comparable<EMUObservation> {
     return salinity;
   }
 
-  public void setSalinity(@Nullable Double salinity) {
+  public void setSalinity(@Nullable final Double salinity) {
     this.salinity = salinity;
   }
 
@@ -121,7 +122,7 @@ public class EMUObservation implements Comparable<EMUObservation> {
     return temperature;
   }
 
-  public void setTemperature(@Nullable Double temperature) {
+  public void setTemperature(@Nullable final Double temperature) {
     this.temperature = temperature;
   }
 
@@ -129,7 +130,7 @@ public class EMUObservation implements Comparable<EMUObservation> {
     return phosphate;
   }
 
-  public void setPhosphate(@Nullable Double phosphate) {
+  public void setPhosphate(@Nullable final Double phosphate) {
     this.phosphate = phosphate;
   }
 
@@ -137,7 +138,7 @@ public class EMUObservation implements Comparable<EMUObservation> {
     return silicate;
   }
 
-  public void setSilicate(@Nullable Double silicate) {
+  public void setSilicate(@Nullable final Double silicate) {
     this.silicate = silicate;
   }
 
@@ -145,7 +146,7 @@ public class EMUObservation implements Comparable<EMUObservation> {
     return nitrate;
   }
 
-  public void setNitrate(@Nullable Double nitrate) {
+  public void setNitrate(@Nullable final Double nitrate) {
     this.nitrate = nitrate;
   }
 }

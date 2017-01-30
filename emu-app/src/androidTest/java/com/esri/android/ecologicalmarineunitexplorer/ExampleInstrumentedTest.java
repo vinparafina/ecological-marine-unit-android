@@ -1,4 +1,4 @@
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,9 +59,9 @@ public class ExampleInstrumentedTest {
 
     final DataManager dataManager = DataManager.getDataManagerInstance(appContext);
 
-    dataManager.queryEMUSummaryStatistics(new ServiceApi.StatCallback() {
-      @Override public void onStatsLoaded() {
-        EMUStat stat = dataManager.getStatForEMU(24);
+    dataManager.queryEmuSummaryStatistics(new ServiceApi.StatCallback() {
+      @Override public void onStatsLoaded(boolean flag) {
+        EMUStat stat = dataManager.getStatForEmu(24);
         Log.d("TEST", stat.toString());
         assertNotNull(stat);
       }
