@@ -1,23 +1,4 @@
-package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
-
-import android.app.ProgressDialog;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-import com.esri.android.ecologicalmarineunitexplorer.R;
-import com.github.mikephil.charting.data.CombinedData;
-import com.github.mikephil.charting.utils.Utils;
-
-import java.util.List;
-
-/* Copyright 2016 Esri
+/* Copyright 2017 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +29,25 @@ import java.util.List;
  * It's the View in the MVP pattern and the concrete implementation of the
  * WaterProfileContract.View interface.
  */
+
+package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
+
+import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+import com.esri.android.ecologicalmarineunitexplorer.R;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.utils.Utils;
+
+import java.util.List;
 
 public class WaterProfileFragment extends Fragment implements WaterProfileContract.View {
 
