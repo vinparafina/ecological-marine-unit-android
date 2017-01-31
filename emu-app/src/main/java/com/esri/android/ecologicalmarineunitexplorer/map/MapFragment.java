@@ -160,6 +160,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         setViewpoint();
       }
     });
+
   }
 
   /**
@@ -169,6 +170,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     if (mSelectedPoint != null){
       final double MAP_SCALE = 25000000;
       mMapView.setViewpointCenterAsync(mSelectedPoint, MAP_SCALE);
+      mSelectedPoint = null;
     }
   }
 
