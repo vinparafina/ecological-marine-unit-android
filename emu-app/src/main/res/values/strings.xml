@@ -88,5 +88,11 @@
     <string name="depth_below_surface_meters">Depth below surface (meters)</string>
     <string name="temperature_c">Temperature (C)</string>
     <string name="water_column_depth">%1$d m</string>
+    <string name="fragment_water_profile">water profile fragment</string>
+    <string name="fragment_map">map fragment</string>
+    <string name="fragment_detail_chart">detail chart fragment</string>
+    <string name="water_column_profile">Water Column Profile</string>
+    <string name="fragment_summary">summary fragment</string>
+    <string name="fragment_chart">chart fragment</string>
 
 </resources>

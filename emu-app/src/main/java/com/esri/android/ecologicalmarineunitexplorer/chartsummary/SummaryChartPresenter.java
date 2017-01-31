@@ -98,6 +98,10 @@ public class SummaryChartPresenter implements SummaryChartContract.Presenter {
     }
   }
 
+  @Override public void setEmuName(int emuName) {
+    currentEmuName = emuName;
+  }
+
   /**
    * Prepare data for displaying in charts
    * @param stat - EMUStat

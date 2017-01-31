@@ -115,6 +115,12 @@ public interface SummaryChartContract {
      * @param emuName - int representing EMU name
      */
       void getDetailForSummary(int emuName);
+
+    /**
+     * Set emu name
+     * @param emuName - int representing EMU name
+     */
+    void setEmuName(int emuName);
   }
 }
 
