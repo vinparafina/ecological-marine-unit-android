@@ -26,7 +26,7 @@ package com.esri.android.ecologicalmarineunitexplorer.waterprofile;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import com.github.mikephil.charting.data.CombinedData;
 
 import java.util.ArrayList;
@@ -34,35 +34,14 @@ import java.util.List;
 /**
  * The view holder for managing tabs of scatter line charts
  */
-public class TabPagerAdapter extends FragmentPagerAdapter {
+public class TabPagerAdapter extends FragmentStatePagerAdapter {
 
   private List<CombinedData> mChartDataList = new ArrayList<>();
 
   @Override public Fragment getItem(final int position) {
-    switch (position){
-
-      case  0:
-        return ChartFragment.newInstance( mChartDataList.get(position));
-
-      case 1:
-        return ChartFragment.newInstance(mChartDataList.get(position));
-
-      case 2:
-        return ChartFragment.newInstance(mChartDataList.get(position));
-
-      case 3:
-        return ChartFragment.newInstance( mChartDataList.get(position));
-
-      case 4:
-        return ChartFragment.newInstance(mChartDataList.get(position));
-
-      case 5:
-        return ChartFragment.newInstance(mChartDataList.get(position));
-
-      default:
-        return new Fragment();
-    }
-
+    ChartFragment chartFragment = new ChartFragment( );
+    chartFragment.setChartData(mChartDataList.get(position));
+    return chartFragment;
   }
 
   public TabPagerAdapter(final FragmentManager fm, final List<CombinedData> data) {
@@ -72,6 +51,7 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
   @Override
   public int getCount() {
     return 6;
+
   }
 
   @Override
@@ -102,4 +82,8 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     }
     return title;
   }
+  @Override public int getItemPosition(Object o){
+    return POSITION_NONE;
+  }
+
 }

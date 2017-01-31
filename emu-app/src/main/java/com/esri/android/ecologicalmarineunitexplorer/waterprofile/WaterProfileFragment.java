@@ -1,4 +1,5 @@
 /* Copyright 2017 Esri
+
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +39,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +72,7 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
   }
 
   /**
-   * Inflate the view pager and start the presenter
+   * Inflate the view pager
    * @param layoutInflater LayoutInflater
    * @param container ViewGroup
    * @param savedInstance Bundle
@@ -84,8 +84,6 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
       final Bundle savedInstance){
     super.onCreateView(layoutInflater, container, savedInstance);
     mViewPager = (ViewPager) layoutInflater.inflate(R.layout.water_profile_view_pager,container,false) ;
-    mPresenter.start();
-
     return  mViewPager;
   }
 
@@ -100,8 +98,10 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
     // USE A NEW INSTANCE OF THE FRAGMENT MANAGER rather than
     // using the fragment manager belonging to the activity.
     //
-    TabPagerAdapter mTabAdapter = new TabPagerAdapter(getChildFragmentManager(), dataList);
-    mViewPager.setAdapter(mTabAdapter);
+    TabPagerAdapter adapter = new TabPagerAdapter(getChildFragmentManager(), dataList);
+    mViewPager.setAdapter(adapter);
+    mViewPager.getAdapter().notifyDataSetChanged();
+
   }
 
   @Override public void showMessage(final String message) {
@@ -117,6 +117,11 @@ public class WaterProfileFragment extends Fragment implements WaterProfileContra
     mProgressDialog.show();
   }
 
+  @Override
+  public void onResume(){
+    super.onResume();
+    mPresenter.start();
+  }
   @Override public void hideProgressBar() {
     mProgressDialog.dismiss();
   }

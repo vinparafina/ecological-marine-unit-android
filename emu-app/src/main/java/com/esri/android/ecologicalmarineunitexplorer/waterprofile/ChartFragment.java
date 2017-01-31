@@ -47,13 +47,7 @@ public class ChartFragment extends Fragment {
   private CombinedChart mChart = null;
   private CombinedData mData = null;
 
-
-  public static ChartFragment newInstance( final CombinedData combinedData) {
-    final ChartFragment fragment = new ChartFragment();
-    fragment.setChartData(combinedData);
-    return fragment;
-  }
-
+  public ChartFragment(){}
   /**
    *  Set up chart widgets
    * @param layoutInflater - LayoutInflater
@@ -83,7 +77,7 @@ public class ChartFragment extends Fragment {
    * Set the data for the chart
    * @param data - CombinedData item used by the chart
    */
-  private void setChartData(final CombinedData data) {
+  public void setChartData(final CombinedData data) {
     mData = data;
   }
 
@@ -109,7 +103,7 @@ public class ChartFragment extends Fragment {
     description.setTextSize(10f);
     mChart.setDescription(description);
     mChart.getLegend().setEnabled(false);
-    mChart.setData(mData);
+
     mChart.invalidate();
     if (property.equalsIgnoreCase("TEMPERATURE")){
       property = property + " \u2103";

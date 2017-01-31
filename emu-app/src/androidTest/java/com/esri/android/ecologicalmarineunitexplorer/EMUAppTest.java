@@ -213,7 +213,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
   public void testForWaterProfileCharts(){
     clickOnOceanPoint();
 
-    solo.clickOnView(solo.getView(R.id.action_profile));
+    solo.clickLongOnView(solo.getView(R.id.action_profile));
     solo.sleep(3000);
     assertTrue(solo.waitForText("Temperature"));
     CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
