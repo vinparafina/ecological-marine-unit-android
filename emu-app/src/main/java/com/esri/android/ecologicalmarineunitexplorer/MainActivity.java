@@ -165,6 +165,21 @@ public class MainActivity extends AppCompatActivity
           if (newState == BottomSheetBehavior.STATE_COLLAPSED){
             showBottomSheetContent();
             mFab.setVisibility(View.VISIBLE);
+            LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
+            LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.setMargins(0,0,0,0);
+            layout.setLayoutParams(layoutParams);
+            layout.requestLayout();
+
+          }
+          if (newState ==BottomSheetBehavior.STATE_EXPANDED){
+            LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
+            LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.setMargins(0,155,0,0);
+            layout.setLayoutParams(layoutParams);
+            layout.requestLayout();
           }
         }
 
