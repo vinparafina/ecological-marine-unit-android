@@ -2,18 +2,18 @@
 Explore our ocean ecosystems with EMUs!
 
 ## Description
-Using 50 year's worth of aggregated nutrient and physical ocean data from [NOAA](https://www.nodc.noaa.gov/OC5/woa13/), Esri has collaborated with the USGS, the Marine Conservation Institute, NatureServe, the University of Auckland, GRID-Arendal, NOAA, Duke University, the Woods Hole Oceanographic Institution, and many other partners to classify our oceans into 37 statistically distinct [ecological marine units](http://www.esri.com/ecological-marine-units) (EMUs).  Leveraging the [Runtime SDK](https://developers.arcgis.com/) and [ArcGIS](http://www.arcgis.com/home/index.html), we'll show you how this Android mobile app can be used to explore ocean conditions locally and globally. (TODO: Mention how you can add your own data to enhance this rich data set for your own organization!)
+Using 50 year's worth of aggregated nutrient and physical ocean data from [NOAA](https://www.nodc.noaa.gov/OC5/woa13/), Esri has collaborated with the USGS, the Marine Conservation Institute, NatureServe, the University of Auckland, GRID-Arendal, NOAA, Duke University, the Woods Hole Oceanographic Institution, and many other partners to classify our oceans into 37 statistically distinct [ecological marine units](http://www.esri.com/ecological-marine-units) (EMUs).  Leveraging the [Runtime SDK](https://developers.arcgis.com/) and [ArcGIS](http://www.arcgis.com/home/index.html), we'll show you how this Android mobile app can be used to explore ocean conditions locally and globally. There are a number of ocean data resources you can use to supplement the EMU story.  For example, the [Ocean Biogeographic Information System](http://www.iobis.org/) hosts free and open access to ocean  biogeographic datasets.
 
 ## Feature Services
-The heart of this application lies in the rich data stores collected by NOAA and analyzed by the scientific collaboration mentioned above.  Over 50 million spatial and non-spatial datapoints are hosted through AGOL [feature services](http://server.arcgis.com/en/server/10.5/publish-services/windows/what-is-a-feature-service-.htm).  All of the read-only feature services in this application were constructed by the [Esri Oceans group](https://esri.maps.arcgis.com/home/user.html?user=esri_oceans), published using [ArcGISPro](https://pro.arcgis.com/en/pro-app/help/sharing/overview/share-with-arcgis-pro.htm) or ArcMap, and made publicly available.  Learn more about how this data set was assembled in this [Story Map](http://esrioceans.maps.arcgis.com/apps/MapJournal/index.html?appid=5075d771f6894080ac190c3ccd954f0e).
+The heart of this application lies in the rich data stores collected by NOAA and analyzed by the scientific collaboration mentioned above.  Over 50 million spatial and non-spatial datapoints are hosted through AGOL [feature services](http://server.arcgis.com/en/server/10.5/publish-services/windows/what-is-a-feature-service-.htm).  Most of the read-only feature services in this application were constructed by the [Esri Oceans group](https://esri.maps.arcgis.com/home/user.html?user=esri_oceans), published using [ArcGISPro](https://pro.arcgis.com/en/pro-app/help/sharing/overview/share-with-arcgis-pro.htm) or ArcMap, and made publicly available. The EMU feature services are also used by the [Ecological Marine Unit Explorer](http://livingatlas.arcgis.com/emu/), a web version of this application. Learn more about how this data set was assembled in this [Story Map](http://esrioceans.maps.arcgis.com/apps/MapJournal/index.html?appid=5075d771f6894080ac190c3ccd954f0e).
 
 
 An [ArcGISTiledLayer](https://developers.arcgis.com/android/latest/api-reference/reference/com/esri/arcgisruntime/layers/ArcGISTiledLayer.html) is used to display the ocean surface EMUs on top of a ocean basemap.  The [tiled layer](https://developers.arcgis.com/android/latest/guide/layers.htm), a cached map service containing pre-generated raster tiles, represents over 670,000 features and is used instead of a FeatureLayer for performance reasons.
 
 ```java
-// Start with an ocean basemap, centered on the 
-// Galapagos Islands at a pre-defined level of detail
-ArcGISMap map =  new ArcGISMap(Basemap.Type.OCEANS, GALAPAGOS_LAT, GALAPAGOS_LONG, 4  );
+// Start with an ocean basemap, at a zoom level of 1
+ArcGISMap map =  new ArcGISMap(Basemap.Type.OCEANS, 0, 0, 1  );
+
 // Attach the map the MapView
 mapView.setMap(map)
 
@@ -24,6 +24,8 @@ ArcGISTiledLayer layer =
 map.getOperationalLayers().add(layer);
 ```
 
+![](assets/01_start.png)
+
 A number of other data sources are consumed in the app but not loaded in the map view.  [ServiceFeatureTables](https://developers.arcgis.com/android/latest/api-reference/reference/com/esri/arcgisruntime/layers/ArcGISTiledLayer.html) provide summary and detail data for given EMU layers and water columns which are displayed in the app as charts and custom graphics in views separate from the map view.
 
 ```java
@@ -31,6 +33,8 @@ A number of other data sources are consumed in the app but not loaded in the map
 ServiceFeatureTable serviceFeatureTable = new  
   ServiceFeatureTable("http://utility.arcgis.com/usrsvcs/servers/dbb13dad900d4014b0611358602723dd/rest/services/EMU_Point_Mesh_Cluster/MapServer/0")
 ```
+
+![](assets/05_charts.png)       |  |          ![](assets/07_profile.png)
 
 ## Querying Feature Tables
 In the app, spatial and non-spatial feature tables are queried.  Spatial queries are used when the user interacts with the map -  the screen location is converted to a geolocation and service feature tables are queried.
@@ -81,7 +85,31 @@ futureResult.addDoneListener(new Runnable() {
      });
 
 ```
+Multiple spatial results returned from the query are sorted based on their geodesic distance from the tapped location.
+```java
+// Establish the center point of the envelope
+final Point center = envelope.getCenter();
 
+final LinearUnit linearUnit = new LinearUnit(LinearUnitId.METERS);
+final AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
+
+// Iterate through the results
+final Geometry geo = iterator.next();
+final WaterColumn waterColumn = waterColumnMap.get(geo);
+final Point point = (Point) geo;
+final Point waterColumnPoint = new Point(point.getX(), point.getY(), center.getSpatialReference());
+
+// Calculate the distance
+final GeodeticDistanceResult geodeticDistanceResult = GeometryEngine.distanceGeodetic(center, waterColumnPoint, linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
+final double calculatedDistance = geodeticDistanceResult.getDistance();
+waterColumn.setDistanceFrom(calculatedDistance);
+waterColumnList.add(waterColumn);
+
+// Sort water columns
+Collections.sort(waterColumnList);
+// Grab the closest water column
+closestWaterColumn = waterColumnList.get(0);
+```
 Non-spatial data like summary statistics and datapoints for charts are retrieved by first putting the table in FeatureRequestMode.MANUAL_CACHE and then querying by calling `pouplateFromServiceAsync`.
 ```java
 ServiceFeatureTable summaryStats = new
@@ -104,9 +132,50 @@ summaryStats.addDoneLoadingListener(new Runnable() {
     
 ```
 
-## Map Prep (This is still a work in progress)
-For traversing depth levels, what considerations were made?  What iterations were done?
-What are the steps we went through to prepare data/services?
-Clustering points --> Dissolving --> Buffering --> Symbology
+## Map Prep For EMUs by Depth Level
+
+Almost of all of the maps and feature services were published by the Oceans Group at Esri.  Members of the Runtime group at Esri developed the feature service for visualizing EMU layers by ocean depth.  Here we discuss our approach and the various ArcGIS tools we used.
+
+Since the EMUs are made available as points, this data was first manipulated it into a form that could be interpreted more intuitively and rendered more quickly.  Using ArcGIS’s suite of [geoprocessing tools](https://desktop.arcgis.com/en/arcmap/latest/analyze/main/geoprocessing-tools.htm), Python 2.7, and the [ArcPy](http://pro.arcgis.com/en/pro-app/arcpy/get-started/what-is-arcpy-.htm) site package, these multidimensional and overlapping clusters of points were converted into polygons.  This process simplified the 52+ million points to less than 1,900 polygons while maintaining geospatial accuracy and precision.  The end result represents ecologically distinct clusters of points, or EMUs, as single polygon features at every depth level.  Some depth levels near the surface contain each of the 37 EMUs, while others, generally as you descend deeper into the water column, shrink to include as few as five or six. Likewise, several of the EMUs occur at each of the 100 depth levels (between 0m and 5500m deep!), while a couple EMUs only exist in the top eight or nine of these depth levels.
+
+### Geoprocessing Goals
+
+To convert this data, the goal of this script was to maintain an accurate representation of the EMU points as polygons, all without violating the inherent topology between neighboring data points. This included:
+
+a) Preventing data overlaps. For a given depth level, only one EMU exists per location and b) preventing data gaps. Within the world’s oceanic regions where data does exist, holes should not appear between adjacent data points.
+
+As is often the case with GIS, there were many different paths that could have been pursued to achieve these goals. We evaluated four different geoprocessing workflows to see which of them best satisfied the objectives above. These were:
+
+1. Aggregate Points -> Dissolve -> Simplify Polygon -> Graphic Buffer
+2. Point to Raster -> Raster to Polygon -> Dissolve -> Smooth Polygon
+3. Point to Raster -> Raster to Polygon (simplify) ->  Dissolve
+4. Point to Raster -> Raster to Poygon -> Dissolve
+
+We then evaluated the output generated by each of the above workflows on the basis of complexity, size on disk, and general cartographic quality. While the first two these qualities can be objectively measured, evaluating the aesthetics of the output proved to be a bit more tricky. This was made easier by the fact that approaches 1 and 2 violated goal b, and in some cases, goal a as well.
+
+Here is a visual comparison showing each of the four outputs at the first depth level:
+
+![](assets/comparison.png)
+
+To compare based on complexity and disk size, the number of vertices were calculated for each of the four layers and a mobile map package was created which included only the layer specified. In both cases, the data was constrained to the first depth level and included coverage of the entire globe.
+
+Here is a comparison of those metrics:
+
+![](assets/chart_comparison.png)
+
+### Python Script
+
+
+### Map Symbology and Presentation
+
+The polygons were then symbolized according to the official colors designated for the EMUs.
+
+![](assets/emu_colors.png)
+
+Lastly, the polygons were overlaid on top of the [Oceans Basemap](https://www.arcgis.com/home/item.html?id=5ae9e138a17842688b0b79283a4353f6) and a 35% transparency was given to them. Adding this transparency helped to reveal the underlying seafloor topography, providing relevant context as well as aiding in the explanation of why certain regions of the EMUs begin disappearing as you descend deeper.
+
+### Publishing
+Once the map was finalized in ArcGIS Pro, it was [published as a web map](http://pro.arcgis.com/en/pro-app/help/sharing/overview/share-a-web-map.htm) to an ArcGIS organization and made [public](https://arcgisruntime.maps.arcgis.com/home/item.html?id=db8728ff2c3c49fca22a0cee58c1e081).
+
 
 
