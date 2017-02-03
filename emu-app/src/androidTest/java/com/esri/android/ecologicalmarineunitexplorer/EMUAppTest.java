@@ -211,9 +211,25 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    * when clicking on "VIEW COLUMN PROFILE"
    */
   public void testForWaterProfileCharts(){
-    clickOnOceanPoint();
 
-    solo.clickLongOnView(solo.getView(R.id.action_profile));
+    assertTrue(solo.waitForDialogToClose());
+    // Near the Galapagos Islands
+    Point start = new Point(-95.0974397, -0.05932, SpatialReferences.getWgs84());
+    android.graphics.Point screenPoint = deriveScreenPointForLocation(start);
+
+    solo.clickOnScreen(screenPoint.x, screenPoint.y );
+    assertTrue(solo.waitForText("Location Summary"));
+
+    android.graphics.Point p = new android.graphics.Point();
+    getActivity().getWindowManager().getDefaultDisplay().getSize(p);
+    int fromX, toX, fromY, toY = 0;
+    fromX = p.x/2;
+    toX = p.x/2;
+    fromY = (p.y/2) + (p.y/3);
+    toY = (p.y/2) - (p.y/3);
+    solo.sleep(3000);
+
+    solo.clickOnView(solo.getView(R.id.action_profile));
     solo.sleep(3000);
     assertTrue(solo.waitForText("Temperature"));
     CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
@@ -280,7 +296,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
     toY = (p.y/2) - (p.y/3);
     solo.sleep(3000);
     // Drag UP
-    solo.drag(fromX, toX, fromY, toY, 40);
+   solo.drag(fromX, toX, fromY, toY, 40);
   }
 
   private void checkForChartData(){

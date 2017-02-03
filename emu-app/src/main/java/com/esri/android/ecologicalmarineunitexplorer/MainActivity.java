@@ -162,6 +162,8 @@ public class MainActivity extends AppCompatActivity
 
       mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
         @Override public void onStateChanged(@NonNull final View bottomSheet, final int newState) {
+          invalidateOptionsMenu();
+
           if (newState == BottomSheetBehavior.STATE_COLLAPSED){
             showBottomSheetContent();
             mFab.setVisibility(View.VISIBLE);
@@ -233,8 +235,11 @@ public class MainActivity extends AppCompatActivity
     final MenuItem profile = menu.findItem(R.id.action_profile);
     final MenuItem search = menu.findItem(R.id.action_search);
     final int state = mBottomSheetBehavior.getState();
-    if ((state == BottomSheetBehavior.STATE_COLLAPSED) || (state == BottomSheetBehavior.STATE_EXPANDED)) {
+    if (state == BottomSheetBehavior.STATE_COLLAPSED) {
       profile.setVisible(true);
+      search.setVisible(false);
+    }else if(state == BottomSheetBehavior.STATE_EXPANDED) {
+      profile.setVisible(false);
       search.setVisible(false);
     }else if(mInMapState) {
       profile.setVisible(false);
