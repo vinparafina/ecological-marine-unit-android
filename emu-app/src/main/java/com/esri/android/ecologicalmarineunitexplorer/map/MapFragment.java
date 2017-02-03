@@ -267,7 +267,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     final PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
     markerSymbol.setHeight(40);
     markerSymbol.setWidth(40);
-    markerSymbol.setOffsetY(17);
+    markerSymbol.setOffsetY(markerSymbol.getHeight()/2);
     markerSymbol.loadAsync();
     markerSymbol.addDoneLoadingListener(new Runnable() {
       @Override public void run() {
