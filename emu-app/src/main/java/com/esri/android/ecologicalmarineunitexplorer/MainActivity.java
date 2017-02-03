@@ -279,6 +279,8 @@ public class MainActivity extends AppCompatActivity
 
     // Hide the FAB
     mFab.setVisibility(View.INVISIBLE);
+
+    mInMapState = false;
   }
 
   /**
@@ -298,7 +300,6 @@ public class MainActivity extends AppCompatActivity
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), mapFragment, R.id.map_container, getString(R.string.fragment_map));
     }
-    mInMapState = true;
   }
 
   /**
@@ -489,6 +490,7 @@ public class MainActivity extends AppCompatActivity
 
     // Hide the FAB
     mFab.setVisibility(View.INVISIBLE);
+    mInMapState = false;
 
     setUpChartSummaryToolbar(emuName);
   }
