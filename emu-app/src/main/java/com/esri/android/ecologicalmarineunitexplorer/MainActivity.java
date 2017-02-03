@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity
     if ((state == BottomSheetBehavior.STATE_COLLAPSED) || (state == BottomSheetBehavior.STATE_EXPANDED)) {
       profile.setVisible(true);
       search.setVisible(false);
-    }else if(state == BottomSheetBehavior.STATE_HIDDEN || mInMapState) {
+    }else if(mInMapState) {
       profile.setVisible(false);
       search.setVisible(true);
     }else{
@@ -357,16 +357,6 @@ public class MainActivity extends AppCompatActivity
     setUpBottomSheetToolbar();
   }
 
-  private void returnToSummaryFromWaterProfile(){
-    //Remove profile
-    removeChartContainer();
-
-    // Shrink the parent container
-    shrinkChartContainer();
-
-    // Return to large map
-    expandMap();
-  }
 
   /**
    * Remove the water column profile fragment
@@ -434,22 +424,6 @@ public class MainActivity extends AppCompatActivity
         }
       });
     }
-  }
-
-  /**
-   * Expand the layout for the map
-   */
-  private void expandMap(){
-    final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
-    if (mapLayout != null){
-      final LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-          ViewGroup.LayoutParams.MATCH_PARENT);
-      mapLayout.setLayoutParams(layoutParams);
-      mapLayout.requestLayout();
-    }
-
-    // Show part of the bottom sheet
-    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
   }
 
 
@@ -593,6 +567,7 @@ public class MainActivity extends AppCompatActivity
       }else if (fragmentName.equalsIgnoreCase(getString(R.string.fragment_summary))){
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
           mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+           setUpMapToolbar();
         }else{
           finish();
         }
