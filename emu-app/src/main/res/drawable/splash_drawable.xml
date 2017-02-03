@@ -7,7 +7,7 @@
     <item>
         <bitmap
                 android:gravity="center"
-                android:src="@mipmap/sdk_launcher"/>
+                android:src="@mipmap/esri_labs"/>
     </item>
 
 </layer-list>

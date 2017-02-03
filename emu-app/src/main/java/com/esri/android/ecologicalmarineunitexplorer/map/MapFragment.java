@@ -46,7 +46,6 @@ import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.Layer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
-import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 
@@ -61,7 +60,6 @@ public class MapFragment extends Fragment implements MapContract.View {
   private Point mSelectedPoint = null;
   private ArcGISMap mMap = null;
 
-  private final String TAG = MapFragment.class.getSimpleName();
   private NoEmuFound mNoEmuFoundCallback = null;
 
   public interface NoEmuFound{
@@ -148,7 +146,6 @@ public class MapFragment extends Fragment implements MapContract.View {
           mMapView.setOnTouchListener(mapTouchListener);
           // Notify presenter
           mPresenter.mapLoaded();
-         // addSeekBar();
         }
       }
     });
@@ -160,6 +157,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         setViewpoint();
       }
     });
+
   }
 
   /**
@@ -169,6 +167,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     if (mSelectedPoint != null){
       final double MAP_SCALE = 25000000;
       mMapView.setViewpointCenterAsync(mSelectedPoint, MAP_SCALE);
+      mSelectedPoint = null;
     }
   }
 

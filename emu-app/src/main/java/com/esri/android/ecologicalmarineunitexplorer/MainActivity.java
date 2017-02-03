@@ -108,7 +108,12 @@ public class MainActivity extends AppCompatActivity
       mFab.setVisibility(View.INVISIBLE);
       mFab.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+          if (mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_COLLAPSED){
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+          }else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN){
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+          }
+
         }
       });
     }
@@ -158,15 +163,23 @@ public class MainActivity extends AppCompatActivity
       mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
         @Override public void onStateChanged(@NonNull final View bottomSheet, final int newState) {
           if (newState == BottomSheetBehavior.STATE_COLLAPSED){
-
             showBottomSheetContent();
-            if (mFab != null){
-              mFab.setVisibility(View.VISIBLE);
-            }
-          }else if (newState == BottomSheetBehavior.STATE_HIDDEN){
-            if (mFab != null){
-              mFab.setVisibility(View.INVISIBLE);
-            }
+            mFab.setVisibility(View.VISIBLE);
+            LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
+            LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.setMargins(0,0,0,0);
+            layout.setLayoutParams(layoutParams);
+            layout.requestLayout();
+
+          }
+          if (newState ==BottomSheetBehavior.STATE_EXPANDED){
+            LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
+            LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.setMargins(0,155,0,0);
+            layout.setLayoutParams(layoutParams);
+            layout.requestLayout();
           }
         }
 
@@ -263,6 +276,9 @@ public class MainActivity extends AppCompatActivity
     }
     transaction.replace(R.id.chartContainer, waterProfileFragment);
     transaction.commit();
+
+    // Hide the FAB
+    mFab.setVisibility(View.INVISIBLE);
   }
 
   /**
@@ -330,10 +346,12 @@ public class MainActivity extends AppCompatActivity
     // Shrink parent container
     shrinkChartContainer();
 
-    if (mBottomSheetFragment.isAdded()){
-      // Restore the bottom sheet
-      mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-    }
+    // Show the FAB
+    mFab.setVisibility(View.VISIBLE);
+
+    // Restore the bottom sheet
+    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
 
     // Restore the bottom sheet toolbar
     setUpBottomSheetToolbar();
@@ -467,7 +485,6 @@ public class MainActivity extends AppCompatActivity
    * @param emuName - int representing an EMU layer name
    */
   private void showSummaryDetail(final int emuName){
-
     // Hide the bottom sheet containing the summary view
     mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
@@ -495,6 +512,9 @@ public class MainActivity extends AppCompatActivity
     }
     transaction.replace(R.id.chartContainer, mSummaryChartFragment);
     transaction.commit();
+
+    // Hide the FAB
+    mFab.setVisibility(View.INVISIBLE);
 
     setUpChartSummaryToolbar(emuName);
   }
