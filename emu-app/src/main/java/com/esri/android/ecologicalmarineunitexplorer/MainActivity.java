@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
             layout.requestLayout();
 
           }
-          if (newState ==BottomSheetBehavior.STATE_EXPANDED){
+          if (newState == BottomSheetBehavior.STATE_EXPANDED){
             mFab.setVisibility(View.INVISIBLE);
             LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
             LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override public void onSlide(@NonNull final View bottomSheet, final float slideOffset) {
-          if (mFab.getVisibility()== View.INVISIBLE){
+          if (mFab.getVisibility() == View.INVISIBLE){
             mFab.setVisibility(View.VISIBLE);
           }
           final float scaleFactor = 1 - slideOffset;
