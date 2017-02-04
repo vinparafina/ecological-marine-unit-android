@@ -33,6 +33,7 @@
 package com.esri.android.ecologicalmarineunitexplorer;
 
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.RecyclerView;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
@@ -210,11 +211,17 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
    * Test the water column profiles are drawn
    * when clicking on "VIEW COLUMN PROFILE"
    */
-  public void testForWaterProfileCharts(){
+  public void testForWaterProfileChartsOnExpandedBottomSheet(){
     clickOnOceanPoint();
 
-    solo.clickLongOnView(solo.getView(R.id.action_profile));
+    View v = solo.getView(R.id.action_profile);
+    ActionMenuItemView actionMenu = (ActionMenuItemView) v;
+    boolean listeners = actionMenu.hasOnClickListeners();
+
+    solo.clickOnView(solo.getView(R.id.action_profile));
+
     solo.sleep(3000);
+
     assertTrue(solo.waitForText("Temperature"));
     CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
     checkForChartData();
@@ -241,7 +248,56 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
     assertTrue(solo.waitForText("Nitrate"));
     checkForChartData();
   }
+  /**
+   * Test the water column profiles are drawn
+   * when clicking on "VIEW COLUMN PROFILE"
+   */
+  public void testForWaterProfileChartsOnCollapsedBottomSheet(){
+    assertTrue(solo.waitForDialogToClose());
+    // Near the Galapagos Islands
+    Point start = new Point(-95.0974397, -0.05932, SpatialReferences.getWgs84());
+    android.graphics.Point screenPoint = deriveScreenPointForLocation(start);
 
+    solo.clickOnScreen(screenPoint.x, screenPoint.y );
+    assertTrue(solo.waitForText("Location Summary"));
+
+    android.graphics.Point p = new android.graphics.Point();
+    getActivity().getWindowManager().getDefaultDisplay().getSize(p);
+    int fromX, toX, fromY, toY = 0;
+    fromX = p.x/2;
+    toX = p.x/2;
+    fromY = (p.y/2) + (p.y/3);
+    toY = (p.y/2) - (p.y/3);
+    solo.sleep(3000);
+    solo.clickOnView(solo.getView(R.id.action_profile));
+    solo.sleep(3000);
+
+    assertTrue(solo.waitForText("Temperature"));
+    CombinedChart chart = (CombinedChart) solo.getView(R.id.propertyChart) ;
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+
+    assertTrue(solo.waitForText("Salinity"));
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+
+    assertTrue(solo.waitForText("Oxygen"));
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+    assertTrue(solo.waitForText("Phosphate"));
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+    assertTrue(solo.waitForText("Silicate"));
+    checkForChartData();
+    solo.scrollToSide(Solo.RIGHT);
+
+    assertTrue(solo.waitForText("Nitrate"));
+    checkForChartData();
+  }
   /**
    * Test that the seekbar results
    * in a change in the map view.  This
@@ -280,7 +336,7 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
     toY = (p.y/2) - (p.y/3);
     solo.sleep(3000);
     // Drag UP
-    solo.drag(fromX, toX, fromY, toY, 40);
+   solo.drag(fromX, toX, fromY, toY, 40);
   }
 
   private void checkForChartData(){

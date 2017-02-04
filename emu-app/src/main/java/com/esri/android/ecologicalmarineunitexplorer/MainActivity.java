@@ -162,6 +162,8 @@ public class MainActivity extends AppCompatActivity
 
       mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
         @Override public void onStateChanged(@NonNull final View bottomSheet, final int newState) {
+          invalidateOptionsMenu();
+
           if (newState == BottomSheetBehavior.STATE_COLLAPSED){
             showBottomSheetContent();
             mFab.setVisibility(View.VISIBLE);
@@ -173,7 +175,8 @@ public class MainActivity extends AppCompatActivity
             layout.requestLayout();
 
           }
-          if (newState ==BottomSheetBehavior.STATE_EXPANDED){
+          if (newState == BottomSheetBehavior.STATE_EXPANDED){
+            mFab.setVisibility(View.INVISIBLE);
             LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
             LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -184,6 +187,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override public void onSlide(@NonNull final View bottomSheet, final float slideOffset) {
+          if (mFab.getVisibility() == View.INVISIBLE){
+            mFab.setVisibility(View.VISIBLE);
+          }
           final float scaleFactor = 1 - slideOffset;
           if (mFab != null){
             if (scaleFactor <= 1){
@@ -236,7 +242,7 @@ public class MainActivity extends AppCompatActivity
     if ((state == BottomSheetBehavior.STATE_COLLAPSED) || (state == BottomSheetBehavior.STATE_EXPANDED)) {
       profile.setVisible(true);
       search.setVisible(false);
-    }else if(state == BottomSheetBehavior.STATE_HIDDEN || mInMapState) {
+    }else if(mInMapState) {
       profile.setVisible(false);
       search.setVisible(true);
     }else{
@@ -279,6 +285,8 @@ public class MainActivity extends AppCompatActivity
 
     // Hide the FAB
     mFab.setVisibility(View.INVISIBLE);
+
+    mInMapState = false;
   }
 
   /**
@@ -298,7 +306,6 @@ public class MainActivity extends AppCompatActivity
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), mapFragment, R.id.map_container, getString(R.string.fragment_map));
     }
-    mInMapState = true;
   }
 
   /**
@@ -357,16 +364,6 @@ public class MainActivity extends AppCompatActivity
     setUpBottomSheetToolbar();
   }
 
-  private void returnToSummaryFromWaterProfile(){
-    //Remove profile
-    removeChartContainer();
-
-    // Shrink the parent container
-    shrinkChartContainer();
-
-    // Return to large map
-    expandMap();
-  }
 
   /**
    * Remove the water column profile fragment
@@ -436,22 +433,6 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
-  /**
-   * Expand the layout for the map
-   */
-  private void expandMap(){
-    final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_container);
-    if (mapLayout != null){
-      final LinearLayout.LayoutParams  layoutParams  =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-          ViewGroup.LayoutParams.MATCH_PARENT);
-      mapLayout.setLayoutParams(layoutParams);
-      mapLayout.requestLayout();
-    }
-
-    // Show part of the bottom sheet
-    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-  }
-
 
   /**
    * Show the bottom sheet
@@ -515,6 +496,7 @@ public class MainActivity extends AppCompatActivity
 
     // Hide the FAB
     mFab.setVisibility(View.INVISIBLE);
+    mInMapState = false;
 
     setUpChartSummaryToolbar(emuName);
   }
@@ -593,6 +575,7 @@ public class MainActivity extends AppCompatActivity
       }else if (fragmentName.equalsIgnoreCase(getString(R.string.fragment_summary))){
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
           mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+           setUpMapToolbar();
         }else{
           finish();
         }
