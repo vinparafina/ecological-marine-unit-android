@@ -176,6 +176,7 @@ public class MainActivity extends AppCompatActivity
 
           }
           if (newState ==BottomSheetBehavior.STATE_EXPANDED){
+            mFab.setVisibility(View.INVISIBLE);
             LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
             LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -186,6 +187,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override public void onSlide(@NonNull final View bottomSheet, final float slideOffset) {
+          if (mFab.getVisibility()== View.INVISIBLE){
+            mFab.setVisibility(View.VISIBLE);
+          }
           final float scaleFactor = 1 - slideOffset;
           if (mFab != null){
             if (scaleFactor <= 1){
@@ -235,11 +239,8 @@ public class MainActivity extends AppCompatActivity
     final MenuItem profile = menu.findItem(R.id.action_profile);
     final MenuItem search = menu.findItem(R.id.action_search);
     final int state = mBottomSheetBehavior.getState();
-    if (state == BottomSheetBehavior.STATE_COLLAPSED) {
+    if ((state == BottomSheetBehavior.STATE_COLLAPSED) || (state == BottomSheetBehavior.STATE_EXPANDED)) {
       profile.setVisible(true);
-      search.setVisible(false);
-    }else if(state == BottomSheetBehavior.STATE_EXPANDED) {
-      profile.setVisible(false);
       search.setVisible(false);
     }else if(mInMapState) {
       profile.setVisible(false);
