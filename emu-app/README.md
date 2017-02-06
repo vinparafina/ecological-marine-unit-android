@@ -163,9 +163,99 @@ Here is a comparison of those metrics:
 
 ![](assets/chart_comparison.png)
 
+Ultimately, in order to best satisfy the objectives above, a point-to-raster-to-polygon approach that didn’t involve attempting to either smooth or simplify the data (workflow 4) was taken.
+
 ### Python Script
 
+The Python `processEMUs.py` script automates the geoprocessing steps for workflow 4.  The script requires a Windows installation of ArcGISPro or ArcGIS Desktop. For help configuring Python with ArcGIS Pro, see this [help page](http://pro.arcgis.com/en/pro-app/arcpy/get-started/installing-python-for-arcgis-pro.htm).  For help setting up Python with ArcGIS Desktop, see this [help page](http://desktop.arcgis.com/en/arcmap/10.3/analyze/python/importing-arcpy.htm).
+```python
 
+# Set up the environment by defining geodatabase and location of EMU datasource
+arcpy.env.workspace =                   # like r"C:\Data\EMUData.gdb"
+arcpy.env.overwriteOutput = True
+base_point_fc =                         # like r"C:\Data\EMUGlobal.gdb\EMUMaster"
+new_poly_fc =                           # like "Global_EMU_Polygons"
+
+# Iterate over the depth levels points from the input point dataset.
+# generate one EMU polygon layer per depth level
+    for depth_lvl in range(1, 101):
+        where_clause = "depth_lvl = {0}".format(str(depth_lvl))
+        start = time.time()
+
+        # select points from next incremented depth level
+        new_selection_fc = "Depth_{0}".format(str(depth_lvl))
+        print "Where Clause: {0}, new_selection_fc: {1}".format(where_clause, new_selection_fc)
+        print "Selecting features..."
+        arcpy.Select_analysis(base_point_fc, new_selection_fc, where_clause)
+
+
+# Represent the points as a raster.
+emu_raster = "EMURaster" + str(depth_lvl)
+arcpy.PointToRaster_conversion(
+    in_features=new_selection_fc,
+    value_field="Cluster37",
+    out_rasterdataset=emu_raster,
+    cellsize=0.25)
+arcpy.Delete_management(new_selection_fc)
+
+# Convert points representing an EMU cluster into a polygon
+emu_polygons = "EMUPolygons_" + str(depth_lvl)
+arcpy.RasterToPolygon_conversion(
+    in_raster=emu_raster,
+    out_polygon_features=emu_polygons,
+    simplify="NO_SIMPLIFY",
+    raster_field="Value")
+arcpy.Delete_management(emu_raster)
+
+# Dissolve all like EMU features into a single feature per depth
+emu_dissolved_polys = "EMUDissolvedPolys_" + str(depth_lvl)
+arcpy.Dissolve_management(
+    in_features = emu_polygons,
+    out_feature_class = emu_dissolved_polys,
+    dissolve_field = "gridcode",
+    multi_part = "MULTI_PART")
+arcpy.Delete_management(emu_polygons)
+
+# Add new, required fields and appropriately attribute the data
+arcpy.AddField_management(
+    in_table = emu_dissolved_polys,
+    field_name = "Depth",
+    field_type = "SHORT")
+arcpy.AddField_management(
+    in_table = emu_dissolved_polys,
+    field_name = "EMU",
+    field_type = "SHORT")
+arcpy.CalculateField_management(
+    in_table = emu_dissolved_polys,
+    field = "Depth",
+    expression = depth_lvl)
+arcpy.CalculateField_management(
+    in_table = emu_dissolved_polys,
+    field = "EMU",
+    expression = "[gridcode]")
+arcpy.DeleteField_management(
+    in_table = emu_dissolved_polys,
+    drop_field = "gridcode")
+
+# Append the polygons to a final, output polygon feature class
+if depth_lvl == 1:
+    if arcpy.Exists(new_poly_fc):
+        arcpy.Delete_management(new_poly_fc)
+    arcpy.CreateFeatureclass_management(
+        out_path = arcpy.env.workspace,
+        out_name = new_poly_fc,
+        geometry_type = "POLYGON",
+        template = emu_dissolved_polys,
+        spatial_reference = emu_dissolved_polys)
+elif not arcpy.Exists(new_poly_fc):
+    # condition shouldn't exist, but cancel the script if so
+    print sys.exit("Output feature class does not exist!")
+arcpy.Append_management(
+    inputs = emu_dissolved_polys,
+    target = new_poly_fc)
+arcpy.Delete_management(emu_dissolved_polys)
+
+```
 ### Map Symbology and Presentation
 
 The polygons were then symbolized according to the official colors designated for the EMUs.
