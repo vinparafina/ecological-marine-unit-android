@@ -176,8 +176,8 @@ arcpy.env.overwriteOutput = True
 base_point_fc =                         # like r"C:\Data\EMUGlobal.gdb\EMUMaster"
 new_poly_fc =                           # like "Global_EMU_Polygons"
 
-# Iterate over the depth levels points from the input point dataset.
-# generate one EMU polygon layer per depth level
+# Iterate over the collection of points at each depth level from the input dataset,
+# generating one EMU polygon layer per depth level
     for depth_lvl in range(1, 101):
         where_clause = "depth_lvl = {0}".format(str(depth_lvl))
         start = time.time()
@@ -256,6 +256,9 @@ arcpy.Append_management(
 arcpy.Delete_management(emu_dissolved_polys)
 
 ```
+
+The end product of the script is a new feature class entitled "Global_EMU_Polygons" in the C:\Data\EMUData.gdb geodatabase.  ArcGIS Pro or ArcMap is used to construct a map with this feature class.
+
 ### Map Symbology and Presentation
 
 The polygons were then symbolized in ArcGIS Pro according to the official colors designated for the EMUs.
