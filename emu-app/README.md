@@ -258,11 +258,11 @@ arcpy.Delete_management(emu_dissolved_polys)
 ```
 ### Map Symbology and Presentation
 
-The polygons were then symbolized according to the official colors designated for the EMUs.
+The polygons were then symbolized in ArcGIS Pro according to the official colors designated for the EMUs.
 
 ![](assets/emu_colors.png)
 
-Lastly, the polygons were overlaid on top of the [Oceans Basemap](https://www.arcgis.com/home/item.html?id=5ae9e138a17842688b0b79283a4353f6) and a 35% transparency was given to them. Adding this transparency helped to reveal the underlying seafloor topography, providing relevant context as well as aiding in the explanation of why certain regions of the EMUs begin disappearing as you descend deeper.
+Lastly, the polygons were overlaid on top of the [Oceans Basemap](https://www.arcgis.com/home/item.html?id=5ae9e138a17842688b0b79283a4353f6) and a 35% transparency was applied in ArcGISPro. Adding this transparency helped to reveal the underlying seafloor topography, providing relevant context as well as aiding in the explanation of why certain regions of the EMUs begin disappearing as you descend deeper.
 
 ### Publishing
 Once the map was finalized in ArcGIS Pro, it was [published as a web map](http://pro.arcgis.com/en/pro-app/help/sharing/overview/share-a-web-map.htm) to an ArcGIS organization and made [public](https://arcgisruntime.maps.arcgis.com/home/item.html?id=db8728ff2c3c49fca22a0cee58c1e081).
