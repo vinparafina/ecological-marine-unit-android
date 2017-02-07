@@ -170,11 +170,29 @@ Ultimately, in order to best satisfy the objectives above, a point-to-raster-to-
 The Python `processEMUs.py` script automates the geoprocessing steps for workflow 4.  The script requires a Windows installation of ArcGISPro or ArcGIS Desktop. For help configuring Python with ArcGIS Pro, see this [help page](http://pro.arcgis.com/en/pro-app/arcpy/get-started/installing-python-for-arcgis-pro.htm).  For help setting up Python with ArcGIS Desktop, see this [help page](http://desktop.arcgis.com/en/arcmap/10.3/analyze/python/importing-arcpy.htm).
 ```python
 
-# Set up the environment by defining geodatabase and location of EMU datasource
-arcpy.env.workspace =                   # like r"C:\Data\EMUData.gdb"
-arcpy.env.overwriteOutput = True
-base_point_fc =                         # like r"C:\Data\EMUGlobal.gdb\EMUMaster"
-new_poly_fc =                           # like "Global_EMU_Polygons"
+# Set up the environment by defining geodatabase and location of EMU datasource, based on input parameters
+
+    parser = argparse.ArgumentParser(
+        description='This program processes EMU points into attributed polygons representing global ocean coverage.',
+        epilog='',
+        add_help=True,
+        argument_default=None,  # Global argument default
+        usage=__doc__)
+    parser.add_argument('-w', '--workspace', action='store', dest='workspace_gdb', required=True,
+                        help='The default geodatabase to which the intermediate outputs should be written.')
+    parser.add_argument('-o', '--overwrite_output', action='store_true', required=True, dest='overwrite_output',
+                        default="", help='Overwrite output?')
+    parser.add_argument('-b', '--base_fc', action='store', dest='base_fc', required=True, default="",
+                        help='The location of the input set of EMU points.')
+    parser.add_argument('-n', '--new_poly_fc', action='store', dest='new_poly_fc', required=True, default="",
+                        help='The name that should be given to the output set of derivative polygons.')
+
+    arguments = parser.parse_args()
+
+    arcpy.env.workspace = arguments.workspace_gdb
+    arcpy.env.overwriteOutput = arguments.overwrite_output
+    base_point_fc = arguments.base_fc
+    new_poly_fc = arguments.new_poly_fc                    # like "Global_EMU_Polygons"
 
 # Iterate over the collection of points at each depth level from the input dataset,
 # generating one EMU polygon layer per depth level
@@ -184,8 +202,7 @@ new_poly_fc =                           # like "Global_EMU_Polygons"
 
         # select points from next incremented depth level
         new_selection_fc = "Depth_{0}".format(str(depth_lvl))
-        print "Where Clause: {0}, new_selection_fc: {1}".format(where_clause, new_selection_fc)
-        print "Selecting features..."
+        print "\nSelecting features for level {}...".format(str(depth_lvl))
         arcpy.Select_analysis(base_point_fc, new_selection_fc, where_clause)
 
 
