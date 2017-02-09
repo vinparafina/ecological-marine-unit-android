@@ -2,7 +2,7 @@
 Explore our ocean ecosystems with EMUs!
 
 ## Description
-Using 50 year's worth of aggregated nutrient and physical ocean data from [NOAA](https://www.nodc.noaa.gov/OC5/woa13/), Esri has collaborated with the USGS, the Marine Conservation Institute, NatureServe, the University of Auckland, GRID-Arendal, NOAA, Duke University, the Woods Hole Oceanographic Institution, and many other partners to classify our oceans into 37 statistically distinct [ecological marine units](http://www.esri.com/ecological-marine-units) (EMUs).  Leveraging the [Runtime SDK](https://developers.arcgis.com/) and [ArcGIS](http://www.arcgis.com/home/index.html), we'll show you how this Android mobile app can be used to explore ocean conditions locally and globally. There are a number of ocean data resources you can use to supplement the EMU story.  For example, the [Ocean Biogeographic Information System](http://www.iobis.org/) hosts free and open access to ocean  biogeographic datasets.
+Using 50 year's worth of aggregated nutrient and physical ocean data from [NOAA](https://www.nodc.noaa.gov/OC5/woa13/), Esri has collaborated with the USGS, the Marine Conservation Institute, NatureServe, the University of Auckland, GRID-Arendal, NOAA, Duke University, the Woods Hole Oceanographic Institution, and many other partners to classify our oceans into 37 statistically distinct [ecological marine units](http://www.esri.com/ecological-marine-units) (EMUs).  Leveraging the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/) and [ArcGIS](http://www.arcgis.com/home/index.html), we'll show you how this ArcGIS Android SDK mobile app can be used to explore ocean conditions locally and globally. There are a number of ocean data resources you can use to supplement the EMU story.  For example, the [Ocean Biogeographic Information System](http://www.iobis.org/) hosts free and open access to ocean  biogeographic datasets.
 
 ## Map Prep For EMUs by Depth Level
 
@@ -77,7 +77,7 @@ map.getOperationalLayers().add(layer);
 
 ![](assets/01_start.png)
 
-A number of other data sources are consumed in the app but not loaded in the map view.  [ServiceFeatureTables](https://developers.arcgis.com/android/latest/api-reference/reference/com/esri/arcgisruntime/layers/ArcGISTiledLayer.html) provide summary and detail data for given EMU layers and water columns which are displayed in the app as charts and custom graphics in views separate from the map view.
+A number of other data sources are consumed in the app but not loaded in the map view.  [ServiceFeatureTables](https://developers.arcgis.com/android/latest/api-reference/reference/com/esri/arcgisruntime/data/ServiceFeatureTable.html) provide summary and detail data for given EMU layers and water columns which are displayed in the app as charts and custom graphics in views separate from the map view.
 
 ```java
 // Provision a feature table
