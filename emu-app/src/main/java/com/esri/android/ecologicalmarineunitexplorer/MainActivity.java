@@ -25,6 +25,7 @@
 
 package com.esri.android.ecologicalmarineunitexplorer;
 
+import android.animation.Animator;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -45,10 +46,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartFragment;
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity
     if (mFab != null){
       mFab.setVisibility(View.INVISIBLE);
       mFab.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
+        @Override public void onClick(final View v) {
           if (mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_COLLAPSED){
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
           }else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN){
@@ -167,8 +165,8 @@ public class MainActivity extends AppCompatActivity
           if (newState == BottomSheetBehavior.STATE_COLLAPSED){
             showBottomSheetContent();
             mFab.setVisibility(View.VISIBLE);
-            LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
-            LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            final LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
+            final LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
             layoutParams.setMargins(0,0,0,0);
             layout.setLayoutParams(layoutParams);
@@ -176,24 +174,35 @@ public class MainActivity extends AppCompatActivity
 
           }
           if (newState == BottomSheetBehavior.STATE_EXPANDED){
-            mFab.setVisibility(View.INVISIBLE);
-            LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
-            LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+
+            final LinearLayout layout = (LinearLayout) findViewById(R.id.horizontalLinearLayout);
+            final LinearLayout.LayoutParams layoutParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-            layoutParams.setMargins(0,155,0,0);
+            final int toolbarSize = findViewById(R.id.toolbar).getHeight();
+            layoutParams.setMargins(0,toolbarSize,0,0);
             layout.setLayoutParams(layoutParams);
             layout.requestLayout();
+          }
+          if (newState == BottomSheetBehavior.STATE_HIDDEN){
+            final Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.chartContainer);
+            if (fragment == null){
+              mFab.setVisibility(View.VISIBLE);
+            }else{
+              mFab.setVisibility(View.INVISIBLE);
+            }
           }
         }
 
         @Override public void onSlide(@NonNull final View bottomSheet, final float slideOffset) {
-          if (mFab.getVisibility() == View.INVISIBLE){
-            mFab.setVisibility(View.VISIBLE);
-          }
+
+
           final float scaleFactor = 1 - slideOffset;
           if (mFab != null){
             if (scaleFactor <= 1){
               mFab.animate().scaleX(1 - slideOffset).scaleY(1 - slideOffset).setDuration(0).start();
+            }
+            if (slideOffset == 1.00f){
+              mFab.setVisibility(View.INVISIBLE);
             }
           }
         }
@@ -270,7 +279,7 @@ public class MainActivity extends AppCompatActivity
       layout.requestLayout();
     }
 
-    WaterProfileFragment waterProfileFragment = WaterProfileFragment.newInstance();
+    final WaterProfileFragment waterProfileFragment = WaterProfileFragment.newInstance();
     new WaterProfilePresenter(point, waterProfileFragment, mDataManager);
 
     // Add the chart view to the column container
@@ -438,6 +447,8 @@ public class MainActivity extends AppCompatActivity
    * Show the bottom sheet
    */
   public void showBottomSheet(){
+
+    mFab.setVisibility(View.VISIBLE);
     // Change the state of bottom sheet
     if (mBottomSheetBehavior.getState() != BottomSheetBehavior.STATE_COLLAPSED){
       mBottomSheetBehavior.setState( BottomSheetBehavior.STATE_COLLAPSED);
@@ -563,12 +574,12 @@ public class MainActivity extends AppCompatActivity
    */
   @Override
   public void onBackPressed() {
-    int count = getSupportFragmentManager().getBackStackEntryCount();
+    final int count = getSupportFragmentManager().getBackStackEntryCount();
     if (count == 0) {
       super.onBackPressed();
     } else {
-      FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(count-1);
-      String fragmentName = entry.getName();
+      final FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(count-1);
+      final String fragmentName = entry.getName();
 
       if (fragmentName.equalsIgnoreCase(getString(R.string.fragment_detail_chart))){
         returnToSummary();
