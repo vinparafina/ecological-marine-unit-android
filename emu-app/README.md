@@ -6,7 +6,7 @@ Using 50 year's worth of aggregated nutrient and physical ocean data from [NOAA]
 
 ## Data Prep & Optimization
 
-Almost of all of the maps and feature services were published by the Oceans Group at Esri.  Members of the Runtime group at Esri developed the feature service for visualizing EMU layers by ocean depth.  Here we discuss our approach and the various ArcGIS tools we used.
+Almost of all of the maps and feature services were published by the Oceans Group at Esri.  Members of the Runtime group at Esri developed the feature service for filtering EMU layers by ocean depth to support the depth slider widget on the map.  Here we discuss our approach and the various ArcGIS tools we used.
 
 Since the EMUs are made available as points, this data was first manipulated into a form that could be interpreted more intuitively and rendered more quickly.  Using ArcGIS’s suite of [geoprocessing tools](https://desktop.arcgis.com/en/arcmap/latest/analyze/main/geoprocessing-tools.htm), Python 2.7, and the [ArcPy](http://pro.arcgis.com/en/pro-app/arcpy/get-started/what-is-arcpy-.htm) site package, these multidimensional and overlapping clusters of points were converted into polygons.  This process simplified the 52+ million points to less than 1,900 polygons while maintaining geospatial accuracy and precision.  The end result represents ecologically distinct clusters of points, or EMUs, as single polygon features at every depth level.  Some depth levels near the surface contain each of the 37 EMUs, while others, generally as you descend deeper into the water column, shrink to include as few as five or six. Likewise, several of the EMUs occur at each of the 100 depth levels (between 0m and 5500m deep!), while a couple EMUs only exist in the top eight or nine of these depth levels.
 
@@ -159,6 +159,58 @@ Collections.sort(waterColumnList);
 // Grab the closest water column
 closestWaterColumn = waterColumnList.get(0);
 ```
+EMU patterns at different ocean depths are visualized by moving the slider on the web map (see the Generating a WebMap section above).
+
+![](assets/10_explore_depth_1.png)       |  |          ![](assets/11_explore_depth_2.png)
+
+The EMU layers are queried by setting a definition expression on the FeatureLayer.
+
+```java
+// The feature layer containing the EMU polygons by depth
+mEmuByDepthLayer = new FeatureLayer(mEmuByDepthTable);
+
+// First check if the feature data has been cached...
+
+if (mCachedLayers.contains(depth)){
+  // Data has been downloaded and cached, so just filter the layer
+  mEmuByDepthLayer.setDefinitionExpression(" Depth = " + depth);
+
+}else{
+  // No local cache, so we make a call to the server
+  // by setting the where clause with the given depth
+  QueryParameters queryParameters = new QueryParameters();
+  queryParameters.setWhereClause(" Depth = " + depth);
+
+  // Return all the output fields
+  List<String> outFields = Collections.singletonList("*");
+
+  final ListenableFuture<FeatureQueryResult> results =  mEmuByDepthTable.populateFromServiceAsync(queryParameters,false, outFields);
+
+  results.addDoneListener(new Runnable() {
+
+      @Override public void run() {
+        try {
+          final FeatureQueryResult fqr = results.get();
+
+          if (fqr.iterator().hasNext()){
+
+            // Cache the depth level so we don't download the same data again
+            mCachedLayers.add(depth);
+
+            // Set the definition expression to show only the depth of interest
+
+            mEmuByDepthLayer.setDefinitionExpression("Depth = " + depth);
+
+          }
+        } catch (final Exception e) {
+          handleError();
+        }
+      }
+    });
+  }
+```
+
+
 Non-spatial data like summary statistics and datapoints for charts are retrieved by first putting the table in FeatureRequestMode.MANUAL_CACHE and then querying by calling `pouplateFromServiceAsync`.
 ```java
 ServiceFeatureTable summaryStats = new
