@@ -25,7 +25,6 @@
 
 package com.esri.android.ecologicalmarineunitexplorer;
 
-import android.animation.Animator;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -85,18 +84,19 @@ public class MainActivity extends AppCompatActivity
   public MainActivity() {}
 
   /**
-   *
-   * @param savedInstanceState
+   * Set up the FAB and ensure internect connectivity exists before
+   * getting map ready.
+   * @param savedInstanceState Bundle
    */
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    /*********************************************************************
+    /*
      * If you have a basic license key, uncomment line 100.
      * See directions in the README about how to Configure a Basic License
-     *********************************************************************/
+     */
 
    // ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
 
