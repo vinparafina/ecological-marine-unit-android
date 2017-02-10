@@ -205,6 +205,9 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
 
     combinedChart = (CombinedChart) solo.getView(R.id.chart6);
     assertTrue(combinedChart.getData().getAllData().size() > 0);
+
+    // FAB should not be visible
+    assertTrue(solo.getView(R.id.fab).getVisibility()== View.INVISIBLE);
   }
 
   /**
@@ -247,6 +250,9 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
 
     assertTrue(solo.waitForText("Nitrate"));
     checkForChartData();
+
+    // FAB should not be visible
+    assertTrue(solo.getView(R.id.fab).getVisibility()== View.INVISIBLE);
   }
   /**
    * Test the water column profiles are drawn
@@ -297,6 +303,9 @@ public class EMUAppTest extends ActivityInstrumentationTestCase2 {
 
     assertTrue(solo.waitForText("Nitrate"));
     checkForChartData();
+
+    // FAB should not be visible
+    assertTrue(solo.getView(R.id.fab).getVisibility()== View.INVISIBLE);
   }
   /**
    * Test that the seekbar results
