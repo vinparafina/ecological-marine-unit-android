@@ -16,7 +16,8 @@ Ultimately we want to consume this data as a web map in the app.  In order to do
 - a: Preventing data overlaps for which given depth level, only one EMU exists per location.
 - b: Preventing data gaps such that within the world’s oceanic regions where data does exist, holes should not appear between adjacent data points.
 
-The four geoprocessing workflows were: 
+The four geoprocessing workflows we tested: 
+
 1. Aggregate Points -> Dissolve -> Simplify Polygon -> Graphic Buffer
 2. Point to Raster -> Raster to Polygon -> Dissolve -> Smooth Polygon
 3. Point to Raster -> Raster to Polygon (simplify) -> Dissolve
