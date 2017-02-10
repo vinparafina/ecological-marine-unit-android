@@ -10,7 +10,7 @@ Almost of all of the maps and feature services were published by the Oceans Grou
 
 Since the EMUs are made available as points, this data was first manipulated into a form that could be interpreted more intuitively and rendered more quickly.  Using ArcGIS’s suite of [geoprocessing tools](https://desktop.arcgis.com/en/arcmap/latest/analyze/main/geoprocessing-tools.htm), Python 2.7, and the [ArcPy](http://pro.arcgis.com/en/pro-app/arcpy/get-started/what-is-arcpy-.htm) site package, these multidimensional and overlapping clusters of points were converted into polygons.  This process simplified the 52+ million points to less than 1,900 polygons while maintaining geospatial accuracy and precision.  The end result represents ecologically distinct clusters of points, or EMUs, as single polygon features at every depth level.  Some depth levels near the surface contain each of the 37 EMUs, while others, generally as you descend deeper into the water column, shrink to include as few as five or six. Likewise, several of the EMUs occur at each of the 100 depth levels (between 0m and 5500m deep!), while a couple EMUs only exist in the top eight or nine of these depth levels.
 
-### Generating a WebMap
+## Generating a WebMap
 Ultimately we want to consume this data as a web map in the app.  In order to do this we further optimized the data into a [Mobile Map Package](http://pro.arcgis.com/en/pro-app/help/sharing/overview/mobile-map-package.htm) and analyzed it such that the polygon features could be overlaid over the [Oceans Basemap](http://doc.arcgis.com/en/living-atlas/item/?itemId=5ae9e138a17842688b0b79283a4353f6). We evaluated four different geoprocessing workflows in order to maintain an accurate representation of the EMU points as polygons without violating the inherent topology between neighboring data points with the following goals: 
                                                                   
 - a: Preventing data overlaps for which given depth level, only one EMU exists per location.
@@ -37,17 +37,17 @@ Here is a comparison of those metrics:
 
 Ultimately, in order to best satisfy the objectives above, a point-to-raster-to-polygon approach that didn’t involve attempting to either smooth or simplify the data (workflow 4) was taken.
 
-#### Automate Geoprocessing
+### Automate Geoprocessing
 In order to automate the geoprocessing steps above we created an [ArcPy script](http://pro.arcgis.com/en/pro-app/arcpy/get-started/a-quick-tour-of-arcpy.htm) named **processEMUs.py** and included in the root of the [emu-app](processEMUs.py) module.  This tool relies on an installation of ArcGIS Desktop or Pro as described [here](http://pro.arcgis.com/en/pro-app/arcpy/get-started/installing-python-for-arcgis-pro.htm) for Pro.  The script produces a geodatabase with a feature class entitled **Global_EMU_Polygon** which we used in ArcGIS Pro to generate our Map.    
 
-#### Creating the Map
+### Creating the Map
 With the optimized features completed we are ready to prepare the features for displaying in our map. We imported the polygon features into ArcGIS Pro and symbolized according to the official colors designated for the EMUs as shown in the chart below:
 
 ![](assets/emu_colors.png)
 
 With the symbology in place, the polygons were overlaid on top of the [Oceans Basemap](https://www.arcgis.com/home/item.html?id=5ae9e138a17842688b0b79283a4353f6) and a 35% transparency was applied in ArcGIS Pro. Adding this transparency helped to reveal the underlying seafloor topography, providing relevant context as well as aiding in the explanation of why certain regions of the EMUs begin disappearing as you descend deeper.
 
-#### Publishing
+### Publishing
 Once the map was finalized in ArcGIS Pro, it was [published as a web map](http://pro.arcgis.com/en/pro-app/help/sharing/overview/share-a-web-map.htm) to an ArcGIS organization and made [public](https://arcgisruntime.maps.arcgis.com/home/item.html?id=db8728ff2c3c49fca22a0cee58c1e081) to be consumed by our EMU app.  In the following sections, we describe the app developer patterns and how we make use of this web map and other EMU services.
 
 ## App Developer Patterns
