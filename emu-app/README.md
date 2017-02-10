@@ -4,7 +4,7 @@ Explore our ocean ecosystems with EMUs!
 ## Description
 Using 50 year's worth of aggregated nutrient and physical ocean data from [NOAA](https://www.nodc.noaa.gov/OC5/woa13/), Esri has collaborated with the USGS, the Marine Conservation Institute, NatureServe, the University of Auckland, GRID-Arendal, NOAA, Duke University, the Woods Hole Oceanographic Institution, and many other partners to classify our oceans into 37 statistically distinct [ecological marine units](http://www.esri.com/ecological-marine-units) (EMUs).  Leveraging the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/) and [ArcGIS](http://www.arcgis.com/home/index.html), we'll show you how this ArcGIS Android SDK mobile app can be used to explore ocean conditions locally and globally. There are a number of ocean data resources you can use to supplement the EMU story.  For example, the [Ocean Biogeographic Information System](http://www.iobis.org/) hosts free and open access to ocean  biogeographic datasets.
 
-## Map Prep For EMUs by Depth Level
+## Data Prep & Optimization
 
 Almost of all of the maps and feature services were published by the Oceans Group at Esri.  Members of the Runtime group at Esri developed the feature service for visualizing EMU layers by ocean depth.  Here we discuss our approach and the various ArcGIS tools we used.
 
@@ -41,9 +41,9 @@ Ultimately, in order to best satisfy the objectives above, a point-to-raster-to-
 
 The Python [`processEMUs.py`](processEMUs.py) script automates the geoprocessing steps for workflow 4.  The script requires a Windows installation of ArcGISPro or ArcGIS Desktop. For help configuring Python with ArcGIS Pro, see this [help page](http://pro.arcgis.com/en/pro-app/arcpy/get-started/installing-python-for-arcgis-pro.htm).  For help setting up Python with ArcGIS Desktop, see this [help page](http://desktop.arcgis.com/en/arcmap/10.3/analyze/python/importing-arcpy.htm).
 
-The end product of the script is a new feature class entitled "Global_EMU_Polygons" in the C:\Data\EMUData.gdb geodatabase.  ArcGIS Pro or ArcMap is used to construct a map with this feature class.
+The end product of the script is a new feature class entitled "Global_EMU_Polygons" in the EMUData.gdb geodatabase where you have hosted your data on disk.  ArcGIS Pro or ArcMap is used to construct a map with this feature class.
 
-### Data Prep & Optimization
+### Map Symbology and Presentation
 
 The polygons were then symbolized in ArcGIS Pro according to the official colors designated for the EMUs.
 
@@ -54,8 +54,10 @@ Lastly, the polygons were overlaid on top of the [Oceans Basemap](https://www.ar
 ### Publishing
 Once the map was finalized in ArcGIS Pro, it was [published as a web map](http://pro.arcgis.com/en/pro-app/help/sharing/overview/share-a-web-map.htm) to an ArcGIS organization and made [public](https://arcgisruntime.maps.arcgis.com/home/item.html?id=db8728ff2c3c49fca22a0cee58c1e081).  In the following sections, learn how the this web map and other feature services are used in the app.
 
+## App Developer Patterns
+Now that we have reviewed the steps for data scrubbing and publishing our content as a web map, we will now step through the developer patterns used to create the Android mobile application.
 
-## Feature Services
+### Feature Services
 The heart of this application lies in the rich data stores collected by NOAA and analyzed by the scientific collaboration mentioned above.  Over 50 million spatial and non-spatial datapoints are hosted through AGOL [feature services](http://server.arcgis.com/en/server/10.5/publish-services/windows/what-is-a-feature-service-.htm).  Most of the read-only feature services in this application were constructed by the [Esri Oceans group](http://www.esri.com/industries/oceans), published using [ArcGISPro](https://pro.arcgis.com/en/pro-app/help/sharing/overview/share-with-arcgis-pro.htm) or ArcMap, and made publicly available. The EMU feature services are also used by the [Ecological Marine Unit Explorer](http://livingatlas.arcgis.com/emu/), a web version of this application. Learn more about how this data set was assembled in this [Story Map](http://esrioceans.maps.arcgis.com/apps/MapJournal/index.html?appid=5075d771f6894080ac190c3ccd954f0e).
 
 
@@ -87,7 +89,7 @@ ServiceFeatureTable serviceFeatureTable = new
 
 ![](assets/05_charts.png)       |  |          ![](assets/07_profile.png)
 
-## Querying Feature Tables
+### Querying Feature Tables
 In the app, spatial and non-spatial feature tables are queried.  Spatial queries are used when the user interacts with the map -  the screen location is converted to a geolocation and service feature tables are queried.
 
 ```java
