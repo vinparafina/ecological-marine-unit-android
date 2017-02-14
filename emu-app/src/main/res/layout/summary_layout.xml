@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="eum"
+                  type="com.esri.android.ecologicalmarineunitexplorer.data.EMU"/>
+    </data>
+    <RelativeLayout android:layout_width="match_parent"
+                    android:id="@+id/relLayout"
+                    android:layout_height="match_parent" >
+
+
+        <LinearLayout
+                android:id="@+id/summaryContent"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="0dp"
+                android:paddingRight="40dp"
+                android:paddingEnd="40dp">
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:orientation="horizontal"
+                          android:layout_height="wrap_content" android:weightSum="1">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:textAppearance="@style/TextAppearance.AppCompat.Headline" android:text="@string/emu"/>
+
+                <TextView android:layout_width="161dp"
+                          android:layout_height="wrap_content"
+                          android:id="@+id/txtName" android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                          android:layout_weight="0.83"/>
+                <ImageView android:layout_height="match_parent"
+                           android:layout_width="40dp"
+                           android:id="@+id/emu_rectangle"
+                           android:src="@drawable/rectangle"/>
+
+            </LinearLayout>
+            <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/physical_summary"/>
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/physical_summary"/>
+            <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/nutrient_summary"/>
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/nutrient_summary"/>
+            <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"/>
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/txt_thickness"/>
+
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/txt_top"/>
+
+            <Button android:layout_width="wrap_content"
+                    android:id="@+id/btnDetail"
+                    android:text="@string/details"
+                    android:layout_height="wrap_content" android:layout_gravity="end" />
+
+            <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:id="@+id/arrowDown" android:src="@drawable/ic_keyboard_arrow_down_black_24px"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+</layout>

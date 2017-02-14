@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:background="?attr/colorPrimaryDark"
+              android:theme="@style/ThemeOverlay.AppCompat.Dark"
+              android:padding="16dp"
+              android:gravity="bottom"
+              android:layout_height="192dp">
+
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="@string/ecological_marine_unit_explorer"
+              android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+</LinearLayout>

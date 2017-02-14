@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:background="@color/colorBackground"
+              android:orientation="vertical"
+              android:id="@+id/bottom_sheet_view"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              app:behavior_peekHeight="250dp"
+              app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="horizontal"
+                  android:id="@+id/horizontalLinearLayout">
+
+        <!-- Water column container -->
+        <FrameLayout android:layout_width="-2dp"
+                     android:layout_height="match_parent"
+                     android:id="@+id/column_container">
+
+            <include layout="@layout/water_column"/>
+        </FrameLayout>
+
+        <!-- Parent layout summary text and recycler view -->
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical"
+                      android:layout_weight="3"
+                      android:layout_marginTop="20dp"
+                      android:id="@+id/summaryLinearLayout">
+
+            <TextView android:layout_width="match_parent"
+                      android:text="@string/location_summary"
+                      android:paddingRight="@dimen/activity_horizontal_margin"
+                      android:paddingEnd="@dimen/activity_horizontal_margin"
+                      android:layout_height="wrap_content"/>
+
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/txtSummary"
+                      android:paddingRight="@dimen/activity_horizontal_margin"
+                      android:paddingEnd="64dp"
+                      android:layout_marginTop="@dimen/activity_horizontal_margin"
+                      android:layout_marginBottom="50dp"/>
+
+
+            <!-- Summary container layout -->
+            <FrameLayout android:id="@+id/summary_container"
+                         android:layout_width="match_parent"
+                         android:layout_height="match_parent"
+                         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                         android:layout_marginBottom="0dp"
+                         android:layout_marginLeft="0dp" android:layout_marginRight="0dp">
+
+                <include layout="@layout/summary_recycler_view"/>
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
