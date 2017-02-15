@@ -77,3 +77,5 @@ A copy of the license is available in the repository's [LICENSE](LICENSE) file.
 
 For information about licensing your deployed app, see [License your app](https://developers.arcgis.com/android/guide/license-your-app.htm).
 
+[](Esri Tags: ArcGIS Android Mobile)
+[](Esri Language: Java)
