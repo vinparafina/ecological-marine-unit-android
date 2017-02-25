@@ -48,6 +48,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartFragment;
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
@@ -59,6 +60,7 @@ import com.esri.android.ecologicalmarineunitexplorer.bottomsheet.BottomSheetPres
 import com.esri.android.ecologicalmarineunitexplorer.util.ActivityUtils;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileFragment;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfilePresenter;
+
 import com.esri.arcgisruntime.geometry.Point;
 
 /**
@@ -79,7 +81,6 @@ public class MainActivity extends AppCompatActivity
   private FloatingActionButton mFab = null;
   private SummaryChartFragment mSummaryChartFragment = null;
   private SummaryChartPresenter mSummaryChartPresenter = null;
-  private BottomSheetFragment mBottomSheetFragment = null;
 
   public MainActivity() {}
 
@@ -93,8 +94,8 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-  /**
-   * If you have a basic license key, uncomment line 101.
+  /*
+   * If you have a basic license key, uncomment line 102.
    * See directions in the README about how to Configure a Basic License
    */
 
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity
    */
   private void setUpBottomSheetFragment(){
     final FragmentManager fm = getSupportFragmentManager();
-    mBottomSheetFragment = (BottomSheetFragment) fm.findFragmentById(R.id.bottom_sheet_view) ;
+    BottomSheetFragment mBottomSheetFragment = (BottomSheetFragment) fm.findFragmentById(R.id.bottom_sheet_view);
 
     if (mBottomSheetFragment == null) {
       mBottomSheetFragment = BottomSheetFragment.newInstance();
