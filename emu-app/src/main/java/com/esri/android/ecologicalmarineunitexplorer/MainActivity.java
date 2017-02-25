@@ -93,10 +93,10 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    /*
-     * If you have a basic license key, uncomment line 100.
-     * See directions in the README about how to Configure a Basic License
-     */
+  /**
+   * If you have a basic license key, uncomment line 101.
+   * See directions in the README about how to Configure a Basic License
+   */
 
    // ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
 
