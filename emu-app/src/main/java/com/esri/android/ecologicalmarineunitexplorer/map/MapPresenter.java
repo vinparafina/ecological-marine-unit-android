@@ -27,10 +27,15 @@ package com.esri.android.ecologicalmarineunitexplorer.map;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
 import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
-import com.esri.arcgisruntime.geometry.*;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.PolygonBuilder;
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;

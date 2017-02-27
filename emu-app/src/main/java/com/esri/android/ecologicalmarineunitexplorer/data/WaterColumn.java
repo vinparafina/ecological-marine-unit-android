@@ -26,9 +26,14 @@ package com.esri.android.ecologicalmarineunitexplorer.data;
 
 
 import android.support.annotation.NonNull;
+
 import com.esri.arcgisruntime.geometry.Point;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A Model object encapsulating a collection of EMUObservations for a specific location

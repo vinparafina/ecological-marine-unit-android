@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
@@ -42,25 +43,26 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.esri.android.ecologicalmarineunitexplorer.bottomsheet.BottomSheetFragment;
+import com.esri.android.ecologicalmarineunitexplorer.bottomsheet.BottomSheetPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartFragment;
 import com.esri.android.ecologicalmarineunitexplorer.chartsummary.SummaryChartPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapFragment;
 import com.esri.android.ecologicalmarineunitexplorer.map.MapPresenter;
-import com.esri.android.ecologicalmarineunitexplorer.bottomsheet.BottomSheetFragment;
-import com.esri.android.ecologicalmarineunitexplorer.bottomsheet.BottomSheetPresenter;
 import com.esri.android.ecologicalmarineunitexplorer.util.ActivityUtils;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfileFragment;
 import com.esri.android.ecologicalmarineunitexplorer.waterprofile.WaterProfilePresenter;
-
 import com.esri.arcgisruntime.geometry.Point;
 
 /**
@@ -99,7 +101,7 @@ public class MainActivity extends AppCompatActivity
    * See directions in the README about how to Configure a Basic License
    */
 
-   // ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
+//   ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);
 
     // Initially hide the FAB
     mFab = (FloatingActionButton) findViewById(R.id.fab);
