@@ -3,9 +3,16 @@
 This repo is home to an Esri example application that uses the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/) to showcase ocean ecosystems.  Explore 50 years worth of NOAA data using Esri maps and services!
 
 ## Features
+- ArcGISTiledLayer
+- ServiceFeatureTable
+- FeatureLayer
+- GeometryEngine
+- GraphicsOverlay
+- QueryParameters
+- FeatureQueryResult
 
 ## Development Instructions
-This Ecological Marine Unit Explorer repo is an Android Studio Project and App Module that can be directly cloned and imported into Android Studio. 
+This Ecological Marine Unit (EMU) Explorer repo is an Android Studio Project and App Module that can be directly cloned and imported into Android Studio. 
 
 ### Fork the repo
 **Fork** the [Ecological Marine Unit Explorer Android](https://github.com/Esri/ecological-marine-unit-android/fork) repo.
@@ -31,13 +38,32 @@ If there are changes made in the Original repository, you can sync the fork to k
 3. ```git checkout master``` to checkout your fork's local master branch.
 4. ```git merge upstream/master``` to sync your local `master' branch with `upstream/master`. **Note**: Your local changes will be retained and your fork's master branch will be in sync with the upstream repository.
 
-### Configure Basic License (optional)
-While the Ecological Marine Unit Explorer application references a Basic license file, it is not required to run the app.  To learn more about licensing your Runtime app, see the documentation [here](https://developers.arcgis.com/arcgis-runtime/licensing/).  The Ecological Marine Unit Explorer is completely functional without the Basic license. We have used a Basic license to remove the "Licensed for Developer Use Only" watermark from the map since this app has often been used in demos. If you have a Basic license, use the following steps to use it in your app.
+### Configure Runtime Lite License (optional)
+While the Ecological Marine Unit Explorer application references a Runtime Lite license file, it is not required to run the app.  To learn more about licensing your Runtime app, see the documentation [here](https://developers.arcgis.com/arcgis-runtime/licensing/).  The Ecological Marine Unit Explorer is completely functional without the Runtime Lite license. We have used a Runtime Lite license to remove the "Licensed for Developer Use Only" watermark from the map since this app has often been used in demos. If you have a ArcGIS Developer account you can generate your ArcGIS Runtime Lite license and use the following steps to use it in your app.
 
-1.  In the module build.file uncomment line 17 `buildConfigField "String" , "LICENSE_KEY" , LICENSE_KEY`
-2.  Add a file entitled gradle.properties to the root of the project.  Copy your license key to this file.
-3.  Uncomment line 100 in the MainActivity.java file that sets the license:  `ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);`
+1.  In the app modules build.gradle uncomment line 33 `buildConfigField "String" , "LICENSE_KEY" , LICENSE_KEY`
+2.  Create a file named gradle.properties in the root of the project.  Assign your license key as a Value/String pair, e.g.: 
+
+```
+LICENSE_KEY="runtimelite,xxxx,xxxx,xxxx,xxxx"
+```
+
+3.  Uncomment line 104 in the MainActivity.java file that sets the license:  `ArcGISRuntimeEnvironment.setLicense(BuildConfig.LICENSE_KEY);`
 4.  Sync your gradle file and re-run the app.
+
+### Signing a release APK
+- Create a file named `keystore.properties` in the root of the project. 
+- Add the following content with your signing info: 
+
+```
+storePassword=myStorePassword
+keyPassword=mykeyPassword
+keyAlias=myKeyAlias
+storeFile=myStoreFileLocation
+```
+
+- Open the **Build Variants** tool in Android Studio and ensure **release** build type is selected
+- Click **Build > Build APK** and confirm that Android Studio has created a signed APK in the `/build/outputs/apk/` directory.  
 
 
 ## Requirements
