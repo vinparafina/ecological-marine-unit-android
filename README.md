@@ -2,6 +2,8 @@
 
 This repo is home to an Esri example application that uses the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/) to showcase ocean ecosystems.  Explore 50 years worth of NOAA data using Esri maps and services!
 
+![https://play.google.com/store/apps/details?id=com.esri.android.ecologicalmarineunitexplorer&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1](https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png)
+
 ## Features
 - ArcGISTiledLayer
 - ServiceFeatureTable
@@ -71,7 +73,7 @@ storeFile=myStoreFileLocation
 * [Android Studio](http://developer.android.com/sdk/index.html)
 
 ## Resources
-* [Ecological Marine Unit Explorer](https://github.com/Esri/ecological-marine-unit-android/blob/emu-app/README.md)
+* [Ecological Marine Unit Explorer](README.md)
 * [ArcGIS Runtime SDK for Android Developers Site](https://developers.arcgis.com/android/)
 * [ArcGIS Mobile Blog](http://blogs.esri.com/esri/arcgis/category/mobile/)
 * [ArcGIS Developer Blog](http://blogs.esri.com/esri/arcgis/category/developer/)
