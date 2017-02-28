@@ -26,6 +26,7 @@ package com.esri.android.ecologicalmarineunitexplorer.bottomsheet;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.esri.arcgisruntime.geometry.Point;
 

@@ -29,13 +29,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
+
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.data.FeatureQueryResult;
 import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
-import com.esri.arcgisruntime.geometry.*;
+import com.esri.arcgisruntime.geometry.AngularUnit;
+import com.esri.arcgisruntime.geometry.AngularUnitId;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.GeodeticCurveType;
+import com.esri.arcgisruntime.geometry.GeodeticDistanceResult;
+import com.esri.arcgisruntime.geometry.Geometry;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.LinearUnit;
+import com.esri.arcgisruntime.geometry.LinearUnitId;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
@@ -47,7 +58,16 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimaps;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * The DataManager is a singleton responsible for managing how the application retrieves
@@ -178,7 +198,7 @@ public class DataManager {
    * @param sr - the desired spatial reference for the geocoded result
    * @param callback - The GeocodingCallback to be called upon completion of the geocoding task
    */
-  public void queryForAddress(@NonNull final String location, @NonNull final SpatialReference sr,  final ServiceApi.GeocodingCallback callback){
+  public void queryForAddress(@NonNull final String location, @NonNull final SpatialReference sr, final ServiceApi.GeocodingCallback callback){
     // Create Locator parameters from single line address string
     final GeocodeParameters geoParameters = new GeocodeParameters();
     geoParameters.setOutputSpatialReference(sr);
