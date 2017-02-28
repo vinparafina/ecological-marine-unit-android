@@ -2,7 +2,7 @@
 
 This repo is home to the ArcGIS Ecological Marine Unit (EMU) example application that's [available now in the Google Play store](https://play.google.com/store/apps/details?id=com.esri.android.ecologicalmarineunitexplorer).  The app uses the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/) to showcase ocean ecosystems.  Explore 50 years worth of NOAA data using Esri maps and services!
 
-<a href='https://play.google.com/store/apps/details?id=com.esri.android.ecologicalmarineunitexplorer&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=com.esri.android.ecologicalmarineunitexplorer&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' style='width:65px;height:25px;'/></a>
 
 ## Features
 - ArcGISTiledLayer
