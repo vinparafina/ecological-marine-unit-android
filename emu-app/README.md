@@ -184,7 +184,8 @@ if (mCachedLayers.contains(depth)){
   // Return all the output fields
   List<String> outFields = Collections.singletonList("*");
 
-  final ListenableFuture<FeatureQueryResult> results =  mEmuByDepthTable.populateFromServiceAsync(queryParameters,false, outFields);
+  final ListenableFuture<FeatureQueryResult> results =  
+    mEmuByDepthTable.populateFromServiceAsync(queryParameters,false, outFields);
 
   results.addDoneListener(new Runnable() {
 
