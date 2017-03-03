@@ -140,17 +140,16 @@ public class MapFragment extends Fragment implements MapContract.View {
     mMap  = map;
     mMapView.setMap(mMap);
 
+    // Start listening to touch interactions on the map
     final View.OnTouchListener mapTouchListener = new MapTouchListener(getActivity().getApplicationContext(), mMapView);
+    mMapView.setOnTouchListener(mapTouchListener);
 
     // Once map has loaded enable touch listener
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED) {
-
           // Stop listening to any more draw status changes
           mMapView.removeDrawStatusChangedListener(this);
-          // Start listening to touch interactions on the map
-          mMapView.setOnTouchListener(mapTouchListener);
           // Notify presenter
           mPresenter.mapLoaded();
         }
