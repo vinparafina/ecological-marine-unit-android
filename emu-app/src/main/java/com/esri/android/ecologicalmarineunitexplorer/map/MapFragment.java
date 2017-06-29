@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
 import com.esri.android.ecologicalmarineunitexplorer.MainActivity;
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
@@ -46,7 +47,13 @@ import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.Layer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
-import com.esri.arcgisruntime.mapping.view.*;
+import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
+import com.esri.arcgisruntime.mapping.view.DrawStatus;
+import com.esri.arcgisruntime.mapping.view.DrawStatusChangedEvent;
+import com.esri.arcgisruntime.mapping.view.DrawStatusChangedListener;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
+import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 
 
@@ -133,17 +140,16 @@ public class MapFragment extends Fragment implements MapContract.View {
     mMap  = map;
     mMapView.setMap(mMap);
 
+    // Start listening to touch interactions on the map
     final View.OnTouchListener mapTouchListener = new MapTouchListener(getActivity().getApplicationContext(), mMapView);
+    mMapView.setOnTouchListener(mapTouchListener);
 
     // Once map has loaded enable touch listener
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED) {
-
           // Stop listening to any more draw status changes
           mMapView.removeDrawStatusChangedListener(this);
-          // Start listening to touch interactions on the map
-          mMapView.setOnTouchListener(mapTouchListener);
           // Notify presenter
           mPresenter.mapLoaded();
         }
@@ -317,7 +323,7 @@ public class MapFragment extends Fragment implements MapContract.View {
   }
 
 
-  public class MapTouchListener extends DefaultMapViewOnTouchListener {
+  public class MapTouchListener extends DefaultMapViewOnTouchListener{
     /**
      * Instantiates a new DrawingMapViewOnTouchListener with the specified
      * context and MapView.

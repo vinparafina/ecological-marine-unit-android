@@ -41,6 +41,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.esri.android.ecologicalmarineunitexplorer.R;
 import com.esri.android.ecologicalmarineunitexplorer.data.EMUObservation;
 import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;

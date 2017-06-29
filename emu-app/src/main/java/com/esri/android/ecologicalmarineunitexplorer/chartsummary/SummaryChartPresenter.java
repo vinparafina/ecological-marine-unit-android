@@ -27,9 +27,22 @@ package com.esri.android.ecologicalmarineunitexplorer.chartsummary;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import com.esri.android.ecologicalmarineunitexplorer.data.*;
+
+import com.esri.android.ecologicalmarineunitexplorer.data.DataManager;
+import com.esri.android.ecologicalmarineunitexplorer.data.EMUObservation;
+import com.esri.android.ecologicalmarineunitexplorer.data.EMUStat;
+import com.esri.android.ecologicalmarineunitexplorer.data.ServiceApi;
+import com.esri.android.ecologicalmarineunitexplorer.data.WaterColumn;
 import com.github.mikephil.charting.charts.ScatterChart;
-import com.github.mikephil.charting.data.*;
+import com.github.mikephil.charting.data.CandleData;
+import com.github.mikephil.charting.data.CandleDataSet;
+import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.ScatterDataSet;
 
 import java.util.ArrayList;
 import java.util.List;

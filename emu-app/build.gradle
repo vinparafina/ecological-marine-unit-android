@@ -1,9 +1,26 @@
 apply plugin: 'com.android.application'
 
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
+    signingConfigs {
+        config {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
-
     defaultConfig {
         applicationId "com.esri.android.ecologicalmarineunitexplorer"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -13,12 +30,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         // You can license the app by providing a LICENSE_KEY
         // in the gradle.properties at the root of the project
-        //
-       // buildConfigField "String" , "LICENSE_KEY" , LICENSE_KEY
+//        buildConfigField "String" , "LICENSE_KEY" , LICENSE_KEY
     }
-
-
-
     buildTypes {
         debug {
             minifyEnabled false
@@ -32,9 +45,9 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
-
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests.all {
         testLogging {
@@ -44,12 +57,10 @@ android {
     dataBinding {
         enabled = true
     }
-
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     // App's dependencies, including test
     compile "com.esri.arcgisruntime:arcgis-android:$rootProject.runtimeVersion"
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
@@ -58,9 +69,8 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "com.google.guava:guava:$rootProject.guavaVersion"
-    // Charting depedency
+    // Charting dependency
     compile "com.github.PhilJay:MPAndroidChart:$rootProject.mpAndroidChartVersion"
-
     androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.espressoCoreVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
