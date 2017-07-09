@@ -38,14 +38,16 @@
             <Space
                     android:layout_width="match_parent"
                     android:layout_height="10dp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/physical_summary"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="@string/physical_summary" android:textStyle="bold"/>
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:id="@+id/physical_summary"/>
             <Space
                     android:layout_width="match_parent"
                     android:layout_height="10dp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/nutrient_summary"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="@string/nutrient_summary" android:textStyle="bold"/>
             <TextView android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:id="@+id/nutrient_summary"/>

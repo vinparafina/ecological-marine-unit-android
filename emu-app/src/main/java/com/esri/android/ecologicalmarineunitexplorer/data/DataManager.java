@@ -819,14 +819,15 @@ public class DataManager {
     final Integer emuNumber = Integer.parseInt( extractValueFromMap(mContext.getString(R.string.emu_number),map));
     emu.setName(emuNumber);
 
-    // Set descriptive name
-    final String emuName = extractValueFromMap(mContext.getString(R.string.name_emu),map);
+    // Get physical and nutrient summaries
+    final String summaries = extractValueFromMap(mContext.getString(R.string.name_emu),map);
 
-    // Get the physical and nutrient summaries which are concatenated in the emuName
-    final String [] results = emuName.split(" with ");
-    if (results.length == 2){
-      emu.setPhysicalSummary(results[0]);
-      emu.setNutrientSummary(results[1]);
+    // Get the physical and nutrient summaries
+    final String [] results = summaries.split(",");
+    if (results.length == 7){
+
+      emu.setPhysicalSummary(results[0].trim() + ", " + results[1].trim() + ", " + results[2].trim());
+      emu.setNutrientSummary(results[3].trim() + ", " + results[4].trim() + ", " + results[5].trim() + ", " + results[6].trim());
     }else{
       emu.setPhysicalSummary("not found");
       emu.setNutrientSummary("not found");
