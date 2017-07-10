@@ -18,7 +18,7 @@
 
     <!-- geocode service -->
     <string name="geocode_url">http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer</string>
-    <string name="name_emu">NameEMU</string>
+    <string name="name_emu">EMU_Name</string>
     <string name="geo_base">GeomorphologyBase</string>
     <string name="geo_features">GeomorphologyFeatures</string>
     <string name="emu_number">Cluster37</string>
