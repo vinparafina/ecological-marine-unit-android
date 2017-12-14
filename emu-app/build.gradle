@@ -26,6 +26,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         // You can license the app by providing a LICENSE_KEY
         // in the gradle.properties at the root of the project
@@ -77,4 +78,7 @@ dependencies {
     // Robotium dependencies
     androidTestCompile "com.jayway.android.robotium:robotium-solo:$rootProject.robotiumVersion"
     testCompile "junit:junit:$rootProject.ext.junitVersion"
+    // Multidex support
+    implementation "com.android.support:multidex:$rootProject.multidexVersion"
+
 }

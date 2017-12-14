@@ -45,4 +45,5 @@ ext {
     espressoCoreVersion = '2.2.2'
     guavaVersion = '18.0'
     mpAndroidChartVersion = 'v3.0.3'
+    multidexVersion = '1.0.2'
 }
