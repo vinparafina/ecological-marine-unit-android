@@ -198,14 +198,12 @@ public class MapPresenter implements MapContract.Presenter {
     }
     mDataManager.manageEmuPolygonsByDepth(depth, new ServiceApi.EMUByDepthCallback() {
       @Override public void onPolygonsRetrieved(final FeatureLayer layer) {
-        // Show progress bar
-        mMapView.showProgressBar("Retrieving EMU polygons", "Data Download");
-        if (layer != null){
-          mMapView.hideProgressBar();
-        }else{
+
+        if (layer == null){
           Log.i("MapPresenter", "*****Return layer is null!");
-          mMapView.hideProgressBar();
           mMapView.showMessage("Unable to display EMU polygons");
+        }else{
+          layer.setVisible(true);
         }
       }
     });
@@ -220,7 +218,7 @@ public class MapPresenter implements MapContract.Presenter {
       @Override public void onPolygonsRetrieved(final FeatureLayer layer) {
         if (layer != null){
           Log.i("MapPresenter", "Initial depth layer downloaded");
-          layer.setDefinitionExpression(" Depth = 0");
+         // layer.setDefinitionExpression(" Depth = 0");
           mMapView.addLayer(layer);
         }
         mMapView.hideProgressBar();

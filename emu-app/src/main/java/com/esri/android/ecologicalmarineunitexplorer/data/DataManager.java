@@ -112,6 +112,8 @@ public class DataManager {
   private static Double MIN_SILICATE = null;
   private static Double MIN_TEMPATURE = null;
 
+  private final static String TAG = DataManager.class.getSimpleName();
+
 
   private DataManager(final Context applicationContext){
 
@@ -208,13 +210,14 @@ public class DataManager {
     }
     mLocatorTask.addDoneLoadingListener(new Runnable() {
       @Override public void run() {
+
         if (mLocatorTask.getLoadStatus() == LoadStatus.LOADED){
           final ListenableFuture<List<GeocodeResult>> futureResults = mLocatorTask.geocodeAsync(location, geoParameters);
           futureResults.addDoneListener(new Runnable() {
             @Override public void run() {
               try{
                 final List<GeocodeResult> geocodeResults = futureResults.get();
-                Log.i("DataManager",  geocodeResults.size() + " geocoding results returned.");
+                Log.i(TAG,  geocodeResults.size() + " geocoding results returned.");
                 callback.onGeocodeResult(geocodeResults);
               }catch ( final Exception e){
                 callback.onGeocodeResult(null  );
@@ -223,7 +226,7 @@ public class DataManager {
           });
         }else{
           callback.onGeocodeResult(null);
-          Log.i("DataManager", "Locator Task failed to load: " + mLocatorTask.getLoadStatus().name());
+          Log.i(TAG, "Locator Task failed to load: " + mLocatorTask.getLoadStatus().name());
         }
       }
     });
@@ -238,18 +241,18 @@ public class DataManager {
    * @param callback ServiceApi.EMUByDepthCallback
    */
   public void manageEmuPolygonsByDepth(final Integer depth, final ServiceApi.EMUByDepthCallback callback){
+    mEmuByDepthLayer.setVisible(false);
     // If depth level is 1, don't download, just default to TiledLayer
     if (depth == 1) {
-      mEmuByDepthLayer.setVisible(false);
       return;
     }
-    mEmuByDepthLayer.setVisible(true);
 
     if (mCachedLayers.contains(depth)){
-      Log.i("DataManager", "EMU polygons downloaded already for depth " + depth);
+      mEmuByDepthLayer.setVisible(true);
+      Log.i(TAG, "EMU polygons downloaded already for depth " + depth);
       mEmuByDepthLayer.setDefinitionExpression(" Depth = " + depth);
     }else{
-      Log.i("DataManager", "Downloading EMU polygons for for depth " + depth);
+      Log.i(TAG, "Downloading EMU polygons for for depth " + depth);
       queryEmuByDepth(depth, callback);
     }
   }
@@ -261,6 +264,7 @@ public class DataManager {
   public void queryEmuByDepth (final Integer depth, final ServiceApi.EMUByDepthCallback callback){
     final QueryParameters queryParameters = generateEmuByDepthQueryParameters(depth);
     try{
+      mEmuByDepthLayer.setDefinitionExpression(null);
       // Return all the output fields
       final List<String> outFields = Collections.singletonList("*");
 
@@ -271,31 +275,36 @@ public class DataManager {
           try {
             final FeatureQueryResult fqr = results.get();
             if (fqr.iterator().hasNext()){
-              Log.i("DataManager", "FeatureQueryResult found...");
+              Log.i(TAG, "FeatureQueryResult found...");
               // Cache the depth level so we don't download
               // the same data again
               mCachedLayers.add(depth);
 
               // Set the definition expression to show only the depth of interest
-              Log.i("DataManager", "Setting definition expression for depth " + depth);
+              Log.i(TAG, "Setting definition expression for depth " + depth);
               mEmuByDepthLayer.setDefinitionExpression("Depth = " + depth);
 
               // Notify caller
               callback.onPolygonsRetrieved(mEmuByDepthLayer);
+            }else{
+              Log.i(TAG, "No data for layer " + depth);
+              callback.onPolygonsRetrieved(null);
             }
           } catch (final Exception e) {
-            Log.e("DataManager", "Error querying EMU by depth " + e.getMessage());
+            Log.e(TAG, "Error querying EMU by depth " + e.getMessage());
             callback.onPolygonsRetrieved(null);
           }
         }
       });
 
+
+
     } catch (final Exception e) {
       String additionalInfo = getAdditionalInfo(e);
       if (additionalInfo!=null){
-        Log.e("DataManager", "Error query emu by depth :" +  e.getMessage() + " Additional info: " + additionalInfo);
+        Log.e(TAG, "Error query emu by depth :" +  e.getMessage() + " Additional info: " + additionalInfo);
       }else{
-        Log.e("DataManager", "Error query emu by depth :" +  e.getMessage());
+        Log.e(TAG, "Error query emu by depth :" +  e.getMessage());
       }
     }
   }
@@ -337,9 +346,9 @@ public class DataManager {
         } catch (final Exception e) {
           String additionalInfo = getAdditionalInfo(e);
           if (additionalInfo!=null){
-            Log.e("DataManager", "No measurements found for water column profile due to error " +  e.getMessage() + " Additional info: " + additionalInfo);
+            Log.e(TAG, "No measurements found for water column profile due to error " +  e.getMessage() + " Additional info: " + additionalInfo);
           }else{
-            Log.e("DataManager", "No measurements found for water column profile due to error " +  e.getMessage());
+            Log.e(TAG, "No measurements found for water column profile due to error " +  e.getMessage());
           }
         }
         callback.onProfileLoaded(profile);
@@ -484,9 +493,9 @@ public class DataManager {
         }catch (final Exception e){
           String additionalInfo = getAdditionalInfo(e);
           if (additionalInfo!=null){
-            Log.e("DataManager", "No measurements found for location due to error " +  e.getMessage() + " Additional info: " + additionalInfo);
+            Log.e(TAG, "No measurements found for location due to error " +  e.getMessage() + " Additional info: " + additionalInfo);
           }else{
-            Log.e("DataManager", "No measurements found for location due to error " +  e.getMessage());
+            Log.e(TAG, "No measurements found for location due to error " +  e.getMessage());
           }
         }
       }
@@ -793,9 +802,9 @@ public class DataManager {
           callback.onStatsLoaded(false);
           String additionalInfo = getAdditionalInfo(e);
           if (additionalInfo!=null){
-            Log.e("DataManager", "There was a problem querying for EMU statistics " +  e.getMessage() + " Additional info: " + additionalInfo);
+            Log.e(TAG, "There was a problem querying for EMU statistics " +  e.getMessage() + " Additional info: " + additionalInfo);
           }else{
-            Log.e("DataManager", "There was a problem querying for EMU statistics " +  e.getMessage());
+            Log.e(TAG, "There was a problem querying for EMU statistics " +  e.getMessage());
           }
         }
       }
