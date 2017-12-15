@@ -32,9 +32,11 @@ import com.esri.arcgisruntime.geometry.Point;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.*;
+
 import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.EntryXComparator;
 
 import java.util.*;
 
@@ -109,6 +111,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
         float x = (float) propertyMeasurementByDepth.get(depth).doubleValue();
         entries.add(new Entry(x, y));
       }
+      Collections.sort(entries, new EntryXComparator());
 
       ScatterDataSet set = new ScatterDataSet(entries, property);
       set.setColor(Color.BLACK);
@@ -134,6 +137,7 @@ public class WaterProfilePresenter implements WaterProfileContract.Presenter {
         for (float index = xmin; index <= xmax; index++) {
           entries.add(new Entry(index, Math.abs(observation.getTop())));
         }
+        Collections.sort(entries, new EntryXComparator());
 
         LineDataSet set = new LineDataSet(entries, "Line DataSet");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
