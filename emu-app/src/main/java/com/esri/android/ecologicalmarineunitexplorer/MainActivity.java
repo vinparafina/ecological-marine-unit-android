@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity
           final float scaleFactor = 1 - slideOffset;
           if (mFab != null){
             if (scaleFactor <= 1){
+              mFab.setVisibility(View.VISIBLE);
               mFab.animate().scaleX(1 - slideOffset).scaleY(1 - slideOffset).setDuration(0).start();
             }
             if (slideOffset == 1.00f){
