@@ -296,9 +296,6 @@ public class DataManager {
           }
         }
       });
-
-
-
     } catch (final Exception e) {
       String additionalInfo = getAdditionalInfo(e);
       if (additionalInfo!=null){

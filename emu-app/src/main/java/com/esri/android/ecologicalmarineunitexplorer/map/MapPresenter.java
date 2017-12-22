@@ -217,8 +217,6 @@ public class MapPresenter implements MapContract.Presenter {
     mDataManager.queryEmuByDepth(10, new ServiceApi.EMUByDepthCallback() {
       @Override public void onPolygonsRetrieved(final FeatureLayer layer) {
         if (layer != null){
-          Log.i("MapPresenter", "Initial depth layer downloaded");
-         // layer.setDefinitionExpression(" Depth = 0");
           mMapView.addLayer(layer);
         }
         mMapView.hideProgressBar();
