@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -19,6 +19,7 @@ allprojects {
             url 'https://esri.bintray.com/arcgis'
         }
         maven { url "https://jitpack.io" }
+        google()
     }
 }
 
@@ -31,16 +32,17 @@ ext {
     // Sdk and tools
     minSdkVersion = 16
     targetSdkVersion = 22
-    compileSdkVersion = 23
-    buildToolsVersion = '25.0.0'
+    compileSdkVersion = 27
+    buildToolsVersion = '27.0.2'
 
     // App dependencies
-    supportLibraryVersion = '23.4.0'
+    supportLibraryVersion = '27.0.2'
     junitVersion = '4.12'
     runnerVersion = '0.4.1'
-    runtimeVersion = '100.1.0'
+    runtimeVersion = '100.2.0'
     robotiumVersion = '5.6.3'
     espressoCoreVersion = '2.2.2'
     guavaVersion = '18.0'
-    mpAndroidChartVersion = 'v3.0.1'
+    mpAndroidChartVersion = 'v3.0.3'
+    multidexVersion = '1.0.2'
 }
