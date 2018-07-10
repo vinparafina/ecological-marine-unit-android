@@ -1,6 +1,6 @@
 # Ecological Marine Unit Explorer Android
 
-This repo is home to the ArcGIS Ecological Marine Unit (EMU) example application.  The app uses the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/) to showcase ocean ecosystems.  
+This repo is home to the [ArcGIS Ecological Marine Unit (EMU)](https://developers.arcgis.com/example-apps/ecological-marine-unit-android/?utm_source=github&utm_medium=web&utm_campaign=example_apps_emu_android) example application.  The app uses the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/) to showcase ocean ecosystems.  
 Explore 50 years worth of NOAA data using Esri maps and services!
 
 Visit Esri's[ **example app site** ](https://developers.arcgis.com/example-apps/ecological-marine-unit-android/)to read more about this app and how the Runtime features are implemented.
